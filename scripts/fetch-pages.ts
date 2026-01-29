@@ -117,21 +117,53 @@ async function fetchPageData(
   return await response.json();
 }
 
-function transformToV3Format(apiResponse: any) {
+function transformToV3Format(apiResponse: any, pageNumber: number) {
   const linesMap: Record<number, any> = {};
+  const surahStarts: { chapterId: number; startLine: number }[] = [];
+  const processedVerses = new Set<string>();
 
   apiResponse.verses.forEach((verse: any) => {
+    // Track Surah starts (Verse 1)
+    const verseKeyParts = verse.verse_key.split(":");
+    const chapterId = parseInt(verseKeyParts[0]);
+    const verseNum = parseInt(verseKeyParts[1]);
+
+    if (verseNum === 1 && !processedVerses.has(verse.verse_key)) {
+        let minLine = 999;
+        // Find the specific line where this verse starts on THIS page
+        // Some verses span pages, so we filter words by page_number if strictly needed, 
+        // but apiResponse is usually scoped to page.
+        // However, 'words' array in apiResponse might include words from other pages if the verse spans?
+        // The API `by_page` usually returns full verses. We must check word.page_number.
+        const wordsOnPage = verse.words.filter((w: any) => w.page_number === pageNumber);
+        
+        if (wordsOnPage.length > 0) {
+            wordsOnPage.forEach((w: any) => {
+                if (w.line_number < minLine) minLine = w.line_number;
+            });
+            if (minLine !== 999) {
+                surahStarts.push({ chapterId, startLine: minLine });
+            }
+        }
+    }
+    processedVerses.add(verse.verse_key);
+
     verse.words.forEach((word: any) => {
+      // Filter words not on this page (important for spanning verses)
+      if (word.page_number !== pageNumber) return;
+
       const lineNum = word.line_number;
 
       if (!linesMap[lineNum]) {
         linesMap[lineNum] = {
           lineNumber: lineNum,
           words: [],
+          isCentered: false, // Default
+          lineType: "text",
           metadata: {
             verseId: verse.id,
             verseKey: verse.verse_key,
-            chapterId: verse.chapter_id || Math.floor(verse.id / 1000),
+            chapterId: verse.chapter_id || chapterId,
           },
         };
       }
@@ -143,8 +175,54 @@ function transformToV3Format(apiResponse: any) {
         code_v2: word.code_v2,
         pageNumber: word.page_number,
         charType: word.char_type_name,
+        surah: chapterId,
+        verse: verseNum,
       });
     });
+  });
+
+  // Inject Headers and Bismillahs
+  surahStarts.forEach(({ chapterId, startLine }) => {
+      // Surah 1: Header at startLine - 1 (Verse 1 is Bismillah)
+      // Surah 9: Header at startLine - 1 (No Bismillah)
+      // Others: Bismillah at startLine - 1, Header at startLine - 2
+
+      if (chapterId === 1 || chapterId === 9) {
+          const headerLine = startLine - 1;
+          if (headerLine > 0 && !linesMap[headerLine]) {
+              linesMap[headerLine] = {
+                  lineNumber: headerLine,
+                  words: [],
+                  isCentered: true,
+                  lineType: "header",
+                  metadata: { chapterId },
+                  surahNumber: chapterId
+              };
+          }
+      } else {
+          const bismillahLine = startLine - 1;
+          const headerLine = startLine - 2;
+
+          if (bismillahLine > 0 && !linesMap[bismillahLine]) {
+              linesMap[bismillahLine] = {
+                  lineNumber: bismillahLine,
+                  words: [], // Empty words, renderer draws Bismillah
+                  isCentered: true,
+                  lineType: "bismillah",
+                  metadata: { chapterId }
+              };
+          }
+          if (headerLine > 0 && !linesMap[headerLine]) {
+              linesMap[headerLine] = {
+                  lineNumber: headerLine,
+                  words: [], // Empty words, renderer draws Header
+                  isCentered: true,
+                  lineType: "header",
+                  metadata: { chapterId },
+                  surahNumber: chapterId
+              };
+          }
+      }
   });
 
   return Object.values(linesMap).sort(
@@ -171,11 +249,19 @@ async function generatePagesForMushaf(
         clientId,
       );
 
-      const v3Data = transformToV3Format(apiData);
-      allPages.push({
+      const v3Data = transformToV3Format(apiData, pageNum);
+      
+      const pageObj: any = {
         pageNumber: pageNum,
         lines: v3Data,
-      });
+      };
+
+      // Flag Pages 1 and 2 for vertical centering
+      if (pageNum === 1 || pageNum === 2) {
+          pageObj.isVerticallyCentered = true;
+      }
+
+      allPages.push(pageObj);
 
       process.stdout.write(`\r  ${config.name}: ${pageNum}/604`);
 

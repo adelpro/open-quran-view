@@ -51,7 +51,7 @@ export default defineConfig({
     "view/web/index": "src/view/web/index.ts",
   },
   format: ["esm"],
-  dts: true,
+  dts: false,
   clean: true,
   splitting: false,
   external: ["react"],

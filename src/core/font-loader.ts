@@ -8,24 +8,26 @@ let fontCache: FontCache = {
   "hafs-unicode": new Map(),
 };
 
-
+async function loadFontUrl(
+  layout: MushafLayout,
+  page: number,
+): Promise<string> {
+  const fontPath = `../data/fonts/${layout}/p${page}.woff2?url`;
+  return new URL(fontPath, import.meta.url).href;
+}
 
 export async function getFontBuffer(
   layout: MushafLayout,
   page: number,
 ): Promise<ArrayBuffer> {
-  const fontUrl = new URL(
-    `../data/fonts/${layout}/p${page}.woff2`,
-    import.meta.url,
-  ).href;
-
-  const response = await fetch(fontUrl);
-  if (!response.ok) {
-    throw new Error(
-      `Failed to load font from ${fontUrl}: ${response.status} ${response.statusText}`,
-    );
+  const fontPath = `../data/fonts/${layout}/p${page}.woff2?raw`;
+  const module = await import(/* @vite-ignore */ fontPath);
+  const fontData = module.default as string;
+  const uint8Array = new Uint8Array(fontData.length);
+  for (let i = 0; i < fontData.length; i++) {
+    uint8Array[i] = fontData.charCodeAt(i);
   }
-  return response.arrayBuffer();
+  return uint8Array.buffer;
 }
 
 export async function getFontUrl(
@@ -51,12 +53,9 @@ export async function loadFont(
   const fontUrl = await getFontUrl(layout, page);
   const fontFace = new FontFace("QuranFont", `url(${fontUrl})`);
   await fontFace.load();
-  
-  if (typeof document !== "undefined" && document.fonts) {
-    document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-     // Fallback for workers or other environments if they support the FontLoading API directly
-    (globalThis as any).fonts.add(fontFace);
+  const fonts = (globalThis as unknown as { fonts: FontFaceSet }).fonts;
+  if (fonts) {
+    fonts.add(fontFace);
   }
 }
 

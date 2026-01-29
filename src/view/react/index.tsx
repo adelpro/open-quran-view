@@ -12,6 +12,7 @@ export type OpenQuranViewProps = {
   width?: number;
   height?: number;
   theme?: "light" | "dark";
+  mushaf?: MushafLayout;
   onPageChange?: (page: number) => void;
   onLoad?: (layout: PageLayout) => void;
   onWordClick?: (word: {
@@ -27,19 +28,26 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   width = 600,
   height = 850,
   theme = "light",
+  mushaf = "hafs-v2",
   onPageChange,
   onLoad,
   onWordClick,
   className,
 }: OpenQuranViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const layoutRef = useRef<MushafLayout>("hafs-v2");
+  const layoutRef = useRef<MushafLayout>(mushaf);
   const calculatorRef = useRef<ReturnType<
     typeof createLayoutCalculator
   > | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
   const [layout, setLayout] = useState<PageLayout | null>(null);
+
+  // Update layout ref when prop changes
+  useEffect(() => {
+    layoutRef.current = mushaf;
+    handleLoadPage(currentPage);
+  }, [mushaf]);
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -105,6 +113,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         position: "relative",
         overflow: "hidden",
         fontFamily: "system-ui, -apple-system, sans-serif",
+        direction: "rtl",
       }}
     >
       {loading && (
@@ -149,15 +158,33 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   : layout.metrics.pagePadding.left,
               }}
             >
-              {line.lineType === "surah_name" ? (
+              {line.lineType === "header" ? (
                 <div
                   style={{
                     fontSize: 28,
                     fontWeight: "bold",
                     color: theme === "dark" ? "#fff" : "#2c3e50",
+                    width: "100%",
+                    textAlign: "center",
+                    borderTop: `1px solid ${theme === 'dark' ? '#444' : '#ddd'}`,
+                    borderBottom: `1px solid ${theme === 'dark' ? '#444' : '#ddd'}`,
+                    padding: "10px 0",
+                    background: theme === 'dark' ? '#222' : '#f0f0f0'
                   }}
                 >
                   سورة {line.surahNumber}
+                </div>
+              ) : line.lineType === "bismillah" ? (
+                 <div
+                  style={{
+                    fontSize: 24,
+                    color: theme === "dark" ? "#ccc" : "#555",
+                    width: "100%",
+                    textAlign: "center",
+                    fontFamily: '"QuranFont", system-ui, sans-serif'
+                  }}
+                >
+                  بسم الله الرحمن الرحيم
                 </div>
               ) : (
                 line.words.map((word) => (

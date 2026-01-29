@@ -5,6 +5,7 @@ import "./App.css";
 function App() {
   const [page, setPage] = useState(1);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mushaf, setMushaf] = useState<"hafs-v2" | "hafs-v4" | "hafs-unicode">("hafs-v2");
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
@@ -47,22 +48,41 @@ function App() {
         >
           Open Quran View
         </h1>
-        <button
-          onClick={() =>
-            setTheme((prev) => (prev === "light" ? "dark" : "light"))
-          }
-          style={{
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "8px",
-            background: theme === "dark" ? "#667eea" : "#333",
-            color: "#fff",
-            cursor: "pointer",
-            fontSize: "14px",
-          }}
-        >
-          {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
-        </button>
+        <div style={{ display: "flex", gap: "10px" }}>
+            <select
+                value={mushaf}
+                onChange={(e) => setMushaf(e.target.value as any)}
+                style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: theme === "dark" ? "#333" : "#fff",
+                    color: theme === "dark" ? "#fff" : "#333",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                }}
+            >
+                <option value="hafs-v2">Hafs V2 (QCF)</option>
+                <option value="hafs-v4">Hafs V4 (QCF)</option>
+                <option value="hafs-unicode">Hafs Unicode (KFGQPC)</option>
+            </select>
+            <button
+            onClick={() =>
+                setTheme((prev) => (prev === "light" ? "dark" : "light"))
+            }
+            style={{
+                padding: "10px 20px",
+                border: "none",
+                borderRadius: "8px",
+                background: theme === "dark" ? "#667eea" : "#333",
+                color: "#fff",
+                cursor: "pointer",
+                fontSize: "14px",
+            }}
+            >
+            {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+            </button>
+        </div>
       </div>
 
       <div
@@ -78,6 +98,7 @@ function App() {
           width={500}
           height={700}
           theme={theme}
+          mushaf={mushaf}
           onPageChange={handlePageChange}
           onWordClick={handleWordClick}
           onLoad={handleLoad}
@@ -111,7 +132,7 @@ function App() {
               <strong>Current Page:</strong> {page}
             </p>
             <p style={{ color: theme === "dark" ? "#aaa" : "#888" }}>
-              <strong>Riwaya:</strong> Hafs
+              <strong>Riwaya:</strong> {mushaf}
             </p>
             <p style={{ color: theme === "dark" ? "#aaa" : "#888" }}>
               <strong>Total Pages:</strong> 604

@@ -27,11 +27,14 @@ export type Line = {
   lineNumber: number;
   words: Word[];
   metadata: LineMetadata;
+  isCentered?: boolean;
+  lineType?: "text" | "header" | "bismillah";
 };
 
 export type Page = {
   pageNumber: number;
   lines: Line[];
+  isVerticallyCentered?: boolean;
 };
 
 export type TranslatedName = {
