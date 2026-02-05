@@ -9,7 +9,7 @@
 Displaying Quran pages on the web is deceptively complex. Unlike regular text, the Quran has:
 
 - **Precise layout requirements** - Each page must match the printed mushaf exactly
-- **Multiple narrations** - Different Hafs narrations (via Warsh, via Shu'bah)
+- **Multiple narrations** - Different Hafs layouts
 - **Right-to-left rendering** - Challenges in CSS and positioning
 - **Word-level precision** - Clicking individual words for definitions or tafsir
 - **Font dependencies** - Special Quranic fonts with thousands of glyphs
