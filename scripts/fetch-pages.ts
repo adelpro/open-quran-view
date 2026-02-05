@@ -117,7 +117,7 @@ async function fetchPageData(
   return await response.json();
 }
 
-function transformToV3Format(apiResponse: any, pageNumber: number) {
+function transformPageData(apiResponse: any, pageNumber: number) {
   const linesMap: Record<number, any> = {};
   const surahStarts: { chapterId: number; startLine: number }[] = [];
   const processedVerses = new Set<string>();
@@ -240,11 +240,11 @@ async function generatePagesForMushaf(
         clientId,
       );
 
-      const v3Data = transformToV3Format(apiData, pageNum);
+      const pageData = transformPageData(apiData, pageNum);
 
       const pageObj: any = {
         pageNumber: pageNum,
-        lines: v3Data,
+        lines: pageData,
       };
 
       if (pageNum === 1 || pageNum === 2) {
