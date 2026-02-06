@@ -6,6 +6,20 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Screenshots for Hafs Unicode Digital Khatt and Hafs V2 Tajweed mushaf styles
+- Comprehensive documentation structure with guides for API integration, data generation, and font loading
+- New architecture documentation: Open Quran View Journey, Static Assets
+- Mushaf comparison guide comparing different Quran editions (Hafs V2 Tajweed, Hafs Unicode Digital Khatt, Indo/Pak)
+
+### Changed
+
+- Restructured documentation from artifacts/ to docs/guides/ and docs/architecture/
+- Updated README with screenshots, preview links, and improved documentation references
+- Renamed script function to `transformPageData` for improved clarity
+- Clarified Hafs narration description in architecture documentation
+
 ## [0.2.1] - 2026-02-04
 
 ### Added
