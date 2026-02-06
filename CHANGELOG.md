@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
+## [Unreleased]
+
 ## [0.2.1] - 2026-02-04
 
 ### Added
