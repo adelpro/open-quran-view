@@ -40,7 +40,6 @@
     "playground:setup": "pnpm playground:install && pnpm playground:build",
     "playground:react": "pnpm --filter vite-react dev",
     "playground:web": "pnpm --filter vite-typescript dev",
-    "prepare": "pnpm run generate:all && pnpm run build",
     "publish": "npm publish"
   },
   "peerDependencies": {
