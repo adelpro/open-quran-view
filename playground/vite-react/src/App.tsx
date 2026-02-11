@@ -30,44 +30,14 @@ function App() {
   }, []);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        padding: "20px",
-        background: theme === "dark" ? "#1a1a2e" : "#f5f5f5",
-        transition: "background 0.3s",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-          padding: "0 20px",
-        }}
-      >
-        <h1
-          style={{
-            color: theme === "dark" ? "#fff" : "#2c3e50",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-          }}
-        >
-          Open Quran View
-        </h1>
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+    <div className={`app ${theme}`}>
+      <header className={`header ${theme}`}>
+        <h1 className={`title ${theme}`}>Open Quran View</h1>
+        <div className="controls">
           <select
             value={mushafLayout}
             onChange={(e) => setMushafLayout(e.target.value as MushafLayout)}
-            style={{
-              padding: "10px 15px",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-              background: theme === "dark" ? "#333" : "#fff",
-              color: theme === "dark" ? "#fff" : "#333",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
+            className={`select ${theme}`}
           >
             {MUSHAF_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -79,29 +49,46 @@ function App() {
             onClick={() =>
               setTheme((prev) => (prev === "light" ? "dark" : "light"))
             }
-            style={{
-              padding: "10px 20px",
-              border: "none",
-              borderRadius: "8px",
-              background: theme === "dark" ? "#667eea" : "#333",
-              color: "#fff",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
+            className={`theme-btn ${theme}`}
+            title={
+              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+            }
           >
-            {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+            {theme === "light" ? (
+              <svg
+                className="icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#1a1a2e"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            ) : (
+              <svg
+                className="icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#6366f1"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+              </svg>
+            )}
           </button>
         </div>
-      </div>
+      </header>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          gap: "20px",
-        }}
-      >
+      <div className="viewer-container">
         <OpenQuranView
           page={page}
           width={500}
@@ -112,44 +99,6 @@ function App() {
           onWordClick={handleWordClick}
           onLoad={handleLoad}
         />
-
-        <div
-          style={{
-            background: theme === "dark" ? "#2a2a3e" : "#fff",
-            padding: "20px",
-            borderRadius: "12px",
-            width: "300px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2
-            style={{
-              color: theme === "dark" ? "#fff" : "#2c3e50",
-              fontFamily: "system-ui, -apple-system, sans-serif",
-              marginBottom: "15px",
-            }}
-          >
-            Quran Info
-          </h2>
-          <p style={{ color: theme === "dark" ? "#ccc" : "#666" }}>
-            This is a demonstration of the Open Quran View component. The
-            component displays Quran pages with Arabic text and navigation
-            controls.
-          </p>
-          <div style={{ marginTop: "15px" }}>
-            <p style={{ color: theme === "dark" ? "#aaa" : "#888" }}>
-              <strong>Current Page:</strong> {page}
-            </p>
-            <p style={{ color: theme === "dark" ? "#aaa" : "#888" }}>
-              <strong>Mushaf Layout:</strong>{" "}
-              {MUSHAF_OPTIONS.find((o) => o.value === mushafLayout)?.label ||
-                mushafLayout}
-            </p>
-            <p style={{ color: theme === "dark" ? "#aaa" : "#888" }}>
-              <strong>Total Pages:</strong> 604
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

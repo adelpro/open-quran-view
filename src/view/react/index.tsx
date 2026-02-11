@@ -198,6 +198,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       paddingBlock: 4,
                       border: `2px solid ${theme === "dark" ? "#fff" : "#2c3e50"}`,
                       borderRadius: 8,
+                      textAlign: "center",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     {line.surahNumber
