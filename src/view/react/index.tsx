@@ -186,7 +186,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                 {line.lineType === "header" ? (
                   <div
                     style={{
-                      fontSize: 42,
+                      fontSize: Math.round(width * 0.07),
                       fontWeight: "bold",
                       color: theme === "dark" ? "#fff" : "#2c3e50",
                       fontFamily:
@@ -255,7 +255,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                                 ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
                                 : '"QuranFont", system-ui, -apple-system, sans-serif',
 
-                            fontSize: 24,
+                            fontSize: Math.round(width * 0.035),
                             color: theme === "dark" ? "#fff" : "#34495e",
                             display: "inline-flex",
                             alignItems: "center",
@@ -303,6 +303,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         onPrev={handlePrevPage}
         onGoTo={handleGoToPage}
         theme={theme}
+        width={width}
       />
     </div>
   );
@@ -315,6 +316,7 @@ interface NavigationControlsProps {
   onPrev: () => void;
   onGoTo: (page: number) => void;
   theme: "light" | "dark";
+  width: number;
 }
 
 const NavigationControls: React.FC<NavigationControlsProps> = ({
@@ -324,6 +326,7 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
   onPrev,
   onGoTo,
   theme,
+  width,
 }: NavigationControlsProps) => {
   const [inputValue, setInputValue] = useState(String(currentPage));
   const [showInput, setShowInput] = useState(false);
@@ -438,7 +441,7 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
                   ? "rgba(255,255,255,0.05)"
                   : "rgba(255,255,255,0.9)",
               color: theme === "dark" ? "#fff" : "#2c3e50",
-              fontSize: 14,
+              fontSize: Math.round(width * 0.023),
               outline: "none",
               fontFamily: "system-ui, -apple-system, sans-serif",
             }}
@@ -453,13 +456,14 @@ const NavigationControls: React.FC<NavigationControlsProps> = ({
             border: "none",
             color:
               theme === "dark" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-            fontSize: 14,
+            fontSize: Math.round(width * 0.023),
             cursor: "pointer",
             padding: "6px 12px",
             borderRadius: 8,
             transition: "all 0.2s ease",
             fontFamily: "system-ui, -apple-system, sans-serif",
             fontWeight: 500,
+            whiteSpace: "nowrap",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background =
