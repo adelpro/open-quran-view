@@ -21,6 +21,8 @@ export {
   getFontBuffer,
 } from "./font-loader";
 
+export { getSurahFrameUrl } from "./static/data";
+
 export {
   createLayoutCalculator,
   type LineLayout,

@@ -12,6 +12,10 @@ const METADATA_SRC = "src/data/metadata";
 const METADATA_DIST = "dist/data/metadata";
 const STATIC_SRC = "src/core/static";
 const STATIC_DIST = "dist/core/static";
+const ASSETS_SRC = "src/data/assets";
+const ASSETS_DIST = "dist/data/assets";
+const VIEW_REACT_SRC = "src/view/react";
+const VIEW_REACT_DIST = "dist/view/react";
 
 function copyFonts() {
   if (existsSync(FONTS_SRC)) {
@@ -42,6 +46,32 @@ function copyStatic() {
   if (existsSync(STATIC_SRC)) {
     mkdirSync(STATIC_DIST, { recursive: true });
     copyDir(STATIC_SRC, STATIC_DIST);
+  }
+}
+
+function copyAssets() {
+  if (existsSync(ASSETS_SRC)) {
+    mkdirSync(ASSETS_DIST, { recursive: true });
+    copyDir(ASSETS_SRC, ASSETS_DIST);
+  }
+}
+
+function copyViewReactAssets() {
+  if (existsSync(VIEW_REACT_SRC)) {
+    mkdirSync(VIEW_REACT_DIST, { recursive: true });
+    const entries = readdirSync(VIEW_REACT_SRC, { withFileTypes: true });
+    for (const entry of entries) {
+      if (
+        entry.isFile() &&
+        (entry.name.endsWith(".svg") ||
+          entry.name.endsWith(".png") ||
+          entry.name.endsWith(".jpg"))
+      ) {
+        const srcPath = join(VIEW_REACT_SRC, entry.name);
+        const destPath = join(VIEW_REACT_DIST, entry.name);
+        copyFileSync(srcPath, destPath);
+      }
+    }
   }
 }
 
@@ -77,7 +107,9 @@ export default defineConfig({
     copyFonts();
     copySharedData();
     copyData();
+    copyAssets();
     copyStatic();
+    copyViewReactAssets();
     console.log("✓ Data and fonts copied to dist successfully");
   },
 });

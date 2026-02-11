@@ -6,6 +6,7 @@ import {
   loadPage,
   loadSurahNameFont,
   surahNumberToFontCode,
+  getSurahFrameUrl,
   type MushafLayout,
   type PageLayout,
 } from "../../core";
@@ -196,8 +197,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       marginBottom: 56,
                       paddingInline: 12,
                       paddingBlock: 4,
-                      border: `2px solid ${theme === "dark" ? "#fff" : "#2c3e50"}`,
-                      borderRadius: 8,
+                      background: `url("${getSurahFrameUrl()}") center/contain no-repeat`,
                       textAlign: "center",
                       display: "flex",
                       justifyContent: "center",
