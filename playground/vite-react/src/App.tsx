@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { OpenQuranView } from "open-quran-view/view";
 import type { MushafLayout } from "open-quran-view/view/react";
 import "./App.css";
@@ -13,6 +13,17 @@ function App() {
   const [page, setPage] = useState(1);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mushafLayout, setMushafLayout] = useState<MushafLayout>("hafs-v2");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
@@ -29,63 +40,171 @@ function App() {
     console.log("Page loaded:", layout);
   }, []);
 
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen((prev) => !prev);
+  }, []);
+
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
   return (
     <div className={`app ${theme}`}>
       <header className={`header ${theme}`}>
-        <h1 className={`title ${theme}`}>Open Quran View</h1>
-        <div className="controls">
-          <select
-            value={mushafLayout}
-            onChange={(e) => setMushafLayout(e.target.value as MushafLayout)}
-            className={`select ${theme}`}
-          >
-            {MUSHAF_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() =>
-              setTheme((prev) => (prev === "light" ? "dark" : "light"))
-            }
-            className={`theme-btn ${theme}`}
-            title={
-              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
-            }
-          >
-            {theme === "light" ? (
-              <svg
-                className="icon"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#1a1a2e"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+        <div className="header-content">
+          <div className="header-left">
+            <h1 className={`title ${theme}`}>Open Quran View</h1>
+          </div>
+
+          {isMobile ? (
+            <>
+              <button
+                className={`mobile-menu-btn ${theme}`}
+                onClick={toggleMobileMenu}
+                aria-label="Toggle menu"
               >
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-            ) : (
-              <svg
-                className="icon"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#6366f1"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {isMobileMenuOpen ? (
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  ) : (
+                    <>
+                      <path d="M3 12h18M3 6h18M3 18h18" />
+                    </>
+                  )}
+                </svg>
+              </button>
+            </>
+          ) : (
+            <div className="controls">
+              <select
+                value={mushafLayout}
+                onChange={(e) => setMushafLayout(e.target.value as MushafLayout)}
+                className={`select ${theme}`}
               >
-                <circle cx="12" cy="12" r="5" />
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-              </svg>
-            )}
-          </button>
+                {MUSHAF_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() =>
+                  setTheme((prev) => (prev === "light" ? "dark" : "light"))
+                }
+                className={`theme-btn ${theme}`}
+                title={
+                  theme === "light"
+                    ? "Switch to dark mode"
+                    : "Switch to light mode"
+                }
+              >
+                {theme === "light" ? (
+                  <svg
+                    className="icon"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#1a1a2e"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="icon"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#6366f1"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5" />
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
         </div>
+
+        {isMobile && isMobileMenuOpen && (
+          <div className="mobile-menu">
+            <div className="mobile-controls">
+              <select
+                value={mushafLayout}
+                onChange={(e) => {
+                  setMushafLayout(e.target.value as MushafLayout);
+                  closeMobileMenu();
+                }}
+                className={`select ${theme}`}
+              >
+                {MUSHAF_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => {
+                  setTheme((prev) => (prev === "light" ? "dark" : "light"));
+                  closeMobileMenu();
+                }}
+                className={`theme-btn ${theme}`}
+                title={
+                  theme === "light"
+                    ? "Switch to dark mode"
+                    : "Switch to light mode"
+                }
+              >
+                {theme === "light" ? (
+                  <svg
+                    className="icon"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#1a1a2e"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg
+                    className="icon"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#6366f1"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="5" />
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       <div className="viewer-container">
