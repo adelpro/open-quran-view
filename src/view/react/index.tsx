@@ -10,6 +10,10 @@ import {
   type MushafLayout,
   type PageLayout,
 } from "../../core";
+import { NavigationControls } from "./navigation-controls";
+
+const clamp = (min: number, val: number, max: number) =>
+  Math.max(min, Math.min(val, max));
 
 export const CENTERED_PAGES_VERTICAL = [1, 2] as const;
 export const CENTERED_PAGES_HORIZONTAL = [1, 2, 602, 603, 604] as const;
@@ -56,6 +60,18 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
+  const [containerSize, setContainerSize] = useState({ width, height });
+
+  const fontSizeSurahHeader = clamp(
+    28,
+    (containerSize.width * 0.07 + height * 0.05) / 2,
+    64,
+  );
+  const fontSizeWord = clamp(
+    24,
+    (containerSize.width * 0.035 + height * 0.025) / 2,
+    32,
+  );
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -84,8 +100,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
 
   useEffect(() => {
     calculatorRef.current = createLayoutCalculator({
-      pageWidth: width,
-      pageHeight: height,
+      pageWidth: containerSize.width,
+      pageHeight: containerSize.height,
     });
 
     handleLoadPage(page);
@@ -94,7 +110,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     return () => {
       calculatorRef.current = null;
     };
-  }, [width, height, page, handleLoadPage]);
+  }, [containerSize.width, containerSize.height, page, handleLoadPage]);
 
   useEffect(() => {
     layoutRef.current = mushafLayout;
@@ -104,6 +120,39 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       loadAyatMarkerFont();
     }
   }, [mushafLayout, page, handleLoadPage]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateSize = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setContainerSize({
+          width: rect.width || width,
+          height: rect.height || height,
+        });
+      }
+    };
+
+    updateSize();
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setContainerSize({
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          });
+        } else {
+          updateSize();
+        }
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => resizeObserver.disconnect();
+  }, [width, height]);
 
   const handleNextPage = useCallback(async () => {
     const next = currentPage + 1;
@@ -186,7 +235,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                 {line.lineType === "header" ? (
                   <div
                     style={{
-                      fontSize: Math.round(width * 0.07),
+                      fontSize: fontSizeSurahHeader,
                       fontWeight: "bold",
                       color: theme === "dark" ? "#fff" : "#2c3e50",
                       fontFamily:
@@ -197,7 +246,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       marginBottom: 56,
                       paddingInline: 12,
                       paddingBlock: 4,
-                      background: `url("${getSurahFrameUrl()}") center/contain no-repeat`,
+                      background: `url("${getSurahFrameUrl()}") center/cover no-repeat`,
                       textAlign: "center",
                       display: "flex",
                       justifyContent: "center",
@@ -215,6 +264,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       flexDirection: "row",
                       alignItems: "center",
                       width: "100%",
+                      padding: "5px",
                       justifyContent: isCenteredLine
                         ? "center"
                         : "space-between",
@@ -255,7 +305,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                                 ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
                                 : '"QuranFont", system-ui, -apple-system, sans-serif',
 
-                            fontSize: Math.round(width * 0.035),
+                            fontSize: fontSizeWord,
                             color: theme === "dark" ? "#fff" : "#34495e",
                             display: "inline-flex",
                             alignItems: "center",
@@ -305,207 +355,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         theme={theme}
         width={width}
       />
-    </div>
-  );
-};
-
-interface NavigationControlsProps {
-  currentPage: number;
-  totalPages: number;
-  onNext: () => void;
-  onPrev: () => void;
-  onGoTo: (page: number) => void;
-  theme: "light" | "dark";
-  width: number;
-}
-
-const NavigationControls: React.FC<NavigationControlsProps> = ({
-  currentPage,
-  totalPages,
-  onNext,
-  onPrev,
-  onGoTo,
-  theme,
-  width,
-}: NavigationControlsProps) => {
-  const [inputValue, setInputValue] = useState(String(currentPage));
-  const [showInput, setShowInput] = useState(false);
-
-  useEffect(() => {
-    setInputValue(String(currentPage));
-  }, [currentPage]);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const pageNum = Number.parseInt(inputValue, 10);
-
-    if (pageNum >= 1 && pageNum <= totalPages) {
-      onGoTo(pageNum);
-      setShowInput(false);
-    } else {
-      setInputValue(String(currentPage));
-    }
-  };
-
-  const buttonStyle: React.CSSProperties = {
-    width: 40,
-    height: 40,
-    border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)"}`,
-    background: "transparent",
-    color: theme === "dark" ? "#fff" : "#2c3e50",
-    borderRadius: "50%",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 18,
-    transition: "all 0.2s ease",
-    fontFamily: "system-ui, -apple-system, sans-serif",
-  };
-
-  const buttonHoverStyle = {
-    background: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-    borderColor: theme === "dark" ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.2)",
-  };
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        bottom: 20,
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        gap: 12,
-        alignItems: "center",
-        padding: "2px",
-        background:
-          theme === "dark" ? "rgba(26,26,46,0.85)" : "rgba(255,255,255,0.85)",
-        borderRadius: 50,
-        backdropFilter: "blur(10px)",
-        boxShadow:
-          theme === "dark"
-            ? "0 4px 20px rgba(0,0,0,0.5)"
-            : "0 4px 20px rgba(0,0,0,0.1)",
-        border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)"}`,
-      }}
-    >
-      <button
-        type="button"
-        onClick={onPrev}
-        disabled={currentPage <= 1}
-        style={{
-          ...buttonStyle,
-          opacity: currentPage <= 1 ? 0.3 : 1,
-          cursor: currentPage <= 1 ? "not-allowed" : "pointer",
-        }}
-        onMouseEnter={(e) => {
-          if (currentPage > 1) {
-            Object.assign(e.currentTarget.style, buttonHoverStyle);
-          }
-        }}
-        onMouseLeave={(e) => {
-          Object.assign(e.currentTarget.style, {
-            background: "transparent",
-            borderColor:
-              theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
-          });
-        }}
-        title="السابق"
-      >
-        ❮
-      </button>
-
-      {showInput ? (
-        <form
-          onSubmit={handleSubmit}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <input
-            type="number"
-            value={inputValue}
-            onChange={(event) => setInputValue(event.target.value)}
-            onBlur={() => {
-              setTimeout(() => setShowInput(false), 200);
-            }}
-            min={1}
-            max={totalPages}
-            style={{
-              width: 60,
-              height: 32,
-              textAlign: "center",
-              border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"}`,
-              borderRadius: 8,
-              background:
-                theme === "dark"
-                  ? "rgba(255,255,255,0.05)"
-                  : "rgba(255,255,255,0.9)",
-              color: theme === "dark" ? "#fff" : "#2c3e50",
-              fontSize: Math.round(width * 0.023),
-              outline: "none",
-              fontFamily: "system-ui, -apple-system, sans-serif",
-            }}
-          />
-        </form>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setShowInput(true)}
-          style={{
-            background: "transparent",
-            border: "none",
-            color:
-              theme === "dark" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-            fontSize: Math.round(width * 0.023),
-            cursor: "pointer",
-            padding: "6px 12px",
-            borderRadius: 8,
-            transition: "all 0.2s ease",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-            fontWeight: 500,
-            whiteSpace: "nowrap",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)";
-            e.currentTarget.style.color = theme === "dark" ? "#fff" : "#2c3e50";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.color =
-              theme === "dark" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)";
-          }}
-          title="انتقل إلى صفحة"
-        >
-          {currentPage} / {totalPages}
-        </button>
-      )}
-
-      <button
-        type="button"
-        onClick={onNext}
-        disabled={currentPage >= totalPages}
-        style={{
-          ...buttonStyle,
-          opacity: currentPage >= totalPages ? 0.3 : 1,
-          cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
-        }}
-        onMouseEnter={(e) => {
-          if (currentPage < totalPages) {
-            Object.assign(e.currentTarget.style, buttonHoverStyle);
-          }
-        }}
-        onMouseLeave={(e) => {
-          Object.assign(e.currentTarget.style, {
-            background: "transparent",
-            borderColor:
-              theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
-          });
-        }}
-        title="التالي"
-      >
-        ❯
-      </button>
     </div>
   );
 };
