@@ -64,7 +64,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const containerHeight = containerWidth / MUSHAF_RATIO;
 
   const fontSizeSurahHeader = clamp(24, containerWidth * 0.07, 64);
-  const fontSizeWord = clamp(20, containerWidth * 0.035, 32);
+  const fontSizeWord = clamp(20, containerWidth * 0.035, 64);
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -159,10 +159,9 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       className={className}
       style={{
         width: "100%",
-        maxWidth: containerWidth,
-        height: containerHeight,
+        maxWidth: 600,
+        minHeight: "100vh",
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
-        position: "relative",
         overflow: "hidden",
         fontFamily: "system-ui, -apple-system, sans-serif",
         direction: "rtl",
@@ -186,155 +185,167 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         <div
           style={{
             width: "100%",
-            height: "100%",
+            minHeight: "100vh",
             position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          {pageLayout.lines.map((line) => {
-            const isCenteredLine =
-              line.isCentered || CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: containerHeight,
+            }}
+          >
+            {pageLayout.lines.map((line) => {
+              const isCenteredLine =
+                line.isCentered ||
+                CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
 
-            return (
-              <div
-                key={line.lineNumber}
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  right: 0,
-                  height: pageLayout.metrics.lineHeight,
-                  top:
-                    line.y -
-                    pageLayout.metrics.lineHeight +
-                    pageLayout.metrics.baselineOffset,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: isCenteredLine ? "center" : "flex-end",
-                  padding: "2px",
-                }}
-              >
-                {line.lineType === "header" ? (
-                  <div
-                    style={{
-                      fontSize: fontSizeSurahHeader,
-                      fontWeight: "bold",
-                      color: theme === "dark" ? "#fff" : "#2c3e50",
-                      fontFamily:
-                        '"SurahNameFont", system-ui, -apple-system, sans-serif',
-                      width: "100%",
-                      boxSizing: "border-box",
-                      marginTop: 12,
-                      marginBottom: 56,
-                      paddingInline: 12,
-                      paddingBlock: 4,
-                      background: `url("${getSurahFrameUrl()}") center/cover no-repeat`,
-                      textAlign: "center",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    {line.surahNumber
-                      ? surahNumberToFontCode(line.surahNumber)
-                      : "surah000"}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      width: "100%",
-                      padding: "1px",
-                      justifyContent: isCenteredLine
-                        ? "center"
-                        : "space-between",
-                      gap: "1px",
-                    }}
-                  >
-                    {line.words.map((word) => {
-                      const isAyahEnd =
-                        mushafLayout === "hafs-unicode" &&
-                        word.charType === "end";
+              return (
+                <div
+                  key={line.lineNumber}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    height: pageLayout.metrics.lineHeight,
+                    top:
+                      line.y -
+                      pageLayout.metrics.lineHeight +
+                      pageLayout.metrics.baselineOffset,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: isCenteredLine ? "center" : "flex-end",
+                    padding: "2px",
+                  }}
+                >
+                  {line.lineType === "header" ? (
+                    <div
+                      style={{
+                        fontSize: fontSizeSurahHeader,
+                        fontWeight: "bold",
+                        color: theme === "dark" ? "#fff" : "#2c3e50",
+                        fontFamily:
+                          '"SurahNameFont", system-ui, -apple-system, sans-serif',
+                        width: "100%",
+                        boxSizing: "border-box",
+                        marginTop: 12,
+                        marginBottom: 56,
+                        paddingInline: 12,
+                        paddingBlock: 4,
+                        background: `url("${getSurahFrameUrl()}") center/cover no-repeat`,
+                        textAlign: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {line.surahNumber
+                        ? surahNumberToFontCode(line.surahNumber)
+                        : "surah000"}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                        padding: "1px",
+                        justifyContent: isCenteredLine
+                          ? "center"
+                          : "space-between",
+                        gap: "1px",
+                      }}
+                    >
+                      {line.words.map((word) => {
+                        const isAyahEnd =
+                          mushafLayout === "hafs-unicode" &&
+                          word.charType === "end";
 
-                      return (
-                        <span
-                          key={word.id}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() =>
-                            onWordClick?.({
-                              id: word.id,
-                              surahNumber: word.surahNumber,
-                              ayahNumber: word.ayahNumber,
-                            })
-                          }
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
+                        return (
+                          <span
+                            key={word.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() =>
                               onWordClick?.({
                                 id: word.id,
                                 surahNumber: word.surahNumber,
                                 ayahNumber: word.ayahNumber,
-                              });
+                              })
                             }
-                          }}
-                          style={{
-                            fontFamily: isAyahEnd
-                              ? '"AyatMarker", "DigitalKhatt", system-ui'
-                              : mushafLayout === "hafs-unicode"
-                                ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
-                                : '"QuranFont", system-ui, -apple-system, sans-serif',
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                onWordClick?.({
+                                  id: word.id,
+                                  surahNumber: word.surahNumber,
+                                  ayahNumber: word.ayahNumber,
+                                });
+                              }
+                            }}
+                            style={{
+                              fontFamily: isAyahEnd
+                                ? '"AyatMarker", "DigitalKhatt", system-ui'
+                                : mushafLayout === "hafs-unicode"
+                                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+                                  : '"QuranFont", system-ui, -apple-system, sans-serif',
 
-                            fontSize: fontSizeWord,
-                            color: theme === "dark" ? "#fff" : "#34495e",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            justifyContent: "center",
+                              fontSize: fontSizeWord,
+                              color: theme === "dark" ? "#fff" : "#34495e",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
 
-                            height: pageLayout.metrics.lineHeight,
-                            lineHeight: `${pageLayout.metrics.lineHeight}px`,
+                              height: pageLayout.metrics.lineHeight,
+                              lineHeight: `${pageLayout.metrics.lineHeight}px`,
 
-                            verticalAlign: "middle",
-                            minWidth: "auto",
-                            width: "auto",
-                            cursor: "pointer",
-                            padding: isAyahEnd ? "0px" : "2px 4px",
-                            borderRadius: 4,
-                            transition: "background 0.2s",
-                            flexShrink: 0,
-                          }}
-                          onMouseEnter={(event) => {
-                            event.currentTarget.style.background =
-                              theme === "dark" ? "#333" : "#e0e0e0";
-                          }}
-                          onMouseLeave={(event) => {
-                            event.currentTarget.style.background =
-                              "transparent";
-                          }}
-                        >
-                          {isAyahEnd
-                            ? `﴾${word.ayahNumber}﴿`
-                            : word.text || `[${word.id}]`}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                              verticalAlign: "middle",
+                              minWidth: "auto",
+                              width: "auto",
+                              cursor: "pointer",
+                              padding: isAyahEnd ? "0px" : "2px 4px",
+                              borderRadius: 4,
+                              transition: "background 0.2s",
+                              flexShrink: 0,
+                            }}
+                            onMouseEnter={(event) => {
+                              event.currentTarget.style.background =
+                                theme === "dark" ? "#333" : "#e0e0e0";
+                            }}
+                            onMouseLeave={(event) => {
+                              event.currentTarget.style.background =
+                                "transparent";
+                            }}
+                          >
+                            {isAyahEnd
+                              ? `﴾${word.ayahNumber}﴿`
+                              : word.text || `[${word.id}]`}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <NavigationControls
+            currentPage={currentPage}
+            totalPages={604}
+            onNext={handleNextPage}
+            onPrev={handlePrevPage}
+            onGoTo={handleGoToPage}
+            theme={theme}
+            width={containerWidth}
+          />
         </div>
       )}
-
-      <NavigationControls
-        currentPage={currentPage}
-        totalPages={604}
-        onNext={handleNextPage}
-        onPrev={handlePrevPage}
-        onGoTo={handleGoToPage}
-        theme={theme}
-        width={containerWidth}
-      />
     </div>
   );
 };
