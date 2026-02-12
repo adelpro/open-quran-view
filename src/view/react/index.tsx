@@ -62,16 +62,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
   const [containerSize, setContainerSize] = useState({ width, height });
 
-  const fontSizeSurahHeader = clamp(
-    28,
-    (containerSize.width * 0.07 + height * 0.05) / 2,
-    64,
-  );
-  const fontSizeWord = clamp(
-    24,
-    (containerSize.width * 0.035 + height * 0.025) / 2,
-    32,
-  );
+  const fontSizeSurahHeader = clamp(16, containerSize.width * 0.07, 64);
+  const fontSizeWord = clamp(12, containerSize.width * 0.035, 32);
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -179,7 +171,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       ref={containerRef}
       className={className}
       style={{
-        width,
+        width: "100%",
+        maxWidth: width,
         height,
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
         position: "relative",
