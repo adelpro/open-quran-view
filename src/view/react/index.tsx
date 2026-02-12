@@ -17,7 +17,6 @@ const clamp = (min: number, val: number, max: number) =>
 
 export const CENTERED_PAGES_VERTICAL = [1, 2] as const;
 export const CENTERED_PAGES_HORIZONTAL = [1, 2, 602, 603, 604] as const;
-
 const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>(
   CENTERED_PAGES_HORIZONTAL,
 );
@@ -27,7 +26,6 @@ export type { MushafLayout, PageLayout } from "../../core";
 export type OpenQuranViewProps = {
   page?: number;
   width?: number;
-  height?: number;
   theme?: "light" | "dark";
   mushafLayout?: MushafLayout;
   onPageChange?: (page: number) => void;
@@ -43,7 +41,6 @@ export type OpenQuranViewProps = {
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   page = 1,
   width = 600,
-  height = 850,
   theme = "light",
   mushafLayout = "hafs-v2",
   onPageChange,
@@ -51,6 +48,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   onWordClick,
   className,
 }: OpenQuranViewProps) => {
+  const MUSHAF_RATIO = 0.7; // width / height
+
   const containerRef = useRef<HTMLDivElement>(null);
   const layoutRef = useRef<MushafLayout>(mushafLayout);
   const calculatorRef = useRef<ReturnType<
@@ -60,10 +59,12 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
-  const [containerSize, setContainerSize] = useState({ width, height });
+  const [containerWidth, setContainerWidth] = useState(width);
 
-  const fontSizeSurahHeader = clamp(16, containerSize.width * 0.07, 64);
-  const fontSizeWord = clamp(12, containerSize.width * 0.035, 32);
+  const containerHeight = containerWidth / MUSHAF_RATIO;
+
+  const fontSizeSurahHeader = clamp(24, containerWidth * 0.07, 64);
+  const fontSizeWord = clamp(20, containerWidth * 0.035, 32);
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -90,10 +91,11 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     [onLoad],
   );
 
+  // Init layout calculator
   useEffect(() => {
     calculatorRef.current = createLayoutCalculator({
-      pageWidth: containerSize.width,
-      pageHeight: containerSize.height,
+      pageWidth: containerWidth,
+      pageHeight: containerHeight,
     });
 
     handleLoadPage(page);
@@ -102,49 +104,34 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     return () => {
       calculatorRef.current = null;
     };
-  }, [containerSize.width, containerSize.height, page, handleLoadPage]);
+  }, [containerWidth, containerHeight, page, handleLoadPage]);
 
   useEffect(() => {
     layoutRef.current = mushafLayout;
     handleLoadPage(page);
 
-    if (mushafLayout === "hafs-unicode") {
-      loadAyatMarkerFont();
-    }
+    if (mushafLayout === "hafs-unicode") loadAyatMarkerFont();
   }, [mushafLayout, page, handleLoadPage]);
 
+  // Resize observer: only track width, derive height automatically
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const updateSize = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setContainerSize({
-          width: rect.width || width,
-          height: rect.height || height,
-        });
-      }
+    const updateWidth = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect?.width) setContainerWidth(rect.width);
     };
 
-    updateSize();
+    updateWidth();
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          setContainerSize({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          });
-        } else {
-          updateSize();
-        }
-      }
+    const resizeObserver = new ResizeObserver(() => {
+      updateWidth();
     });
 
     resizeObserver.observe(containerRef.current);
 
     return () => resizeObserver.disconnect();
-  }, [width, height]);
+  }, []);
 
   const handleNextPage = useCallback(async () => {
     const next = currentPage + 1;
@@ -172,8 +159,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       className={className}
       style={{
         width: "100%",
-        maxWidth: width,
-        height,
+        maxWidth: containerWidth,
+        height: containerHeight,
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
         position: "relative",
         overflow: "hidden",
@@ -257,11 +244,11 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       flexDirection: "row",
                       alignItems: "center",
                       width: "100%",
-                      padding: "5px",
+                      padding: "1px",
                       justifyContent: isCenteredLine
                         ? "center"
                         : "space-between",
-                      gap: "4px",
+                      gap: "1px",
                     }}
                   >
                     {line.words.map((word) => {
@@ -346,7 +333,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         onPrev={handlePrevPage}
         onGoTo={handleGoToPage}
         theme={theme}
-        width={width}
+        width={containerWidth}
       />
     </div>
   );
