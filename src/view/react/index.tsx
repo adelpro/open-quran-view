@@ -26,6 +26,7 @@ export type { MushafLayout, PageLayout } from "../../core";
 export type OpenQuranViewProps = {
   page?: number;
   width?: number;
+  height?: number;
   theme?: "light" | "dark";
   mushafLayout?: MushafLayout;
   onPageChange?: (page: number) => void;
@@ -41,6 +42,7 @@ export type OpenQuranViewProps = {
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   page = 1,
   width = 600,
+  height,
   theme = "light",
   mushafLayout = "hafs-v2",
   onPageChange,
@@ -59,9 +61,13 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
-  const [containerWidth, setContainerWidth] = useState(width);
+  const [containerHeight, setContainerHeight] = useState(height || 800);
 
-  const containerHeight = containerWidth / MUSHAF_RATIO;
+  useEffect(() => {
+    if (height) setContainerHeight(height);
+  }, [height]);
+
+  const containerWidth = containerHeight * MUSHAF_RATIO;
 
   const fontSizeSurahHeader = clamp(24, containerWidth * 0.07, 64);
   const fontSizeWord = clamp(20, containerWidth * 0.035, 64);
@@ -113,26 +119,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     if (mushafLayout === "hafs-unicode") loadAyatMarkerFont();
   }, [mushafLayout, page, handleLoadPage]);
 
-  // Resize observer: only track width, derive height automatically
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateWidth = () => {
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect?.width) setContainerWidth(rect.width);
-    };
-
-    updateWidth();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateWidth();
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => resizeObserver.disconnect();
-  }, []);
-
   const handleNextPage = useCallback(async () => {
     const next = currentPage + 1;
     await handleLoadPage(next);
@@ -159,12 +145,13 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       className={className}
       style={{
         width: "100%",
-        maxWidth: 600,
-        minHeight: "100vh",
+        height: "100vh",
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
         overflow: "hidden",
         fontFamily: "system-ui, -apple-system, sans-serif",
         direction: "rtl",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       {loading && (
@@ -184,8 +171,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       {!loading && pageLayout && (
         <div
           style={{
-            width: "100%",
-            minHeight: "100vh",
+            width: containerWidth,
+            height: "100%",
             position: "relative",
             display: "flex",
             flexDirection: "column",

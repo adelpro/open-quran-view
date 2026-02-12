@@ -9,6 +9,8 @@ const MUSHAF_OPTIONS: { value: MushafLayout; label: string }[] = [
   { value: "hafs-unicode", label: "Hafs uncode (digital khat)" },
 ];
 
+const MUSHAF_RATIO = 0.7;
+
 function App() {
   const [page, setPage] = useState(1);
   const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -87,7 +89,9 @@ function App() {
             <div className="controls">
               <select
                 value={mushafLayout}
-                onChange={(e) => setMushafLayout(e.target.value as MushafLayout)}
+                onChange={(e) =>
+                  setMushafLayout(e.target.value as MushafLayout)
+                }
                 className={`select ${theme}`}
               >
                 {MUSHAF_OPTIONS.map((option) => (
@@ -210,8 +214,8 @@ function App() {
       <div className="viewer-container">
         <OpenQuranView
           page={page}
-          width={500}
-          height={700}
+          width={600 * MUSHAF_RATIO}
+          height={600}
           theme={theme}
           mushafLayout={mushafLayout}
           onPageChange={handlePageChange}
