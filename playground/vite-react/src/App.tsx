@@ -9,10 +9,12 @@ const MUSHAF_OPTIONS: { value: MushafLayout; label: string }[] = [
   { value: "hafs-unicode", label: "Hafs uncode (digital khat)" },
 ];
 
-const MUSHAF_RATIO = 0.7;
-
 function App() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = params.get("page");
+    return pageParam ? Math.max(1, Math.min(604, parseInt(pageParam, 10))) : 1;
+  });
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mushafLayout, setMushafLayout] = useState<MushafLayout>("hafs-v2");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,8 +29,28 @@ function App() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const pageParam = params.get("page");
+      if (pageParam) {
+        const pageNum = parseInt(pageParam, 10);
+        if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= 604) {
+          setPage(pageNum);
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", newPage.toString());
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState({}, "", newUrl);
   }, []);
 
   const handleWordClick = useCallback(
@@ -212,9 +234,9 @@ function App() {
       </header>
 
       <div className="viewer-container">
+        {/* width, default to 0.7 of the height */}
         <OpenQuranView
           page={page}
-          width={600 * MUSHAF_RATIO}
           height={600}
           theme={theme}
           mushafLayout={mushafLayout}

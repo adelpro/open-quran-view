@@ -41,7 +41,6 @@ export type OpenQuranViewProps = {
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   page = 1,
-  width = 600,
   height,
   theme = "light",
   mushafLayout = "hafs-v2",
@@ -50,8 +49,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   onWordClick,
   className,
 }: OpenQuranViewProps) => {
-  const MUSHAF_RATIO = 0.7; // width / height
-
+  const MUSHAF_RATIO = 0.7;
   const containerRef = useRef<HTMLDivElement>(null);
   const layoutRef = useRef<MushafLayout>(mushafLayout);
   const calculatorRef = useRef<ReturnType<
