@@ -509,7 +509,7 @@ export class OpenQuranView extends HTMLElement {
 
           if (isEndMarker) {
             wordEl.classList.add("ayah-end");
-            wordEl.textContent = `﴾${word.ayahNumber}﴿`;
+            wordEl.textContent = `﴾${word.verse}﴿`;
             wordEl.style.cssText = `
               font-family: "AyatMarker", "DigitalKhatt", system-ui;
               color: ${wordColor};
@@ -541,8 +541,8 @@ export class OpenQuranView extends HTMLElement {
               new CustomEvent("wordClick", {
                 detail: {
                   id: word.id,
-                  surahNumber: word.surahNumber,
-                  ayahNumber: word.ayahNumber,
+                  surahNumber: word.surah,
+                  ayahNumber: word.verse,
                 },
                 bubbles: false,
                 composed: true,

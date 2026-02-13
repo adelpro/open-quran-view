@@ -9,16 +9,11 @@ export type LineLayout = {
   surahNumber?: number;
 };
 
-export type WordLayout = {
-  id: number;
+export type WordLayout = Word & {
   x: number;
   y: number;
   width: number;
   height: number;
-  text: string;
-  charType: CharType;
-  surahNumber?: number;
-  ayahNumber?: number;
 };
 
 export type PageMetrics = {
@@ -83,15 +78,11 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
     for (const word of line.words) {
       const textWidth = word.text.length * (fontSize * 0.5);
       const wordLayout: WordLayout = {
-        id: word.id,
+        ...word,
         x: currentX,
         y,
         width: textWidth,
         height: fontSize,
-        text: word.text,
-        charType: word.charType,
-        surahNumber: word.surah,
-        ayahNumber: word.verse,
       };
       words.push(wordLayout);
       currentX += textWidth + 8;
