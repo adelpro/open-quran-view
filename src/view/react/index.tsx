@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   createLayoutCalculator,
+  getBismillahWords,
   loadAyatMarkerFont,
   loadFont,
   loadPage,
@@ -9,6 +10,7 @@ import {
   getSurahFrameUrl,
   type MushafLayout,
   type PageLayout,
+  type Word,
 } from "../../core";
 import { NavigationControls } from "./navigation-controls";
 
@@ -60,6 +62,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [currentPage, setCurrentPage] = useState(page);
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
   const [containerHeight, setContainerHeight] = useState(height || 800);
+  const [bismillahWords, setBismillahWords] = useState<Word[]>([]);
 
   useEffect(() => {
     if (height) setContainerHeight(height);
@@ -116,6 +119,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
 
     if (mushafLayout === "hafs-unicode") loadAyatMarkerFont();
   }, [mushafLayout, page, handleLoadPage]);
+
+  useEffect(() => {
+    getBismillahWords(mushafLayout).then(setBismillahWords);
+  }, [mushafLayout]);
 
   const handleNextPage = useCallback(async () => {
     const next = currentPage + 1;
@@ -229,6 +236,78 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       {line.surahNumber
                         ? surahNumberToFontCode(line.surahNumber)
                         : "surah000"}
+                    </div>
+                  ) : line.lineType === "bismillah" ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        width: "100%",
+                        padding: "1px",
+                        justifyContent: isCenteredLine
+                          ? "center"
+                          : "space-between",
+                        gap: "1px",
+                      }}
+                    >
+                      {bismillahWords.map((word) => {
+                        return (
+                          <span
+                            key={word.id}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() =>
+                              onWordClick?.({
+                                id: word.id,
+                                surahNumber: 1,
+                                ayahNumber: 0,
+                              })
+                            }
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                onWordClick?.({
+                                  id: word.id,
+                                  surahNumber: 1,
+                                  ayahNumber: 0,
+                                });
+                              }
+                            }}
+                            style={{
+                              fontFamily:
+                                mushafLayout === "hafs-unicode"
+                                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+                                  : '"QuranFont", system-ui, -apple-system, sans-serif',
+                              fontSize: fontSizeWord,
+                              color: theme === "dark" ? "#fff" : "#34495e",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              height: pageLayout.metrics.lineHeight,
+                              lineHeight: `${pageLayout.metrics.lineHeight}px`,
+                              verticalAlign: "middle",
+                              minWidth: "auto",
+                              width: "auto",
+                              cursor: "pointer",
+                              padding: "2px 4px",
+                              borderRadius: 4,
+                              transition: "background 0.2s",
+                              flexShrink: 0,
+                            }}
+                            onMouseEnter={(event) => {
+                              event.currentTarget.style.background =
+                                theme === "dark" ? "#333" : "#e0e0e0";
+                            }}
+                            onMouseLeave={(event) => {
+                              event.currentTarget.style.background =
+                                "transparent";
+                            }}
+                          >
+                            {word.text || `[${word.id}]`}
+                          </span>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div

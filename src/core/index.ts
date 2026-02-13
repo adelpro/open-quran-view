@@ -43,3 +43,5 @@ export {
   type VerseLocation,
   type NavigationInfo,
 } from "./lookup";
+
+export { getBismillahWords, clearBismillahCache } from "./bismillah";

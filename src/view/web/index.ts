@@ -1,4 +1,5 @@
 import {
+  getBismillahWords,
   loadPage,
   loadFont,
   loadSurahNameFont,
@@ -7,6 +8,7 @@ import {
   createLayoutCalculator,
   type MushafLayout,
   type PageLayout,
+  type Word,
 } from "../../core";
 
 const STYLES = `
@@ -190,6 +192,7 @@ export class OpenQuranView extends HTMLElement {
   private fontLoaded: boolean = false;
   private fontFaceSheet: HTMLStyleElement | null = null;
   private showingInput: boolean = false;
+  private bismillahWords: Word[] = [];
 
   static get observedAttributes(): string[] {
     return ["page", "mushaf-layout", "width", "height", "theme"];
@@ -296,6 +299,8 @@ export class OpenQuranView extends HTMLElement {
     this.updateTheme(theme);
 
     await this.loadFont();
+
+    this.bismillahWords = await getBismillahWords(this.layout);
 
     try {
       this.updatePageDisplay();
@@ -441,6 +446,53 @@ export class OpenQuranView extends HTMLElement {
         }
 
         lineEl.appendChild(surahEl);
+      } else if (line.lineType === "bismillah") {
+        const lineContent = document.createElement("div");
+        lineContent.className = "quran-line-content";
+        lineContent.style.cssText = `
+          justify-content: ${isCenteredLine ? "center" : "space-between"};
+        `;
+
+        for (const word of this.bismillahWords) {
+          const wordEl = document.createElement("span");
+          wordEl.className = "quran-word";
+
+          wordEl.textContent = word.text || `[${word.id}]`;
+          wordEl.style.cssText = `
+            font-family: ${
+              this.layout === "hafs-unicode"
+                ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+                : '"QuranFont", system-ui, -apple-system, sans-serif'
+            };
+            color: ${wordColor};
+            height: ${pageLayout.metrics.lineHeight}px;
+            line-height: ${pageLayout.metrics.lineHeight}px;
+          `;
+
+          wordEl.addEventListener("mouseenter", () => {
+            wordEl.style.background = hoverBg;
+          });
+          wordEl.addEventListener("mouseleave", () => {
+            wordEl.style.background = "transparent";
+          });
+          wordEl.addEventListener("click", () => {
+            this.dispatchEvent(
+              new CustomEvent("wordClick", {
+                detail: {
+                  id: word.id,
+                  surahNumber: 1,
+                  ayahNumber: 0,
+                },
+                bubbles: false,
+                composed: true,
+              }),
+            );
+          });
+
+          lineContent.appendChild(wordEl);
+        }
+
+        lineEl.appendChild(lineContent);
       } else {
         const lineContent = document.createElement("div");
         lineContent.className = "quran-line-content";
