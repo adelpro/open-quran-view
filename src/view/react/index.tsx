@@ -198,10 +198,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                     left: 0,
                     right: 0,
                     height: pageLayout.metrics.lineHeight,
-                    top:
-                      line.y -
-                      pageLayout.metrics.lineHeight +
-                      pageLayout.metrics.baselineOffset,
+                    top: line.y - pageLayout.metrics.lineHeight / 2,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: isCenteredLine ? "center" : "flex-end",
