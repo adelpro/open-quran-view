@@ -130,6 +130,7 @@ export function getFontUrl(layout: MushafLayout, page: number): string {
 export async function loadFont(
   layout: MushafLayout,
   page: number,
+  fontFamily: string = "QuranFont",
 ): Promise<void> {
   if (layout === "hafs-unicode") {
     await loadDigitalKhattFont();
@@ -138,7 +139,7 @@ export async function loadFont(
   }
 
   const fontUrl = getFontUrl(layout, page);
-  const fontFace = new FontFace("QuranFont", `url(${fontUrl})`);
+  const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
   await fontFace.load();
 
   if (typeof document !== "undefined" && document.fonts) {

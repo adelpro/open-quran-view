@@ -119,7 +119,11 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     layoutRef.current = mushafLayout;
     handleLoadPage(page);
 
-    if (mushafLayout === "hafs-unicode") loadAyatMarkerFont();
+    if (mushafLayout === "hafs-unicode") {
+      loadAyatMarkerFont();
+    } else {
+      loadFont(mushafLayout, 1, "BismillahFont");
+    }
   }, [mushafLayout, page, handleLoadPage]);
 
   useEffect(() => {
