@@ -152,7 +152,9 @@ export default function Line({
         fontFamily:
           mushafLayout === "hafs-unicode"
             ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
-            : '"QuranFont", system-ui, -apple-system, sans-serif',
+            : line.lineType === "bismillah"
+              ? '"BismillahFont", system-ui, -apple-system, sans-serif'
+              : '"QuranFont", system-ui, -apple-system, sans-serif',
         fontSize: fontSizeWord,
         color: theme === "dark" ? "#fff" : "#34495e",
         display: "inline-flex",

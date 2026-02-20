@@ -2,6 +2,7 @@ import {
   getBismillahWords,
   loadPage,
   loadFont,
+  loadBismillahFont,
   loadSurahNameFont,
   loadAyatMarkerFont,
   surahNumberToFontCode,
@@ -299,6 +300,7 @@ export class OpenQuranView extends HTMLElement {
     this.updateTheme(theme);
 
     await this.loadFont();
+    await loadBismillahFont(this.layout);
 
     this.bismillahWords = await getBismillahWords(this.layout);
 
@@ -459,10 +461,9 @@ export class OpenQuranView extends HTMLElement {
 
           wordEl.textContent = word.text || `[${word.id}]`;
           wordEl.style.cssText = `
-            font-family: ${
-              this.layout === "hafs-unicode"
-                ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
-                : '"QuranFont", system-ui, -apple-system, sans-serif'
+            font-family: ${this.layout === "hafs-unicode"
+              ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+              : '"BismillahFont", system-ui, -apple-system, sans-serif'
             };
             color: ${wordColor};
             height: ${pageLayout.metrics.lineHeight}px;
@@ -519,10 +520,9 @@ export class OpenQuranView extends HTMLElement {
           } else {
             wordEl.textContent = word.text || `[${word.id}]`;
             wordEl.style.cssText = `
-              font-family: ${
-                this.layout === "hafs-unicode"
-                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
-                  : '"QuranFont", system-ui, -apple-system, sans-serif'
+              font-family: ${this.layout === "hafs-unicode"
+                ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+                : '"QuranFont", system-ui, -apple-system, sans-serif'
               };
               color: ${wordColor};
               height: ${pageLayout.metrics.lineHeight}px;

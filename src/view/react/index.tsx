@@ -3,6 +3,7 @@ import {
   createLayoutCalculator,
   getBismillahWords,
   loadAyatMarkerFont,
+  loadBismillahFont,
   loadFont,
   loadPage,
   loadSurahNameFont,
@@ -123,6 +124,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   }, [mushafLayout, page, handleLoadPage]);
 
   useEffect(() => {
+    loadBismillahFont(mushafLayout);
     getBismillahWords(mushafLayout).then(setBismillahWords);
   }, [mushafLayout]);
 

@@ -148,6 +148,20 @@ export async function loadFont(
   }
 }
 
+export async function loadBismillahFont(layout: MushafLayout): Promise<void> {
+  if (layout === "hafs-unicode") return;
+
+  const fontUrl = getFontUrl(layout, 1);
+  const fontFace = new FontFace("BismillahFont", `url(${fontUrl})`);
+  await fontFace.load();
+
+  if (typeof document !== "undefined" && document.fonts) {
+    document.fonts.add(fontFace);
+  } else if ((globalThis as any).fonts) {
+    (globalThis as any).fonts.add(fontFace);
+  }
+}
+
 export async function preloadAllFonts(layout: MushafLayout): Promise<void> {
   for (let page = 1; page <= 604; page++) {
     await loadFont(layout, page);

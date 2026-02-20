@@ -14,6 +14,7 @@ export {
 
 export {
   loadFont,
+  loadBismillahFont,
   loadSurahNameFont,
   loadAyatMarkerFont,
   surahNumberToFontCode,
