@@ -482,8 +482,8 @@ export class OpenQuranView extends HTMLElement {
                 : '"QuranFont", system-ui, -apple-system, sans-serif'
             };
             color: ${wordColor};
-            height: ${pageLayout.metrics.lineHeight}px;
-            line-height: ${pageLayout.metrics.lineHeight}px;
+            height: ${lineHeight}px;
+            line-height: ${lineHeight}px;
           `;
 
           wordEl.addEventListener("mouseenter", () => {
