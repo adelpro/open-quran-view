@@ -163,6 +163,18 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
           {pageLayout.lines.map((line) => {
             const isCenteredLine =
               line.isCentered || CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
+            
+            const lineHeight = line.height || pageLayout.metrics.lineHeight;
+            const top = line.y - lineHeight / 2;
+
+            const headerFontSize = Math.min(
+              42,
+              Math.max(16, lineHeight - 10),
+            );
+            const headerLineHeight = Math.max(
+              12,
+              lineHeight - 4,
+            );
 
             return (
               <div
@@ -171,11 +183,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   position: "absolute",
                   left: 0,
                   right: 0,
-                  height: pageLayout.metrics.lineHeight,
-                  top:
-                    line.y -
-                    pageLayout.metrics.lineHeight +
-                    pageLayout.metrics.baselineOffset,
+                  height: lineHeight,
+                  top: top,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: isCenteredLine ? "center" : "flex-end",
@@ -185,19 +194,26 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                 {line.lineType === "header" ? (
                   <div
                     style={{
-                      fontSize: 42,
+                      fontSize: headerFontSize,
                       fontWeight: "bold",
                       color: theme === "dark" ? "#fff" : "#2c3e50",
                       fontFamily:
                         '"SurahNameFont", system-ui, -apple-system, sans-serif',
+                      textAlign: "center",
                       width: "100%",
                       boxSizing: "border-box",
-                      marginTop: 12,
-                      marginBottom: 56,
-                      paddingInline: 12,
-                      paddingBlock: 4,
-                      border: `2px solid ${theme === "dark" ? "#fff" : "#2c3e50"}`,
-                      borderRadius: 8,
+                      paddingInline: "12px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: `2px solid ${
+                        theme === "dark" ? "#fff" : "#2c3e50"
+                      }`,
+                      height: lineHeight,
+                      lineHeight: `${headerLineHeight}px`,
+                      margin: 0,
+                      paddingBlock: 0,
                     }}
                   >
                     {line.surahNumber
@@ -211,10 +227,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       flexDirection: "row",
                       alignItems: "center",
                       width: "100%",
+                      gap: "4px",
                       justifyContent: isCenteredLine
                         ? "center"
                         : "space-between",
-                      gap: "4px",
                     }}
                   >
                     {line.words.map((word) => {
