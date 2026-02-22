@@ -189,6 +189,23 @@ viewer.setAttribute('theme', 'dark');
 
 ---
 
+### Bismillah Rendering
+
+Bismillah is rendered correctly across all layouts following Quranic rules:
+
+| Surah | Behavior |
+|-------|----------|
+| Surah 1 (Al-Fatiha) | Bismillah shown as Ayah 1 | ✅ |
+| Surah 9 (At-Tawbah) | No Bismillah shown | ✅ |
+| All other Surahs | Decorative centered Bismillah line after Surah header | ✅ |
+
+Each layout uses its own dedicated font for Bismillah rendering:
+- `hafs-unicode` → DigitalKhatt font
+- `hafs-v2` → Hafs v2 font (BismillahFont)
+- `hafs-v4` → Hafs v4 font (BismillahFont)
+
+---
+
 ## Documentation
 
 See [`docs/`](docs/) directory for:

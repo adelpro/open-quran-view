@@ -27,8 +27,9 @@ export async function getBismillahWords(layout: MushafLayout): Promise<Word[]> {
     return [];
   }
 
-  bismillahCache[layout] = firstVerseWords;
-  return firstVerseWords;
+  const bismillahWords = firstVerseWords.slice(0, 4);
+  bismillahCache[layout] = bismillahWords;
+  return bismillahWords;
 }
 
 export function clearBismillahCache(layout?: MushafLayout): void {
