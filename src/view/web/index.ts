@@ -530,8 +530,8 @@ export class OpenQuranView extends HTMLElement {
             wordEl.style.cssText = `
               font-family: "AyatMarker", "DigitalKhatt", system-ui;
               color: ${wordColor};
-              height: ${pageLayout.metrics.lineHeight}px;
-              line-height: ${pageLayout.metrics.lineHeight}px;
+              height: ${lineHeight}px;
+              line-height: ${lineHeight}px;
             `;
           } else {
             wordEl.textContent = word.text || `[${word.id}]`;
@@ -542,8 +542,8 @@ export class OpenQuranView extends HTMLElement {
                   : '"QuranFont", system-ui, -apple-system, sans-serif'
               };
               color: ${wordColor};
-              height: ${pageLayout.metrics.lineHeight}px;
-              line-height: ${pageLayout.metrics.lineHeight}px;
+              height: ${lineHeight}px;
+              line-height: ${lineHeight}px;
             `;
           }
 

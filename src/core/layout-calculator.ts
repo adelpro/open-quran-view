@@ -41,6 +41,9 @@ export type LayoutCalculatorOptions = {
   lineHeight?: number;
 };
 
+const NAV_BAR_MIN_HEIGHT = 80;
+const HEADER_LINE_HEIGHT_MULTIPLIER = 1.8;
+
 export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   calculatePageLayout: (page: Page) => PageLayout;
   getMetrics: () => PageMetrics;
@@ -51,7 +54,7 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   const lineHeight = options.lineHeight || fontSize * 1.5;
 
   const paddingTop = pageHeight * 0.05;
-  const paddingBottom = Math.max(pageHeight * 0.05, 80);
+  const paddingBottom = Math.max(pageHeight * 0.05, NAV_BAR_MIN_HEIGHT);
   const paddingLeft = pageWidth * 0.08;
   const paddingRight = pageWidth * 0.08;
 
@@ -113,7 +116,7 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
       let height = metrics.lineHeight;
       
       if (line.lineType === "header") {
-        height = metrics.lineHeight * 1.8;
+        height = metrics.lineHeight * HEADER_LINE_HEIGHT_MULTIPLIER;
       }
       
       lineHeights.push(height);
@@ -121,13 +124,15 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
     }
 
     // Calculate available vertical space for content
-    const availableHeight =
-      pageHeight - metrics.pagePadding.top - metrics.pagePadding.bottom;
+    const availableHeight = Math.max(
+      0,
+      pageHeight - metrics.pagePadding.top - metrics.pagePadding.bottom,
+    );
       
     // If content exceeds available height, scale it down to fit
     let scale = 1;
-    if (contentHeight > availableHeight) {
-      scale = availableHeight / contentHeight;
+    if (contentHeight > 0) {
+      scale = Math.min(1, availableHeight / contentHeight);
     }
 
     let verticalOffset = 0;
