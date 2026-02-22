@@ -167,15 +167,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
             const lineHeight = line.height || pageLayout.metrics.lineHeight;
             const top = line.y - lineHeight / 2;
 
-            const headerFontSize = Math.min(
-              42,
-              Math.max(16, lineHeight - 10),
-            );
-            const headerLineHeight = Math.max(
-              12,
-              lineHeight - 4,
-            );
-
             return (
               <div
                 key={line.lineNumber}
@@ -191,7 +182,16 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   padding: "2px",
                 }}
               >
-                {line.lineType === "header" ? (
+                {line.lineType === "header" ? (() => {
+                  const headerFontSize = Math.min(
+                    42,
+                    Math.max(16, lineHeight - 10),
+                  );
+                  const headerLineHeight = Math.max(
+                    12,
+                    lineHeight - 4,
+                  );
+                  return (
                   <div
                     style={{
                       fontSize: headerFontSize,
@@ -220,7 +220,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                       ? surahNumberToFontCode(line.surahNumber)
                       : "surah000"}
                   </div>
-                ) : (
+                  );
+                })() : (
                   <div
                     style={{
                       display: "flex",
@@ -273,8 +274,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                             alignItems: "center",
                             justifyContent: "center",
 
-                            height: pageLayout.metrics.lineHeight,
-                            lineHeight: `${pageLayout.metrics.lineHeight}px`,
+                            height: lineHeight,
+                            lineHeight: `${lineHeight}px`,
 
                             verticalAlign: "middle",
                             minWidth: "auto",
