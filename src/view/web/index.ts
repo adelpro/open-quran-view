@@ -63,12 +63,11 @@ const STYLES = `
     text-align: center;
     width: 100%;
     box-sizing: border-box;
-    margin-top: 12px;
-    margin-bottom: 56px;
     padding-inline: 12px;
-    padding-block: 4px;
     border-radius: 8px;
-    font-size: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .quran-word {
@@ -420,9 +419,13 @@ export class OpenQuranView extends HTMLElement {
 
       const lineEl = document.createElement("div");
       lineEl.className = "quran-line";
+      // Use dynamic line height if available, fallback to metrics
+      const lineHeight = line.height || pageLayout.metrics.lineHeight;
+      const top = line.y - lineHeight / 2;
+      
       lineEl.style.cssText = `
-        height: ${pageLayout.metrics.lineHeight}px;
-        top: ${line.y - pageLayout.metrics.lineHeight + pageLayout.metrics.baselineOffset}px;
+        height: ${lineHeight}px;
+        top: ${top}px;
         justify-content: ${isCenteredLine ? "center" : "flex-end"};
       `;
 
@@ -432,11 +435,25 @@ export class OpenQuranView extends HTMLElement {
       const hoverBg = theme === "dark" ? "#333" : "#e0e0e0";
 
       if (line.lineType === "header") {
+        const headerFontSize = Math.min(
+          42,
+          Math.max(16, lineHeight - 10),
+        );
+        const headerLineHeight = Math.max(
+          12,
+          lineHeight - 4,
+        );
+
         const surahEl = document.createElement("div");
         surahEl.className = "quran-surah-name";
         surahEl.style.cssText = `
           color: ${surahColor}; 
           border: 2px solid ${surahColor};
+          height: ${lineHeight}px;
+          line-height: ${headerLineHeight}px;
+          font-size: ${headerFontSize}px;
+          margin: 0;
+          padding-block: 0;
         `;
 
         if (line.surahNumber) {
