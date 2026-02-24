@@ -192,31 +192,40 @@ export default function Line({
         padding: "2px",
       }}
     >
-      {line.lineType === "header" ? (
-        <div
-          style={{
-            fontSize: fontSizeSurahHeader,
-            fontWeight: "bold",
-            color: theme === "dark" ? "#fff" : "#2c3e50",
-            fontFamily: '"SurahNameFont", system-ui, -apple-system, sans-serif',
-            width: "100%",
-            boxSizing: "border-box",
-            marginTop: 12,
-            marginBottom: 56,
-            paddingInline: 12,
-            paddingBlock: 4,
-            background: `url("${getSurahFrameUrl()}") center/cover no-repeat`,
-            textAlign: "center",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {line.surahNumber
-            ? surahNumberToFontCode(line.surahNumber)
-            : "surah000"}
-        </div>
-      ) : line.lineType === "bismillah" ? (
+      {line.lineType === "header" ? (() => {
+        const headerFontSize = Math.min(42, Math.max(16, lineHeight - 10));
+        const headerLineHeight = Math.max(12, lineHeight - 4);
+        return (
+          <div
+            style={{
+              fontSize: headerFontSize,
+              fontWeight: "bold",
+              color: theme === "dark" ? "#fff" : "#2c3e50",
+              fontFamily:
+                '"SurahNameFont", system-ui, -apple-system, sans-serif',
+              textAlign: "center",
+              width: "100%",
+              boxSizing: "border-box",
+              paddingInline: "12px",
+              borderRadius: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: `2px solid ${
+                theme === "dark" ? "#fff" : "#2c3e50"
+              }`,
+              height: lineHeight,
+              lineHeight: `${headerLineHeight}px`,
+              margin: 0,
+              paddingBlock: 0,
+            }}
+          >
+            {line.surahNumber
+              ? surahNumberToFontCode(line.surahNumber)
+              : "surah000"}
+          </div>
+        );
+      })() : line.lineType === "bismillah" ? (
         <div style={wordContainerStyle}>
           {bismillahWords.map(renderBismillahWord)}
         </div>

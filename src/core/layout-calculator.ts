@@ -3,6 +3,7 @@ import type { Line, LineType, Page, Word, CharType } from "./types";
 export type LineLayout = {
   lineNumber: number;
   y: number;
+  height: number;
   words: WordLayout[];
   isCentered: boolean;
   lineType: LineType;
@@ -40,6 +41,9 @@ export type LayoutCalculatorOptions = {
   lineHeight?: number;
 };
 
+const NAV_BAR_MIN_HEIGHT = 80;
+const HEADER_LINE_HEIGHT_MULTIPLIER = 1.8;
+
 export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   calculatePageLayout: (page: Page) => PageLayout;
   getMetrics: () => PageMetrics;
@@ -50,13 +54,13 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   const lineHeight = options.lineHeight || fontSize * 1.5;
 
   const paddingTop = pageHeight * 0.05;
-  const paddingBottom = pageHeight * 0.05;
+  const paddingBottom = Math.max(pageHeight * 0.05, NAV_BAR_MIN_HEIGHT);
   const paddingLeft = pageWidth * 0.08;
   const paddingRight = pageWidth * 0.08;
 
   const metrics: PageMetrics = {
     lineHeight,
-    baselineOffset: lineHeight / 2,
+    baselineOffset: Math.round(lineHeight / 2),
     pagePadding: {
       top: Math.round(paddingTop),
       bottom: Math.round(paddingBottom),
@@ -67,12 +71,10 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
 
   function calculateLineLayout(
     line: Line,
-    startY: number,
-    lineIndex: number,
-    verticalOffset: number = 0,
+    y: number,
+    lineHeightForLine: number,
   ): LineLayout {
     const words: WordLayout[] = [];
-    const y = startY + lineIndex * metrics.lineHeight + verticalOffset;
     let currentX = metrics.pagePadding.left;
 
     for (const word of line.words) {
@@ -93,6 +95,7 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
     return {
       lineNumber: line.lineNumber,
       y,
+      height: lineHeightForLine,
       words,
       isCentered,
       lineType: line.lineType || "text",
@@ -103,29 +106,60 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
 
   function calculatePageLayout(page: Page): PageLayout {
     const lines: LineLayout[] = [];
+    
+    // Calculate total content height first to determine vertical offset
+    let contentHeight = 0;
+    const lineHeights: number[] = [];
+    
+    for (let i = 0; i < page.lines.length; i++) {
+      const line = page.lines[i];
+      let height = metrics.lineHeight;
+      
+      if (line.lineType === "header") {
+        height = metrics.lineHeight * HEADER_LINE_HEIGHT_MULTIPLIER;
+      }
+      
+      lineHeights.push(height);
+      contentHeight += height;
+    }
+
+    // Calculate available vertical space for content
+    const availableHeight = Math.max(
+      0,
+      pageHeight - metrics.pagePadding.top - metrics.pagePadding.bottom,
+    );
+      
+    // If content exceeds available height, scale it down to fit
+    let scale = 1;
+    if (contentHeight > 0) {
+      scale = Math.min(1, availableHeight / contentHeight);
+    }
 
     let verticalOffset = 0;
     if (page.isVerticallyCentered && page.lines.length > 0) {
-      const contentHeight = page.lines.length * metrics.lineHeight;
-      const availableHeight =
-        pageHeight - metrics.pagePadding.top - metrics.pagePadding.bottom;
-      if (availableHeight > contentHeight) {
-        verticalOffset = (availableHeight - contentHeight) / 2;
+      // Use the scaled content height for centering calculation
+      const effectiveContentHeight = contentHeight * scale;
+      if (availableHeight > effectiveContentHeight) {
+        verticalOffset = (availableHeight - effectiveContentHeight) / 2;
       }
     }
 
-    const startY = metrics.pagePadding.top + metrics.lineHeight / 2;
+    let currentTop = metrics.pagePadding.top + verticalOffset;
 
     for (let i = 0; i < page.lines.length; i++) {
       const line = page.lines[i];
-      const lineIndex = line.lineNumber - 1;
+      const height = lineHeights[i] * scale;
+      
+      const centerY = currentTop + height / 2;
+      
       const lineLayout = calculateLineLayout(
         line,
-        startY,
-        lineIndex,
-        verticalOffset,
+        centerY,
+        height,
       );
       lines.push(lineLayout);
+      
+      currentTop += height;
     }
 
     return {
