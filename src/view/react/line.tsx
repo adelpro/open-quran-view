@@ -1,8 +1,6 @@
 import { CSSProperties, KeyboardEvent, MouseEvent } from "react";
 import type { LineLayout, MushafLayout, Word, WordLayout } from "../../core";
 
-type WordLike = { id: number; text?: string; surah: number; verse: number };
-
 type Props = {
   line: LineLayout;
   isCenteredLine: boolean;
@@ -25,24 +23,14 @@ export default function Line({
   line,
   isCenteredLine,
   theme,
-  fontSizeSurahHeader,
   fontSizeWord,
   bismillahWords,
   mushafLayout,
   lineHeight,
   onWordClick,
   surahNumberToFontCode,
-  getSurahFrameUrl,
 }: Props) {
   const handleWordClick = (word: WordLayout) => {
-    onWordClick?.({
-      id: word.id,
-      surahNumber: word.surah,
-      ayahNumber: word.verse,
-    });
-  };
-
-  const handleBismillahWordClick = (word: Word) => {
     onWordClick?.({
       id: word.id,
       surahNumber: word.surah,
@@ -54,13 +42,6 @@ export default function Line({
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleWordClick(word);
-    }
-  };
-
-  const handleBismillahKeyDown = (event: KeyboardEvent, word: Word) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleBismillahWordClick(word);
     }
   };
 
@@ -192,40 +173,40 @@ export default function Line({
         padding: "2px",
       }}
     >
-      {line.lineType === "header" ? (() => {
-        const headerFontSize = Math.min(42, Math.max(16, lineHeight - 10));
-        const headerLineHeight = Math.max(12, lineHeight - 4);
-        return (
-          <div
-            style={{
-              fontSize: headerFontSize,
-              fontWeight: "bold",
-              color: theme === "dark" ? "#fff" : "#2c3e50",
-              fontFamily:
-                '"SurahNameFont", system-ui, -apple-system, sans-serif',
-              textAlign: "center",
-              width: "100%",
-              boxSizing: "border-box",
-              paddingInline: "12px",
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: `2px solid ${
-                theme === "dark" ? "#fff" : "#2c3e50"
-              }`,
-              height: lineHeight,
-              lineHeight: `${headerLineHeight}px`,
-              margin: 0,
-              paddingBlock: 0,
-            }}
-          >
-            {line.surahNumber
-              ? surahNumberToFontCode(line.surahNumber)
-              : "surah000"}
-          </div>
-        );
-      })() : line.lineType === "bismillah" ? (
+      {line.lineType === "header" ? (
+        (() => {
+          const headerFontSize = Math.min(42, Math.max(16, lineHeight - 10));
+          const headerLineHeight = Math.max(12, lineHeight - 4);
+          return (
+            <div
+              style={{
+                fontSize: headerFontSize,
+                fontWeight: "bold",
+                color: theme === "dark" ? "#fff" : "#2c3e50",
+                fontFamily:
+                  '"SurahNameFont", system-ui, -apple-system, sans-serif',
+                textAlign: "center",
+                width: "100%",
+                boxSizing: "border-box",
+                paddingInline: "12px",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                border: `2px solid ${theme === "dark" ? "#fff" : "#2c3e50"}`,
+                height: lineHeight,
+                lineHeight: `${headerLineHeight}px`,
+                margin: 0,
+                paddingBlock: 0,
+              }}
+            >
+              {line.surahNumber
+                ? surahNumberToFontCode(line.surahNumber)
+                : "surah000"}
+            </div>
+          );
+        })()
+      ) : line.lineType === "bismillah" ? (
         <div style={wordContainerStyle}>
           {bismillahWords.map(renderBismillahWord)}
         </div>

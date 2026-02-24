@@ -5,6 +5,10 @@ import {
 } from "./static/fonts";
 import { getSurahNameFontUrl as getSurahNameFontUrlStatic } from "./static/data";
 
+interface GlobalWithFonts {
+  fonts?: FontFaceSet;
+}
+
 let surahNameFontLoaded: boolean = false;
 let digitalKhattFontLoaded: boolean = false;
 let ayatMarkerFontLoaded: boolean = false;
@@ -38,8 +42,8 @@ export async function loadSurahNameFont(): Promise<void> {
 
   if (typeof document !== "undefined" && document.fonts) {
     document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-    (globalThis as any).fonts.add(fontFace);
+  } else if ((globalThis as GlobalWithFonts).fonts) {
+    (globalThis as GlobalWithFonts).fonts!.add(fontFace);
   }
 
   surahNameFontLoaded = true;
@@ -63,8 +67,8 @@ export async function loadDigitalKhattFont(): Promise<void> {
 
   if (typeof document !== "undefined" && document.fonts) {
     document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-    (globalThis as any).fonts.add(fontFace);
+  } else if ((globalThis as GlobalWithFonts).fonts) {
+    (globalThis as GlobalWithFonts).fonts!.add(fontFace);
   }
 
   digitalKhattFontLoaded = true;
@@ -88,8 +92,8 @@ export async function loadAyatMarkerFont(): Promise<void> {
 
   if (typeof document !== "undefined" && document.fonts) {
     document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-    (globalThis as any).fonts.add(fontFace);
+  } else if ((globalThis as GlobalWithFonts).fonts) {
+    (globalThis as GlobalWithFonts).fonts!.add(fontFace);
   }
 
   ayatMarkerFontLoaded = true;
@@ -143,8 +147,8 @@ export async function loadFont(
 
   if (typeof document !== "undefined" && document.fonts) {
     document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-    (globalThis as any).fonts.add(fontFace);
+  } else if ((globalThis as GlobalWithFonts).fonts) {
+    (globalThis as GlobalWithFonts).fonts!.add(fontFace);
   }
 }
 
@@ -157,8 +161,8 @@ export async function loadBismillahFont(layout: MushafLayout): Promise<void> {
 
   if (typeof document !== "undefined" && document.fonts) {
     document.fonts.add(fontFace);
-  } else if ((globalThis as any).fonts) {
-    (globalThis as any).fonts.add(fontFace);
+  } else if ((globalThis as GlobalWithFonts).fonts) {
+    (globalThis as GlobalWithFonts).fonts!.add(fontFace);
   }
 }
 

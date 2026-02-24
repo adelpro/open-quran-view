@@ -1,4 +1,4 @@
-import type { Line, LineType, Page, Word, CharType } from "./types";
+import type { Line, LineType, Page, Word } from "./types";
 
 export type LineLayout = {
   lineNumber: number;
@@ -106,19 +106,19 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
 
   function calculatePageLayout(page: Page): PageLayout {
     const lines: LineLayout[] = [];
-    
+
     // Calculate total content height first to determine vertical offset
     let contentHeight = 0;
     const lineHeights: number[] = [];
-    
+
     for (let i = 0; i < page.lines.length; i++) {
       const line = page.lines[i];
       let height = metrics.lineHeight;
-      
+
       if (line.lineType === "header") {
         height = metrics.lineHeight * HEADER_LINE_HEIGHT_MULTIPLIER;
       }
-      
+
       lineHeights.push(height);
       contentHeight += height;
     }
@@ -128,7 +128,7 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
       0,
       pageHeight - metrics.pagePadding.top - metrics.pagePadding.bottom,
     );
-      
+
     // If content exceeds available height, scale it down to fit
     let scale = 1;
     if (contentHeight > 0) {
@@ -149,16 +149,12 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
     for (let i = 0; i < page.lines.length; i++) {
       const line = page.lines[i];
       const height = lineHeights[i] * scale;
-      
+
       const centerY = currentTop + height / 2;
-      
-      const lineLayout = calculateLineLayout(
-        line,
-        centerY,
-        height,
-      );
+
+      const lineLayout = calculateLineLayout(line, centerY, height);
       lines.push(lineLayout);
-      
+
       currentTop += height;
     }
 
