@@ -30,7 +30,7 @@ const wordInfo = document.getElementById("word-info") as HTMLDivElement;
 goBtn.addEventListener("click", () => {
   const page = parseInt(pageInput.value, 10);
   if (page >= 1 && page <= 604) {
-    viewer.setAttribute("page", String(page));
+    viewer.goToPage(page);
   }
 });
 
@@ -38,21 +38,19 @@ pageInput.addEventListener("keypress", (e: KeyboardEvent) => {
   if (e.key === "Enter") {
     const page = parseInt(pageInput.value, 10);
     if (page >= 1 && page <= 604) {
-      viewer.setAttribute("page", String(page));
+      viewer.goToPage(page);
     }
   }
 });
 
 prevBtn.addEventListener("click", () => {
-  const currentPage = parseInt(viewer.getAttribute("page") || "1", 10);
-  viewer.setAttribute("page", String(Math.max(1, currentPage - 1)));
-  pageInput.value = viewer.getAttribute("page") || "1";
+  viewer.goToPage(viewer.page - 1);
+  pageInput.value = String(viewer.page);
 });
 
 nextBtn.addEventListener("click", () => {
-  const currentPage = parseInt(viewer.getAttribute("page") || "1", 10);
-  viewer.setAttribute("page", String(Math.min(604, currentPage + 1)));
-  pageInput.value = viewer.getAttribute("page") || "1";
+  viewer.goToPage(viewer.page + 1);
+  pageInput.value = String(viewer.page);
 });
 
 themeSelect.addEventListener("change", () => {
