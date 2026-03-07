@@ -13,15 +13,17 @@ const STYLES = `
   :host {
     display: block;
     position: relative;
-    overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif;
     direction: rtl;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .quran-viewer {
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: hidden;
   }
 
   .quran-loading {
@@ -291,7 +293,8 @@ export class OpenQuranView extends HTMLElement {
       pageHeight: height,
     });
 
-    this.container.style.width = `${width}px`;
+    this.container.style.maxWidth = `${width}px`;
+    this.container.style.width = "100%";
     this.container.style.height = `${height}px`;
     this.updateTheme(theme);
 
