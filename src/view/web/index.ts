@@ -30,6 +30,12 @@ const STYLES = `
     width: 100%;
     height: 100%;
     position: relative;
+  }
+
+  .quran-frame {
+    width: 100%;
+    height: 100%;
+    position: relative;
     overflow: hidden;
   }
 
@@ -45,6 +51,7 @@ const STYLES = `
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: visible;
   }
 
   .quran-line {
@@ -164,8 +171,10 @@ const TEMPLATE = document.createElement("template");
 TEMPLATE.innerHTML = `
   <style>${STYLES}</style>
   <div class="quran-viewer">
-    <div class="quran-loading">جاري التحميل...</div>
-    <div class="quran-content"></div>
+    <div class="quran-frame">
+      <div class="quran-loading">جاري التحميل...</div>
+      <div class="quran-content"></div>
+    </div>
     <div class="quran-nav" style="display: none;">
       <button class="quran-prev" title="السابق">❮</button>
       <button class="quran-page-display"></button>
@@ -237,10 +246,13 @@ export class OpenQuranView extends HTMLElement {
     if (oldValue === newValue) return;
 
     switch (name) {
-      case "page":
-        this.currentPage = parseInt(newValue, 10) || 1;
+      case "page": {
+        const newPage = parseInt(newValue, 10) || 1;
+        if (newPage === this.currentPage) return;
+        this.currentPage = newPage;
         this.renderPage();
         break;
+      }
       case "mushaf-layout":
       case "width":
       case "height":
@@ -287,7 +299,7 @@ export class OpenQuranView extends HTMLElement {
   }
 
   private async initialize(): Promise<void> {
-    const width = parseInt(this.getAttribute("width") || "600", 10);
+    const maxWidth = parseInt(this.getAttribute("width") || "600", 10);
     const height = parseInt(this.getAttribute("height") || "850", 10);
     const theme = (this.getAttribute("theme") || "light") as "light" | "dark";
     const mushafLayout = this.getAttribute(
@@ -295,15 +307,19 @@ export class OpenQuranView extends HTMLElement {
     ) as MushafLayout | null;
     this.layout = mushafLayout || "hafs-v2";
 
-    this.calculator = createLayoutCalculator({
-      pageWidth: width,
-      pageHeight: height,
-    });
-
-    this.container.style.maxWidth = `${width}px`;
+    this.container.style.maxWidth = `${maxWidth}px`;
     this.container.style.width = "100%";
     this.container.style.height = `${height}px`;
     this.updateTheme(theme);
+
+    const renderedWidth =
+      Math.min(maxWidth, this.container.getBoundingClientRect().width) ||
+      maxWidth;
+
+    this.calculator = createLayoutCalculator({
+      pageWidth: renderedWidth,
+      pageHeight: height,
+    });
 
     await this.loadFont();
 
@@ -523,6 +539,7 @@ export class OpenQuranView extends HTMLElement {
     page = Math.max(1, Math.min(page, this.totalPages));
     if (page !== oldPage) {
       this.currentPage = page;
+      this.setAttribute("page", String(page));
       this.renderPage();
 
       this.dispatchEvent(
