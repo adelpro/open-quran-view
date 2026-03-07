@@ -9,6 +9,13 @@ import {
   type PageLayout,
 } from "../../core";
 
+export const CENTERED_PAGES_VERTICAL = [1, 2] as const;
+export const CENTERED_PAGES_HORIZONTAL = [1, 2, 602, 603, 604] as const;
+
+const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>(
+  CENTERED_PAGES_HORIZONTAL,
+);
+
 const STYLES = `
   :host {
     display: block;
@@ -98,7 +105,7 @@ const STYLES = `
     display: flex;
     gap: 12px;
     align-items: center;
-    padding: 12px;
+    padding: 2px;
     border-radius: 50px;
     backdrop-filter: blur(10px);
   }
@@ -408,10 +415,6 @@ export class OpenQuranView extends HTMLElement {
   private async renderLayout(pageLayout: PageLayout): Promise<void> {
     this.content.innerHTML = "";
 
-    const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>([
-      1, 2, 602, 603, 604,
-    ]);
-
     for (const line of pageLayout.lines) {
       const isCenteredLine =
         line.isCentered || CENTERED_PAGES_HORIZONTAL_SET.has(this.currentPage);
@@ -489,7 +492,7 @@ export class OpenQuranView extends HTMLElement {
           });
           wordEl.addEventListener("click", () => {
             this.dispatchEvent(
-              new CustomEvent("wordClick", {
+              new CustomEvent("wordclick", {
                 detail: {
                   id: word.id,
                   surahNumber: word.surahNumber,
@@ -523,8 +526,8 @@ export class OpenQuranView extends HTMLElement {
       this.renderPage();
 
       this.dispatchEvent(
-        new CustomEvent("pageChange", {
-          detail: page,
+        new CustomEvent("pagechange", {
+          detail: { page },
           bubbles: false,
           composed: true,
         }),
