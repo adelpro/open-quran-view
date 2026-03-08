@@ -29,7 +29,8 @@ const STYLES = `
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: visible;
   }
 
   .quran-loading {
