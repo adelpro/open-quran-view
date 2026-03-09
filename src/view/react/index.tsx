@@ -156,68 +156,79 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         width: "100%",
         height: "100vh",
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
-        overflow: "hidden",
+        position: "relative",
         fontFamily: "system-ui, -apple-system, sans-serif",
         direction: "rtl",
         display: "flex",
         justifyContent: "center",
       }}
     >
-      {loading && <Loading theme={theme} />}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "relative",
+          overflowY: "hidden",
+          overflowX: "visible",
+        }}
+      >
+        {loading && <Loading theme={theme} />}
 
-      {!loading && pageLayout && (
-        <div
-          style={{
-            width: containerWidth,
-            height: "100%",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        {!loading && pageLayout && (
           <div
             style={{
+              width: containerWidth,
+              height: "100%",
               position: "relative",
-              width: "100%",
-              height: containerHeight,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "visible",
             }}
           >
-            {pageLayout.lines.map((line) => {
-              const isCenteredLine =
-                line.isCentered ||
-                CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
+            <div
+              style={{
+                position: "relative",
+                width: "100%",
+                height: containerHeight,
+              }}
+            >
+              {pageLayout.lines.map((line) => {
+                const isCenteredLine =
+                  line.isCentered ||
+                  CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
 
-              return (
-                <Line
-                  key={line.lineNumber}
-                  line={line}
-                  isCenteredLine={isCenteredLine}
-                  theme={theme}
-                  fontSizeSurahHeader={fontSizeSurahHeader}
-                  fontSizeWord={fontSizeWord}
-                  bismillahWords={bismillahWords}
-                  mushafLayout={mushafLayout}
-                  lineHeight={line.height || pageLayout.metrics.lineHeight}
-                  onWordClick={onWordClick}
-                  surahNumberToFontCode={surahNumberToFontCode}
-                  getSurahFrameUrl={getSurahFrameUrl}
-                />
-              );
-            })}
+                return (
+                  <Line
+                    key={line.lineNumber}
+                    line={line}
+                    isCenteredLine={isCenteredLine}
+                    theme={theme}
+                    fontSizeSurahHeader={fontSizeSurahHeader}
+                    fontSizeWord={fontSizeWord}
+                    bismillahWords={bismillahWords}
+                    mushafLayout={mushafLayout}
+                    lineHeight={line.height || pageLayout.metrics.lineHeight}
+                    onWordClick={onWordClick}
+                    surahNumberToFontCode={surahNumberToFontCode}
+                    getSurahFrameUrl={getSurahFrameUrl}
+                  />
+                );
+              })}
+            </div>
+            <NavigationControls
+              currentPage={currentPage}
+              totalPages={604}
+              onNext={handleNextPage}
+              onPrev={handlePrevPage}
+              onGoTo={handleGoToPage}
+              theme={theme}
+              width={containerWidth}
+            />
           </div>
-          <NavigationControls
-            currentPage={currentPage}
-            totalPages={604}
-            onNext={handleNextPage}
-            onPrev={handlePrevPage}
-            onGoTo={handleGoToPage}
-            theme={theme}
-            width={containerWidth}
-          />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
