@@ -133,33 +133,42 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         height,
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
         position: "relative",
-        overflow: "hidden",
         fontFamily: "system-ui, -apple-system, sans-serif",
         direction: "rtl",
       }}
     >
-      {loading && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            color: theme === "dark" ? "#fff" : "#333",
-          }}
-        >
-          جاري التحميل...
-        </div>
-      )}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "relative",
+          overflowY: "hidden",
+          overflowX: "visible",
+        }}
+      >
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              color: theme === "dark" ? "#fff" : "#333",
+            }}
+          >
+            جاري التحميل...
+          </div>
+        )}
 
-      {!loading && pageLayout && (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "relative",
-          }}
-        >
+        {!loading && pageLayout && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "relative",
+              overflow: "visible",
+            }}
+          >
           {pageLayout.lines.map((line) => {
             const isCenteredLine =
               line.isCentered || CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
@@ -291,6 +300,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
           })}
         </div>
       )}
+      </div>
 
       <NavigationControls
         currentPage={currentPage}
