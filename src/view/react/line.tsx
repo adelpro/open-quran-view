@@ -1,5 +1,11 @@
 import { CSSProperties, KeyboardEvent, MouseEvent } from "react";
-import type { LineLayout, MushafLayout, Word, WordLayout } from "../../core";
+import type {
+  LineLayout,
+  MushafLayout,
+  Word,
+  WordLayout,
+  WordClickedData,
+} from "../../core";
 
 type Props = {
   line: LineLayout;
@@ -10,11 +16,7 @@ type Props = {
   bismillahWords: Word[];
   mushafLayout: MushafLayout;
   lineHeight: number;
-  onWordClick?: (word: {
-    id: number;
-    surahNumber?: number;
-    ayahNumber?: number;
-  }) => void;
+  onWordClick?: (word: WordClickedData) => void;
   surahNumberToFontCode: (surahNumber: number) => string;
   getSurahFrameUrl: () => string;
 };
@@ -35,6 +37,9 @@ export default function Line({
       id: word.id,
       surahNumber: word.surah,
       ayahNumber: word.verse,
+      position: word.position,
+      text: word.text,
+      charType: word.charType,
     });
   };
 
@@ -117,6 +122,9 @@ export default function Line({
           id: word.id,
           surahNumber: 1,
           ayahNumber: 0,
+          position: word.position,
+          text: word.text,
+          charType: word.charType,
         })
       }
       onKeyDown={(event) => {
@@ -126,6 +134,9 @@ export default function Line({
             id: word.id,
             surahNumber: 1,
             ayahNumber: 0,
+            position: word.position,
+            text: word.text,
+            charType: word.charType,
           });
         }
       }}

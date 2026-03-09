@@ -12,6 +12,21 @@ declare global {
 
 import { registerOpenQuranView } from "open-quran-view/view/web";
 
+interface WordTafseer {
+  text: string;
+  tafseer: string;
+  verse: number;
+  surah: number;
+}
+
+interface VerseTafseer {
+  tafseer: string;
+  verse: number;
+  surah: number;
+}
+
+type WordMap = Record<string, WordTafseer | VerseTafseer>;
+
 registerOpenQuranView();
 
 const viewer = document.getElementById("quran-viewer") as OpenQuranViewElement;
@@ -26,6 +41,32 @@ const goBtn = document.getElementById("go-btn") as HTMLButtonElement;
 const prevBtn = document.getElementById("prev-btn") as HTMLButtonElement;
 const nextBtn = document.getElementById("next-btn") as HTMLButtonElement;
 const wordInfo = document.getElementById("word-info") as HTMLDivElement;
+const tafseerDialog = document.getElementById(
+  "tafseer-dialog",
+) as HTMLDialogElement;
+const tafseerContent = document.getElementById(
+  "tafseer-content",
+) as HTMLDivElement;
+
+let quranWords: WordMap = {};
+
+fetch("/data/tafseers/quran-words.json")
+  .then((res) => res.json())
+  .then((data) => {
+    quranWords = data as WordMap;
+  })
+  .catch(console.error);
+
+function closeTafseerDialog() {
+  tafseerDialog.close();
+  tafseerContent.innerHTML = "";
+}
+
+tafseerDialog.addEventListener("click", (e) => {
+  if (e.target === tafseerDialog) {
+    closeTafseerDialog();
+  }
+});
 
 goBtn.addEventListener("click", () => {
   const page = parseInt(pageInput.value, 10);
@@ -72,7 +113,57 @@ viewer.addEventListener("wordclick", (e: Event) => {
     id: number;
     surahNumber?: number;
     ayahNumber?: number;
+    position?: number;
+    text?: string;
+    charType?: string;
   };
+
+  if (detail.charType === "end") {
+    const verseKey = `${detail.surahNumber}:${detail.ayahNumber}`;
+    const verseTafseer = quranWords[verseKey] as VerseTafseer | undefined;
+    if (verseTafseer) {
+      tafseerContent.innerHTML = `
+        <div class="tafseer-header">
+          <span class="tafseer-surah">سورة ${verseTafseer.surah}</span>
+          <span class="tafseer-verse">آية ${verseTafseer.verse}</span>
+        </div>
+        <div class="tafseer-text">${verseTafseer.tafseer}</div>
+        <div class="tafseer-actions">
+          <button class="tafseer-close" id="tafseer-close-btn">إغلاق</button>
+        </div>
+      `;
+      tafseerDialog.showModal();
+      document
+        .getElementById("tafseer-close-btn")
+        ?.addEventListener("click", closeTafseerDialog);
+    }
+    return;
+  }
+
+  if (detail.charType === "word" && detail.position) {
+    const wordKey = `${detail.surahNumber}:${detail.ayahNumber}:${detail.position}`;
+    const wordTafseer = quranWords[wordKey] as WordTafseer | undefined;
+    if (wordTafseer) {
+      tafseerContent.innerHTML = `
+        <div class="tafseer-header">
+          <span class="tafseer-surah">سورة ${wordTafseer.surah}</span>
+          <span class="tafseer-position">الموقع - ${detail.position}</span>
+          <span class="tafseer-verse">آية ${wordTafseer.verse}</span>
+        </div>
+        <div class="tafseer-word">${wordTafseer.text}</div>
+        <div class="tafseer-text">${wordTafseer.tafseer}</div>
+        <div class="tafseer-actions">
+          <button class="tafseer-close" id="tafseer-close-btn">إغلاق</button>
+        </div>
+      `;
+      tafseerDialog.showModal();
+      document
+        .getElementById("tafseer-close-btn")
+        ?.addEventListener("click", closeTafseerDialog);
+    }
+    return;
+  }
+
   wordInfo.innerHTML = `
     <strong>Word Clicked:</strong><br>
     ID: ${detail.id} | Surah: ${detail.surahNumber ?? "N/A"} | Ayah: ${detail.ayahNumber ?? "N/A"}

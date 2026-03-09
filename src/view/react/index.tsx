@@ -12,6 +12,7 @@ import {
   type MushafLayout,
   type PageLayout,
   type Word,
+  type WordClickedData,
 } from "../../core";
 import { NavigationControls } from "./navigation-controls";
 import Line from "./line";
@@ -26,7 +27,7 @@ const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>(
   CENTERED_PAGES_HORIZONTAL,
 );
 
-export type { MushafLayout, PageLayout } from "../../core";
+export type { MushafLayout, PageLayout, WordClickedData } from "../../core";
 
 export type OpenQuranViewProps = {
   page?: number;
@@ -36,11 +37,7 @@ export type OpenQuranViewProps = {
   mushafLayout?: MushafLayout;
   onPageChange?: (page: number) => void;
   onLoad?: (layout: PageLayout) => void;
-  onWordClick?: (word: {
-    id: number;
-    surahNumber?: number;
-    ayahNumber?: number;
-  }) => void;
+  onWordClick?: (word: WordClickedData) => void;
   className?: string;
 };
 

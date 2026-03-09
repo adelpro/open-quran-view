@@ -81,6 +81,99 @@
             border-radius: 8px;
             overflow: hidden;
         }
+
+        .tafseer-dialog {
+            border: none;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.8);
+            color: #1a1a2e;
+            margin: auto;
+        }
+
+        .tafseer-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .tafseer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .tafseer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .tafseer-surah,
+        .tafseer-verse {
+            font-weight: 600;
+            font-size: 14px;
+            color: #6366f1;
+            flex: 1;
+        }
+
+        .tafseer-surah {
+            text-align: left;
+        }
+
+        .tafseer-verse {
+            text-align: right;
+        }
+
+        .tafseer-position {
+            font-weight: 600;
+            font-size: 14px;
+            color: #6366f1;
+            text-align: center;
+        }
+
+        .tafseer-word {
+            font-size: 24px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: "DigitalKhatt", "Scheherazade New", "Amiri", system-ui, sans-serif;
+        }
+
+        .tafseer-text {
+            font-size: 16px;
+            line-height: 1.8;
+            text-align: right;
+            overflow-y: auto;
+        }
+
+        .tafseer-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+        }
+
+        .tafseer-close {
+            padding: 10px 32px;
+            border: none;
+            border-radius: 12px;
+            background: #1a1a1a;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tafseer-close:hover {
+            background: #333;
+        }
     </style>
 </head>
 
@@ -117,6 +210,10 @@
 
         <open-quran-view id="quran-viewer" page="1" mushaf-layout="hafs-v2" width="600" height="850" theme="light">
         </open-quran-view>
+
+        <dialog id="tafseer-dialog" class="tafseer-dialog">
+            <div class="tafseer-content" id="tafseer-content"></div>
+        </dialog>
     </div>
 
     <script type="module" src="/main.ts"></script>

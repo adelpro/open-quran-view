@@ -21,6 +21,15 @@ export type Word = {
   charType: CharType;
 } & WordLocation;
 
+export type WordClickedData = {
+  id: number;
+  surahNumber: number;
+  ayahNumber: number;
+  position: number;
+  text: string;
+  charType: CharType;
+};
+
 export type LineMetadata = {
   verseId: number;
   verseKey: string;
