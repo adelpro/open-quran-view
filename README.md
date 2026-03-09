@@ -221,13 +221,13 @@ See [`docs/`](docs/) directory for:
 
 | Script | Description |
 |--------|-------------|
-| `pnpm generate:all` | Download fonts + fetch data + generate all static assets |
-| `pnpm generate:static:fonts` | Download fonts from Quran Foundation API and generate font URLs |
-| `pnpm generate:static:data` | Fetch Quran data from Quran Foundation API and generate page layouts |
-| `pnpm build` | Build the package |
-| `pnpm prepare` | Auto-generate + build on install |
-| `pnpm test` | Run tests |
-| `pnpm lint` | Lint code |
+| `yarn generate:all` | Download fonts + fetch data + generate all static assets |
+| `yarn generate:static:fonts` | Download fonts from Quran Foundation API and generate font URLs |
+| `yarn generate:static:data` | Fetch Quran data from Quran Foundation API and generate page layouts |
+| `yarn build` | Build the package |
+| `yarn prepare` | Auto-generate + build on install |
+| `yarn test` | Run tests |
+| `yarn lint` | Lint code |
 
 ---
 
@@ -235,18 +235,18 @@ See [`docs/`](docs/) directory for:
 
 ```bash
 # Install dependencies
-pnpm install
+yarn install
 
 # Generate static assets
-pnpm run generate:all
+yarn generate:all
 
 # Build package
-pnpm run build
+yarn build
 
 # Run development playground
-pnpm run playground:setup
-pnpm run playground:react
-pnpm run playground:web
+yarn playground:setup
+yarn playground:react
+yarn playground:web
 ```
 
 ---

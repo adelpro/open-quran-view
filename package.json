@@ -34,14 +34,18 @@
     "generate:fonts": "tsx scripts/download-fonts.ts",
     "generate:static:fonts": "tsx scripts/generate-static-fonts.ts",
     "generate:static:data": "tsx scripts/generate-static-data.ts",
-    "generate:static": "npm run generate:static:fonts && npm run generate:static:data",
-    "playground:install": "pnpm install",
-    "playground:build": "pnpm build",
-    "playground:setup": "pnpm playground:install && pnpm playground:build",
-    "playground:react": "pnpm --filter vite-react dev",
-    "playground:web": "pnpm --filter vite-typescript dev",
+    "generate:static": "yarn generate:static:fonts && yarn generate:static:data",
+    "playground:install": "yarn install",
+    "playground:build": "yarn build",
+    "playground:setup": "yarn playground:install && yarn playground:build",
+    "playground:react": "yarn workspace vite-react dev",
+    "playground:web": "yarn workspace vite-typescript dev",
     "publish": "npm publish"
   },
+  "workspaces": [
+    "playground/*",
+    "."
+  ],
   "peerDependencies": {
     "react": ">=18"
   },
@@ -91,5 +95,5 @@
   ],
   "author": "adelpro <adelpro@github.com>",
   "license": "MIT",
-  "packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268"
+  "packageManager": "yarn@4.13.0+sha512.5c20ba010c99815433e5c8453112165e673f1c7948d8d2b267f4b5e52097538658388ebc9f9580656d9b75c5cc996f990f611f99304a2197d4c56d21eea370e7"
 }

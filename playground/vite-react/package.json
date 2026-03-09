@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "open-quran-view": "workspace:*",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "open-quran-view": "workspace:*"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

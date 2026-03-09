@@ -101,15 +101,15 @@ open-quran-view/
 
 | Script | Description |
 |--------|-------------|
-| `pnpm generate:all` | Generate all data (metadata, pages, fonts, static assets) |
-| `pnpm generate:pages` | Generate page data from Quran Foundation API |
-| `pnpm generate:metadata` | Generate surah and juz metadata |
-| `pnpm generate:fonts` | Download fonts from verses.quran.foundation |
-| `pnpm generate:static:fonts` | Generate static font URLs |
-| `pnpm generate:static:data` | Generate static data URLs |
-| `pnpm generate:static` | Generate both static fonts and data URLs |
-| `pnpm build` | Build the package |
-| `pnpm prepare` | Auto-generate + build on install |
+| `yarn generate:all` | Generate all data (metadata, pages, fonts, static assets) |
+| `yarn generate:pages` | Generate page data from Quran Foundation API |
+| `yarn generate:metadata` | Generate surah and juz metadata |
+| `yarn generate:fonts` | Download fonts from verses.quran.foundation |
+| `yarn generate:static:fonts` | Generate static font URLs |
+| `yarn generate:static:data` | Generate static data URLs |
+| `yarn generate:static` | Generate both static fonts and data URLs |
+| `yarn build` | Build the package |
+| `yarn prepare` | Auto-generate + build on install |
 
 See [Static Assets Architecture](architecture/static-assets.md) for details.
 

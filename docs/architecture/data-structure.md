@@ -46,7 +46,7 @@ open-quran-view/
 ├── playground/                   # Development playground
 ├── dist/                         # Build output (generated)
 ├── package.json
-├── pnpm-workspace.yaml
+├── .yarnrc.yml
 ├── tsconfig.json
 ├── vitest.config.ts
 └── README.md

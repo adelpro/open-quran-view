@@ -111,10 +111,10 @@ export function getSurahNameFontUrl(): string
 
 | Script | Description |
 |--------|-------------|
-| `pnpm generate:static:fonts` | Generates `fonts.ts` from `data/fonts/` |
-| `pnpm generate:static:data` | Generates `data.ts` from `data/` |
-| `pnpm generate:all` | Runs all generation scripts |
-| `pnpm prepare` | Auto-generates + builds on `pnpm install` |
+| `yarn generate:static:fonts` | Generates `fonts.ts` from `data/fonts/` |
+| `yarn generate:static:data` | Generates `data.ts` from `data/` |
+| `yarn generate:all` | Runs all generation scripts |
+| `yarn prepare` | Auto-generates + builds on `yarn install` |
 
 ## Build Output
 
@@ -154,8 +154,8 @@ Ensure `prepare` script ran during installation:
 
 ```bash
 # If fonts are missing, regenerate manually
-pnpm run generate:static
-pnpm run build
+yarn generate:static
+yarn build
 ```
 
 ### 404 on Font Files
@@ -167,8 +167,8 @@ Verify `dist/data/fonts/` exists and contains font files. The build process shou
 Static assets are tied to the package version. After upgrading, reinstall:
 
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+rm -rf node_modules yarn.lock
+yarn install
 ```
 
 ## Related Files

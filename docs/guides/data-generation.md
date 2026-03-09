@@ -51,7 +51,7 @@ QURAN_CLIENT_SECRET=your_client_secret
 ### Install Dependencies
 
 ```bash
-pnpm install
+yarn install
 ```
 
 ---
@@ -63,7 +63,7 @@ pnpm install
 Generates surah and juz metadata from the Quran Foundation API.
 
 ```bash
-pnpm run generate:metadata
+yarn generate:metadata
 ```
 
 **Output:**
@@ -79,7 +79,7 @@ src/data/metadata/
 Generates page data for all three Mushaf layouts from the Quran Foundation API.
 
 ```bash
-pnpm run generate:pages
+yarn generate:pages
 ```
 
 **Mushaf Configurations:**
@@ -104,7 +104,7 @@ src/data/pages/
 Downloads page-specific Quranic fonts from verses.quran.foundation.
 
 ```bash
-pnpm run generate:fonts
+yarn generate:fonts
 ```
 
 **Font Sources:**
@@ -179,7 +179,7 @@ tsx scripts/download-fonts.ts
 Creates static font URL mappings.
 
 ```bash
-pnpm run generate:static:fonts
+yarn generate:static:fonts
 # or
 tsx scripts/generate-static-fonts.ts
 ```
@@ -195,7 +195,7 @@ tsx scripts/generate-static-fonts.ts
 Creates static data URL mappings.
 
 ```bash
-pnpm run generate:static:data
+yarn generate:static:data
 # or
 tsx scripts/generate-static-data.ts
 ```
@@ -215,7 +215,7 @@ Static assets are pre-generated URLs that work reliably at runtime.
 ### Run Both Static Generators
 
 ```bash
-pnpm run generate:static
+yarn generate:static
 ```
 
 This runs:
@@ -266,46 +266,46 @@ export const staticData = {
 
 ```bash
 # 1. Install dependencies
-pnpm install
+yarn install
 
 # 2. Generate all data (metadata + pages + fonts)
-pnpm run generate:all
+yarn generate:all
 
 # 3. Generate static assets
-pnpm run generate:static
+yarn generate:static
 
 # 4. Build the package
-pnpm build
+yarn build
 ```
 
 ### Automated (on install)
 
 ```bash
-pnpm install
+yarn install
 ```
 
 The `prepare` script runs automatically:
 
-- `pnpm run generate:all`
-- `pnpm run build`
+- `yarn generate:all`
+- `yarn build`
 
 ### Manual Step-by-Step
 
 ```bash
 # Step 1: Generate metadata
-pnpm run generate:metadata
+yarn generate:metadata
 
 # Step 2: Generate page data
-pnpm run generate:pages
+yarn generate:pages
 
 # Step 3: Download fonts
-pnpm run generate:fonts
+yarn generate:fonts
 
 # Step 4: Generate static assets
-pnpm run generate:static
+yarn generate:static
 
 # Step 5: Build
-pnpm build
+yarn build
 ```
 
 ---
@@ -346,7 +346,7 @@ echo "QURAN_CLIENT_SECRET=your_secret" >> .env
 Re-run to download missing fonts:
 
 ```bash
-pnpm run generate:fonts
+yarn generate:fonts
 ```
 
 ### Generated files not found at runtime
@@ -356,7 +356,7 @@ pnpm run generate:fonts
 **Solution:** Run static asset generation:
 
 ```bash
-pnpm run generate:static
+yarn generate:static
 ```
 
 ---

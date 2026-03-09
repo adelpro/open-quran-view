@@ -236,7 +236,7 @@ Quran Foundation API
 ### Step 1: Fetch Metadata
 
 ```bash
-pnpm run generate:metadata
+yarn generate:metadata
 ```
 
 Generates:
@@ -259,7 +259,7 @@ Generates:
 ### Step 2: Fetch Page Data
 
 ```bash
-pnpm run generate:pages
+yarn generate:pages
 ```
 
 For each mushaf, fetches all 604 pages with word-level data.
@@ -267,7 +267,7 @@ For each mushaf, fetches all 604 pages with word-level data.
 ### Step 3: Download Fonts
 
 ```bash
-pnpm run generate:fonts
+yarn generate:fonts
 ```
 
 Downloads fonts from:
@@ -278,7 +278,7 @@ Downloads fonts from:
 ### Step 4: Generate Static Assets
 
 ```bash
-pnpm run generate:static
+yarn generate:static
 ```
 
 Creates TypeScript files with pre-resolved URLs:
@@ -651,7 +651,7 @@ When developers install the package, they need fonts and data. We solved this wi
 ```json
 {
   "scripts": {
-    "prepare": "tsx scripts/generate-all.ts && pnpm run build"
+    "prepare": "tsx scripts/generate-all.ts && yarn build"
   }
 }
 ```
@@ -794,7 +794,7 @@ The project uses PNPM workspaces for efficient dependency management:
 ```
 open-quran-view/
 ├── package.json              # Root workspace config
-├── pnpm-workspace.yaml      # PNPM workspace definition
+├── .yarnrc.yml             # Yarn workspace definition
 ├── packages/                # (Future) Separate publishable packages
 ├── playground/              # Development playgrounds
 │   ├── vite-react/         # React playground
@@ -806,7 +806,7 @@ open-quran-view/
 Benefits:
 
 - Shared dependencies across playgrounds
-- Fast installs with PNPM's content-addressable storage
+- Fast installs with Yarn workspaces
 - Easy to add new packages (e.g., open-quran-view/core, open-quran-view/react)
 
 ### TypeScript First
@@ -865,9 +865,9 @@ Benefits:
 The project includes live playgrounds for testing during development:
 
 ```bash
-pnpm run playground:setup   # Install dependencies for playgrounds
-pnpm run playground:react   # Run React playground (localhost:5173)
-pnpm run playground:web    # Run Web Component playground (localhost:5174)
+yarn playground:setup   # Install dependencies for playgrounds
+yarn playground:react   # Run React playground (localhost:5173)
+yarn playground:web    # Run Web Component playground (localhost:5174)
 ```
 
 The playgrounds:
@@ -882,9 +882,9 @@ The playgrounds:
 We use [Vitest](https://vitest.dev/) for fast, modern testing:
 
 ```bash
-pnpm run test              # Run all tests
-pnpm run test:watch        # Watch mode for TDD
-pnpm run test:coverage     # Coverage report
+yarn test              # Run all tests
+yarn test:watch        # Watch mode for TDD
+yarn test:coverage     # Coverage report
 ```
 
 Test categories:
@@ -927,24 +927,24 @@ describe('DataLoader', () => {
 # 1. Clone and install
 git clone https://github.com/your-org/open-quran-view.git
 cd open-quran-view
-pnpm install
+yarn install
 
 # 2. Generate data (requires API credentials)
 cp .env.example .env
 # Add QURAN_CLIENT_ID and QURAN_CLIENT_SECRET
-pnpm run generate:all
+yarn generate:all
 
 # 3. Start development
-pnpm run playground:react
+yarn playground:react
 
 # 4. Make changes to src/
 # Playground hot-reloads automatically
 
 # 5. Test your changes
-pnpm run test
+yarn test
 
 # 6. Build for release
-pnpm run build
+yarn build
 ```
 
 ### CI/CD Pipeline
@@ -962,16 +962,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-      - run: pnpm install
-      - run: pnpm run generate:all
-      - run: pnpm run test
-      - run: pnpm run lint
-      - run: pnpm run build
+          cache: yarn
+      - run: yarn install
+      - run: yarn generate:all
+      - run: yarn test
+      - run: yarn lint
+      - run: yarn build
 ```
 
 ---
