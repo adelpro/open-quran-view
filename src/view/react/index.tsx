@@ -179,6 +179,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
               position: "relative",
               width: "100%",
               height: containerHeight,
+              overflow: "hidden",
             }}
           >
             {pageLayout.lines.map((line) => {

@@ -58,6 +58,7 @@ export default function Line({
     padding: "1px",
     justifyContent: isCenteredLine ? "center" : "space-between",
     gap: "1px",
+    overflow: "hidden",
   };
 
   const getWordStyle = (isAyahEnd: boolean): CSSProperties => ({
@@ -74,13 +75,14 @@ export default function Line({
     height: lineHeight,
     lineHeight: `${lineHeight}px`,
     verticalAlign: "middle",
-    minWidth: "auto",
     width: "auto",
     cursor: "pointer",
-    padding: isAyahEnd ? "0px" : "2px 4px",
+    padding: isAyahEnd ? "0px" : "1px 4px",
+    margin: isAyahEnd ? "0px 8px" : "0px",
     borderRadius: 4,
     transition: "background 0.2s",
-    flexShrink: 0,
+    flexShrink: 1,
+    minWidth: 0,
   });
 
   const handleMouseEnter = (event: MouseEvent<HTMLSpanElement>) => {
@@ -177,11 +179,12 @@ export default function Line({
         left: 0,
         right: 0,
         height: lineHeight,
-        top: line.y - lineHeight / 2,
+        top: Math.max(0, line.y - lineHeight / 2),
         display: "flex",
         alignItems: "center",
-        justifyContent: isCenteredLine ? "center" : "flex-end",
-        padding: "2px",
+        justifyContent: isCenteredLine ? "center" : "space-between",
+        padding: "1px",
+        overflow: "hidden",
       }}
     >
       {line.lineType === "header" ? (
