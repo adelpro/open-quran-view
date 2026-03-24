@@ -18,6 +18,8 @@ High-performance universal Quran rendering library using Quran Foundation API.
 - **Universal Views** - React component and Vanilla Web Component with consistent API.
 - **TypeScript First** - Built with TypeScript for a robust development experience.
 - **Static Assets** - Self-contained fonts and metadata included in package.
+- **Word-Level Interactivity** - Click on words for tafseer and explanations.
+- **Multiple Mushaf Layouts** - Support for Hafs V2, Hafs V4, and Hafs Unicode.
 
 ---
 
