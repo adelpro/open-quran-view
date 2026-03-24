@@ -31,6 +31,8 @@ export default function Line({
   lineHeight,
   onWordClick,
   surahNumberToFontCode,
+  getSurahFrameUrl,
+  fontSizeSurahHeader,
 }: Props) {
   const handleWordClick = (word: WordLayout) => {
     onWordClick?.({
@@ -188,38 +190,46 @@ export default function Line({
       }}
     >
       {line.lineType === "header" ? (
-        (() => {
-          const headerFontSize = Math.min(42, Math.max(16, lineHeight - 10));
-          const headerLineHeight = Math.max(12, lineHeight - 4);
-          return (
-            <div
-              style={{
-                fontSize: headerFontSize,
-                fontWeight: "bold",
-                color: theme === "dark" ? "#fff" : "#2c3e50",
-                fontFamily:
-                  '"SurahNameFont", system-ui, -apple-system, sans-serif',
-                textAlign: "center",
-                width: "100%",
-                boxSizing: "border-box",
-                paddingInline: "12px",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: `2px solid ${theme === "dark" ? "#fff" : "#2c3e50"}`,
-                height: lineHeight,
-                lineHeight: `${headerLineHeight}px`,
-                margin: 0,
-                paddingBlock: 0,
-              }}
-            >
-              {line.surahNumber
-                ? surahNumberToFontCode(line.surahNumber)
-                : "surah000"}
-            </div>
-          );
-        })()
+        <div
+          style={{
+            position: "relative",
+            width: "100%",
+            height: lineHeight,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={getSurahFrameUrl()}
+            alt=""
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: theme === "dark" ? 0.8 : 1,
+            }}
+          />
+          <span
+            style={{
+              position: "relative",
+              zIndex: 1,
+              fontSize: fontSizeSurahHeader,
+              fontWeight: "bold",
+              color: theme === "dark" ? "#fff" : "#2c3e50",
+              fontFamily:
+                '"SurahNameFont", system-ui, -apple-system, sans-serif',
+              textAlign: "center",
+            }}
+          >
+            {line.surahNumber
+              ? surahNumberToFontCode(line.surahNumber)
+              : "surah000"}
+          </span>
+        </div>
       ) : line.lineType === "bismillah" ? (
         <div style={wordContainerStyle}>
           {bismillahWords.map(renderBismillahWord)}
