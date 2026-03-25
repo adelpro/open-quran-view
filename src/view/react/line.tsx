@@ -190,36 +190,27 @@ export default function Line({
       }}
     >
       {line.lineType === "header" ? (
-        <div
+        <span
           style={{
             position: "relative",
             width: "100%",
-            height: lineHeight,
+            height: "auto",
+            marginTop: 5,
+            marginBottom: 5,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            backgroundImage: `url(${getSurahFrameUrl()})`,
+            backgroundSize: "100% 100%",
           }}
         >
-          <img
-            src={getSurahFrameUrl()}
-            alt=""
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              opacity: theme === "dark" ? 0.8 : 1,
-            }}
-          />
           <span
             style={{
               position: "relative",
               zIndex: 1,
               fontSize: fontSizeSurahHeader,
               fontWeight: "bold",
-              color: theme === "dark" ? "#fff" : "#2c3e50",
+              color: theme === "dark" ? "#2c3e50" : "#2c3e50",
               fontFamily:
                 '"SurahNameFont", system-ui, -apple-system, sans-serif',
               textAlign: "center",
@@ -229,7 +220,7 @@ export default function Line({
               ? surahNumberToFontCode(line.surahNumber)
               : "surah000"}
           </span>
-        </div>
+        </span>
       ) : line.lineType === "bismillah" ? (
         <div style={wordContainerStyle}>
           {bismillahWords.map(renderBismillahWord)}

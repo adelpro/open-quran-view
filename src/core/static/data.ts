@@ -18,10 +18,8 @@ export const staticData = {
       .href,
   },
   assets: {
-    surahFrame: new URL(
-      "../../data/assets/surah-frame-sides.svg",
-      import.meta.url,
-    ).href,
+    surahFrame: new URL("../../data/assets/surah-frame.svg", import.meta.url)
+      .href,
   },
 } as const;
 
