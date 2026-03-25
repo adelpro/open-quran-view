@@ -195,8 +195,6 @@ export default function Line({
             position: "relative",
             width: "100%",
             height: "auto",
-            marginTop: 5,
-            marginBottom: 5,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
