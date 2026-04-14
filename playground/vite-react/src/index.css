@@ -18,8 +18,6 @@
 body {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
   padding: 0;
   margin: 0;
 }
@@ -27,6 +25,8 @@ body {
 #root {
   width: 100%;
   max-width: 100%;
+  display: flex;
+  flex: 1;
   padding: 0;
   margin: 0;
 }

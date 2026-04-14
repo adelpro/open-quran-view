@@ -16,9 +16,11 @@ type Props = {
   bismillahWords: Word[];
   mushafLayout: MushafLayout;
   lineHeight: number;
-  onWordClick?: (word: WordClickedData) => void;
   surahNumberToFontCode: (surahNumber: number) => string;
   getSurahFrameUrl: () => string;
+  paddingLeft: number;
+  paddingRight: number;
+  onWordClick?: (word: WordClickedData) => void;
 };
 
 export default function Line({
@@ -33,6 +35,8 @@ export default function Line({
   surahNumberToFontCode,
   getSurahFrameUrl,
   fontSizeSurahHeader,
+  paddingLeft,
+  paddingRight,
 }: Props) {
   const handleWordClick = (word: WordLayout) => {
     onWordClick?.({
@@ -178,8 +182,8 @@ export default function Line({
     <div
       style={{
         position: "absolute",
-        left: 0,
-        right: 0,
+        left: paddingLeft,
+        right: paddingRight,
         height: lineHeight,
         top: Math.max(0, line.y - lineHeight / 2),
         display: "flex",
@@ -187,6 +191,7 @@ export default function Line({
         justifyContent: isCenteredLine ? "center" : "space-between",
         padding: "1px",
         overflow: "hidden",
+        border: "1px solid blue",
       }}
     >
       {line.lineType === "header" ? (

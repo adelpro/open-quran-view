@@ -50,13 +50,17 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
 } {
   const pageWidth = options.pageWidth;
   const pageHeight = options.pageHeight;
-  const fontSize = options.fontSize || 24;
-  const lineHeight = options.lineHeight || fontSize * 1.5;
 
   const paddingTop = pageHeight * 0.05;
   const paddingBottom = Math.max(pageHeight * 0.05, NAV_BAR_MIN_HEIGHT);
   const paddingLeft = pageWidth * 0.08;
   const paddingRight = pageWidth * 0.08;
+
+  const availableHeight = Math.max(0, pageHeight - paddingTop - paddingBottom);
+  // Al-Madinah Mushaf standard is 15 lines per page
+  const computedLineHeight = availableHeight / 15;
+  const lineHeight = options.lineHeight || computedLineHeight;
+  const fontSize = options.fontSize || lineHeight / 1.5;
 
   const metrics: PageMetrics = {
     lineHeight,

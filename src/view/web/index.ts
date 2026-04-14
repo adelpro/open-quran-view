@@ -280,21 +280,25 @@ export class OpenQuranView extends HTMLElement {
   }
 
   private async initialize(): Promise<void> {
-    const width = parseInt(this.getAttribute("width") || "600", 10);
-    const height = parseInt(this.getAttribute("height") || "850", 10);
+    const widthAttr = this.getAttribute("width");
+    const heightAttr = this.getAttribute("height");
     const theme = (this.getAttribute("theme") || "light") as "light" | "dark";
     const mushafLayout = this.getAttribute(
       "mushaf-layout",
     ) as MushafLayout | null;
     this.layout = mushafLayout || "hafs-v2";
 
+    const width = widthAttr ? parseInt(widthAttr, 10) : 600;
+    const height = heightAttr ? parseInt(heightAttr, 10) : this.clientHeight || 850;
+
+    this.container.style.width = widthAttr ? `${width}px` : "100%";
+    this.container.style.height = heightAttr ? `${height}px` : "100%";
+    
     this.calculator = createLayoutCalculator({
-      pageWidth: width,
+      pageWidth: widthAttr ? width : height * 0.7,
       pageHeight: height,
     });
 
-    this.container.style.width = `${width}px`;
-    this.container.style.height = `${height}px`;
     this.updateTheme(theme);
 
     await this.loadFont();
@@ -308,6 +312,30 @@ export class OpenQuranView extends HTMLElement {
     } catch (error) {
       this.loading.textContent = "فشل في تحميل البيانات";
       console.error("Failed to initialize:", error);
+    }
+
+    if (!heightAttr) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+           const rect = entry.contentRect;
+           if (rect.height > 0) {
+             let newHeight = rect.height;
+             let newWidth = widthAttr ? width : newHeight * 0.7;
+
+             if (!widthAttr && rect.width > 0 && newHeight * 0.7 > rect.width) {
+                newHeight = rect.width / 0.7;
+                newWidth = rect.width;
+             }
+
+             this.calculator = createLayoutCalculator({
+                pageWidth: newWidth,
+                pageHeight: newHeight,
+             });
+             this.renderPage();
+           }
+        }
+      });
+      resizeObserver.observe(this);
     }
   }
 

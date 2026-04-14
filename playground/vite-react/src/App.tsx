@@ -276,7 +276,6 @@ function App() {
         {/* width, default to 0.7 of the height */}
         <OpenQuranView
           page={page}
-          height={600}
           theme={theme}
           mushafLayout={mushafLayout}
           onPageChange={handlePageChange}

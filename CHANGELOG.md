@@ -8,6 +8,12 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ### Added
 
+- Fullscreen mode for immersive Quran reading experience
+  - Fullscreen toggle button in navigation controls with expand/collapse icons
+  - Keyboard shortcut: press `F` to toggle fullscreen
+  - Auto-hide navigation controls after 3 seconds of inactivity in fullscreen
+  - Show controls on mouse move with smooth fade animation
+  - Arrow key navigation (← → for prev/next page)
 - Word and verse tafseer (explanation) display on word click
 - Script to scrape Quran word-level tafseer and align it with pages.json
 

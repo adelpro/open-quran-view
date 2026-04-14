@@ -39,6 +39,8 @@ export type OpenQuranViewProps = {
   onLoad?: (layout: PageLayout) => void;
   onWordClick?: (word: WordClickedData) => void;
   className?: string;
+  fullscreen?: boolean;
+  onFullscreenToggle?: (isFullscreen: boolean) => void;
 };
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
@@ -50,7 +52,13 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   onLoad,
   onWordClick,
   className,
+  fullscreen = false,
+  onFullscreenToggle,
 }: OpenQuranViewProps) => {
+  // The official Al-Madinah Mushaf standard medium edition measures ~14x20 cm.
+  // 14 / 20 = 0.7, giving a ratio of 1:1.43.
+  // Other editions include Large/Premium (~20x28 cm, 0.71 ratio) and Travel/Small (~11.5x18.7 cm, ~0.61 ratio).
+  // We use 0.7 to best match the most common widespread physical edition.
   const MUSHAF_RATIO = 0.7;
   const containerRef = useRef<HTMLDivElement>(null);
   const layoutRef = useRef<MushafLayout>(mushafLayout);
@@ -63,15 +71,96 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
   const [containerHeight, setContainerHeight] = useState(height || 800);
   const [bismillahWords, setBismillahWords] = useState<Word[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(fullscreen);
+  const [showControls, setShowControls] = useState(true);
+  const hideControlsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (height) setContainerHeight(height);
-  }, [height]);
+    if (height && !isFullscreen) {
+      setContainerHeight(height);
+      return;
+    }
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const rect = entry.contentRect;
+        if (rect.height > 0) {
+          // Keep it constrained to available width if needed to prevent horizontal overflow
+          if (rect.width > 0 && rect.height * MUSHAF_RATIO > rect.width) {
+            setContainerHeight(rect.width / MUSHAF_RATIO);
+          } else {
+            setContainerHeight(rect.height);
+          }
+        }
+      }
+    });
+
+    resizeObserver.observe(container);
+    return () => resizeObserver.disconnect();
+  }, [height, isFullscreen]);
+
+  const handleFullscreenToggle = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      container
+        .requestFullscreen()
+        .then(() => {
+          setIsFullscreen(true);
+          onFullscreenToggle?.(true);
+        })
+        .catch((err) => {
+          console.error("Failed to enter fullscreen:", err);
+        });
+    } else {
+      document
+        .exitFullscreen()
+        .then(() => {
+          setIsFullscreen(false);
+          onFullscreenToggle?.(false);
+        })
+        .catch((err) => {
+          console.error("Failed to exit fullscreen:", err);
+        });
+    }
+  }, [onFullscreenToggle]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isCurrentlyFullscreen);
+      if (isCurrentlyFullscreen) {
+        onFullscreenToggle?.(true);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, [onFullscreenToggle]);
+
+  useEffect(() => {
+    setIsFullscreen(fullscreen);
+  }, [fullscreen]);
+
+  const handleMouseMove = useCallback(() => {
+    setShowControls(true);
+    if (hideControlsTimerRef.current) {
+      clearTimeout(hideControlsTimerRef.current);
+    }
+    hideControlsTimerRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+  }, []);
 
   const containerWidth = containerHeight * MUSHAF_RATIO;
 
-  const fontSizeSurahHeader = clamp(24, containerWidth * 0.07, 64);
-  const fontSizeWord = clamp(20, containerWidth * 0.035, 64);
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
@@ -145,28 +234,51 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     [handleLoadPage, onPageChange],
   );
 
+  // Keyboard navigation support
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        handlePrevPage();
+      } else if (e.key === "ArrowLeft") {
+        handleNextPage();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [handleNextPage, handlePrevPage]);
+
   return (
+    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
     <div
       ref={containerRef}
       className={className}
+      role="region"
+      aria-label="Quran Viewer"
       style={{
-        width: "100%",
-        height: "100vh",
+        width: isFullscreen ? "100vw" : "100%",
+        height: isFullscreen ? "100vh" : "100%",
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
         overflow: "hidden",
         fontFamily: "system-ui, -apple-system, sans-serif",
         direction: "rtl",
         display: "flex",
         justifyContent: "center",
+        cursor: isFullscreen ? (showControls ? "default" : "none") : "default",
       }}
+      onMouseMove={handleMouseMove}
+      tabIndex={0}
     >
+      <div style={{ position: "absolute", top: 0, left: 0, zIndex: 1000, background: "black", color: "white", padding: 8 }}>
+        containerWidth: {containerWidth.toFixed(2)}, containerHeight: {containerHeight.toFixed(2)}
+      </div>
       {loading && <Loading theme={theme} />}
 
       {!loading && pageLayout && (
         <div
           style={{
             width: containerWidth,
-            height: "100%",
+            height: containerHeight,
             position: "relative",
             display: "flex",
             flexDirection: "column",
@@ -180,12 +292,20 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
               width: "100%",
               height: containerHeight,
               overflow: "hidden",
+              border: "1px solid red",
             }}
           >
             {pageLayout.lines.map((line) => {
               const isCenteredLine =
                 line.isCentered ||
                 CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
+
+              const lineH = line.height || pageLayout.metrics.lineHeight;
+              // Layout calculator assumes fontSize = lineH / 1.5 for word-width estimation.
+              // We match that ratio so rendered text stays within each line box and
+              // doesn't bleed into adjacent lines (causing the "words above each other" effect).
+              const fontSizeWord = clamp(10, lineH / 1.5, 200);
+              const fontSizeSurahHeader = clamp(16, lineH / 1.5, 200);
 
               return (
                 <Line
@@ -197,14 +317,33 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   fontSizeWord={fontSizeWord}
                   bismillahWords={bismillahWords}
                   mushafLayout={mushafLayout}
-                  lineHeight={line.height || pageLayout.metrics.lineHeight}
+                  lineHeight={lineH}
                   onWordClick={onWordClick}
                   surahNumberToFontCode={surahNumberToFontCode}
                   getSurahFrameUrl={getSurahFrameUrl}
+                  paddingLeft={pageLayout.metrics.pagePadding.left}
+                  paddingRight={pageLayout.metrics.pagePadding.right}
                 />
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Navigation controls - positioned relative to the main container */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: "50%",
+          transform: "translateX(-50%)",
+          opacity: showControls ? 1 : 0,
+          pointerEvents: showControls ? "auto" : "none",
+          transition: "opacity 0.3s ease",
+          zIndex: 10,
+        }}
+      >
+        {!loading && pageLayout && (
           <NavigationControls
             currentPage={currentPage}
             totalPages={604}
@@ -213,10 +352,13 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
             onGoTo={handleGoToPage}
             theme={theme}
             width={containerWidth}
+            isFullscreen={isFullscreen}
+            onFullscreenToggle={handleFullscreenToggle}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
+    /* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
   );
 };
 
