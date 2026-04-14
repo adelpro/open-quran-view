@@ -104,23 +104,20 @@ export default function Line({
     const isAyahEnd =
       mushafLayout === "hafs-unicode" && word.charType === "end";
 
-    /*     // Standard Rub el Hizb
+    // Standard Rub el Hizb
     const RUB_EL_HIZB = "\u06DE";
-    // Presentation forms often used for ornaments in specific fonts
+    // Presentation forms
     const ORNAMENT_1 = "\uFC41"; // ﱁ
     const ORNAMENT_2 = "\uFC42"; // ﱂ
 
     const firstChar = word.text ? word.text[0] : "";
 
-    // Check if the word starts with any known Rub/Ornament marker
     const hasRubMarker = [RUB_EL_HIZB, ORNAMENT_1, ORNAMENT_2].includes(
       firstChar,
     );
 
     if (hasRubMarker) {
-      // Keep the marker symbol to render it specially
       const rubSymbol = firstChar;
-      // Slice off the marker to get the actual word text
       const wordText = word.text.slice(1).trim();
 
       return (
@@ -133,48 +130,43 @@ export default function Line({
           style={{
             ...getWordStyle(isAyahEnd),
             position: "relative",
-            display: "inline-block",
-            height: lineHeight,
+            display: "inline-flex",
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
+          {/* ✅ REAL TEXT ONLY (controls width) */}
+          <span style={{ whiteSpace: "nowrap" }}>{wordText}</span>
+
+          {/* ✅ GLYPH OUT OF FLOW */}
           <span
             style={{
+              position: "absolute",
+              top: -fontSizeWord * 0.55,
+              left: "50%",
+              transform: "translateX(-50%)",
+
               fontFamily:
                 mushafLayout === "hafs-unicode"
                   ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui'
                   : '"QuranFont", system-ui',
-              fontSize: fontSizeWord * 0.7, // Adjusted size for ornament
-              color: theme === "dark" ? "#fff" : "#34495e",
+
+              fontSize: fontSizeWord * 0.7,
               lineHeight: 1,
-              position: "absolute",
-              top: -fontSizeWord * 0.1,
-              left: "50%",
-              transform: "translateX(-50%) translateY(-100%)",
+              pointerEvents: "none",
+
+              // 🔥 critical fix
+              width: 0,
+              height: 0,
+              overflow: "visible",
               whiteSpace: "nowrap",
             }}
           >
             {rubSymbol}
           </span>
-          <span
-            style={{
-              fontFamily:
-                mushafLayout === "hafs-unicode"
-                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui'
-                  : '"QuranFont", system-ui',
-              fontSize: fontSizeWord,
-              color: theme === "dark" ? "#fff" : "#34495e",
-              lineHeight: `${lineHeight}px`,
-              display: "inline",
-            }}
-          >
-            {wordText}
-          </span>
         </span>
       );
-    } */
-
+    }
     return (
       <span
         key={word.id}
