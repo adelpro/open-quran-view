@@ -104,6 +104,77 @@ export default function Line({
     const isAyahEnd =
       mushafLayout === "hafs-unicode" && word.charType === "end";
 
+    /*     // Standard Rub el Hizb
+    const RUB_EL_HIZB = "\u06DE";
+    // Presentation forms often used for ornaments in specific fonts
+    const ORNAMENT_1 = "\uFC41"; // ﱁ
+    const ORNAMENT_2 = "\uFC42"; // ﱂ
+
+    const firstChar = word.text ? word.text[0] : "";
+
+    // Check if the word starts with any known Rub/Ornament marker
+    const hasRubMarker = [RUB_EL_HIZB, ORNAMENT_1, ORNAMENT_2].includes(
+      firstChar,
+    );
+
+    if (hasRubMarker) {
+      // Keep the marker symbol to render it specially
+      const rubSymbol = firstChar;
+      // Slice off the marker to get the actual word text
+      const wordText = word.text.slice(1).trim();
+
+      return (
+        <span
+          key={word.id}
+          role="button"
+          tabIndex={0}
+          onClick={() => handleWordClick(word)}
+          onKeyDown={(event) => handleKeyDown(event, word)}
+          style={{
+            ...getWordStyle(isAyahEnd),
+            position: "relative",
+            display: "inline-block",
+            height: lineHeight,
+          }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <span
+            style={{
+              fontFamily:
+                mushafLayout === "hafs-unicode"
+                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui'
+                  : '"QuranFont", system-ui',
+              fontSize: fontSizeWord * 0.7, // Adjusted size for ornament
+              color: theme === "dark" ? "#fff" : "#34495e",
+              lineHeight: 1,
+              position: "absolute",
+              top: -fontSizeWord * 0.1,
+              left: "50%",
+              transform: "translateX(-50%) translateY(-100%)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {rubSymbol}
+          </span>
+          <span
+            style={{
+              fontFamily:
+                mushafLayout === "hafs-unicode"
+                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui'
+                  : '"QuranFont", system-ui',
+              fontSize: fontSizeWord,
+              color: theme === "dark" ? "#fff" : "#34495e",
+              lineHeight: `${lineHeight}px`,
+              display: "inline",
+            }}
+          >
+            {wordText}
+          </span>
+        </span>
+      );
+    } */
+
     return (
       <span
         key={word.id}
@@ -191,7 +262,6 @@ export default function Line({
         justifyContent: isCenteredLine ? "center" : "space-between",
         padding: "1px",
         overflow: "hidden",
-        border: "1px solid blue",
       }}
     >
       {line.lineType === "header" ? (

@@ -105,7 +105,7 @@ mushafSelect.addEventListener("change", () => {
 });
 
 viewer.addEventListener("load", (e: Event) => {
-  console.log("Page loaded:", (e as CustomEvent).detail);
+  // console.log("Page loaded:", (e as CustomEvent).detail);
 });
 
 viewer.addEventListener("wordclick", (e: Event) => {

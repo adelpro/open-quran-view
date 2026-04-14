@@ -100,7 +100,7 @@ function App() {
   }, []);
 
   const handleLoad = useCallback((layout: unknown) => {
-    console.log("Page loaded:", layout);
+    //console.log("Page loaded:", layout);
   }, []);
 
   const toggleMobileMenu = useCallback(() => {

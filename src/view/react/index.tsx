@@ -161,7 +161,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
 
   const containerWidth = containerHeight * MUSHAF_RATIO;
 
-
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
       if (!calculatorRef.current || !containerRef.current) return;
@@ -249,7 +248,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   }, [handleNextPage, handlePrevPage]);
 
   return (
-    /* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
+    /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
     <div
       ref={containerRef}
       className={className}
@@ -269,9 +268,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       onMouseMove={handleMouseMove}
       tabIndex={0}
     >
-      <div style={{ position: "absolute", top: 0, left: 0, zIndex: 1000, background: "black", color: "white", padding: 8 }}>
-        containerWidth: {containerWidth.toFixed(2)}, containerHeight: {containerHeight.toFixed(2)}
-      </div>
       {loading && <Loading theme={theme} />}
 
       {!loading && pageLayout && (
@@ -292,7 +288,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
               width: "100%",
               height: containerHeight,
               overflow: "hidden",
-              border: "1px solid red",
             }}
           >
             {pageLayout.lines.map((line) => {
@@ -302,10 +297,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
 
               const lineH = line.height || pageLayout.metrics.lineHeight;
               // Layout calculator assumes fontSize = lineH / 1.5 for word-width estimation.
-              // We match that ratio so rendered text stays within each line box and
-              // doesn't bleed into adjacent lines (causing the "words above each other" effect).
-              const fontSizeWord = clamp(10, lineH / 1.5, 200);
-              const fontSizeSurahHeader = clamp(16, lineH / 1.5, 200);
+              // We use /1.7 (slightly smaller) to add breathing room inside the line box
+              // so glyphs (especially small ayah-end circle markers) don't crowd the edges.
+              const fontSizeWord = clamp(10, lineH / 1.7, 200);
+              const fontSizeSurahHeader = clamp(16, lineH / 1.7, 200);
 
               return (
                 <Line
@@ -358,7 +353,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         )}
       </div>
     </div>
-    /* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */
+    /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
   );
 };
 
