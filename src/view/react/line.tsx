@@ -104,69 +104,27 @@ export default function Line({
     const isAyahEnd =
       mushafLayout === "hafs-unicode" && word.charType === "end";
 
-    // Standard Rub el Hizb
-    const RUB_EL_HIZB = "\u06DE";
-    // Presentation forms
-    const ORNAMENT_1 = "\uFC41"; // ﱁ
-    const ORNAMENT_2 = "\uFC42"; // ﱂ
+    // The specific marker you identified (U+FCA1)
+    const TARGET_MARKER = "\uFCA1";
+    const isTarget = word.text && word.text.includes(TARGET_MARKER);
 
-    const firstChar = word.text ? word.text[0] : "";
+    // Layout Logic: If it's the marker, we treat it as a centered block
+    const markerStyles: CSSProperties = isTarget
+      ? {
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minWidth: "1.2em",
+          margin: "0 2px",
+          borderRadius: "4px",
+          position: "relative",
+          verticalAlign: "middle",
+        }
+      : {
+          position: "relative",
+          display: "inline-block",
+        };
 
-    const hasRubMarker = [RUB_EL_HIZB, ORNAMENT_1, ORNAMENT_2].includes(
-      firstChar,
-    );
-
-    if (hasRubMarker) {
-      const rubSymbol = firstChar;
-      const wordText = word.text.slice(1).trim();
-
-      return (
-        <span
-          key={word.id}
-          role="button"
-          tabIndex={0}
-          onClick={() => handleWordClick(word)}
-          onKeyDown={(event) => handleKeyDown(event, word)}
-          style={{
-            ...getWordStyle(isAyahEnd),
-            position: "relative",
-            display: "inline-flex",
-          }}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          {/* ✅ REAL TEXT ONLY (controls width) */}
-          <span style={{ whiteSpace: "nowrap" }}>{wordText}</span>
-
-          {/* ✅ GLYPH OUT OF FLOW */}
-          <span
-            style={{
-              position: "absolute",
-              top: -fontSizeWord * 0.55,
-              left: "50%",
-              transform: "translateX(-50%)",
-
-              fontFamily:
-                mushafLayout === "hafs-unicode"
-                  ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui'
-                  : '"QuranFont", system-ui',
-
-              fontSize: fontSizeWord * 0.7,
-              lineHeight: 1,
-              pointerEvents: "none",
-
-              // 🔥 critical fix
-              width: 0,
-              height: 0,
-              overflow: "visible",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {rubSymbol}
-          </span>
-        </span>
-      );
-    }
     return (
       <span
         key={word.id}
@@ -174,11 +132,26 @@ export default function Line({
         tabIndex={0}
         onClick={() => handleWordClick(word)}
         onKeyDown={(event) => handleKeyDown(event, word)}
-        style={getWordStyle(isAyahEnd)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        style={{
+          ...getWordStyle(isAyahEnd),
+          ...markerStyles,
+        }}
       >
-        {isAyahEnd ? `﴾${word.verse}﴿` : word.text || `[${word.id}]`}
+        <span
+          style={{
+            // Fixes issues where the font might overlap adjacent words
+            whiteSpace: "nowrap",
+            fontSize: isTarget ? fontSizeWord * 0.9 : fontSizeWord,
+            fontFamily:
+              mushafLayout === "hafs-unicode"
+                ? '"DigitalKhatt", "Amiri", system-ui'
+                : "inherit",
+          }}
+        >
+          {isAyahEnd ? `﴾${word.verse}﴿` : word.text || `[${word.id}]`}
+        </span>
       </span>
     );
   };
