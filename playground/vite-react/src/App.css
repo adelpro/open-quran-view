@@ -115,6 +115,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -325,7 +326,7 @@
   padding: 12px;
   border-radius: var(--radius-md);
   font-family:
-    "DigitalKhatt", "Scheherazade New", "Amiri", system-ui, sans-serif;
+    "DigitalKhatt", "Amiri", system-ui, sans-serif;
 }
 
 .tafseer-text {

@@ -71,7 +71,7 @@ export default function Line({
     fontFamily: isAyahEnd
       ? '"AyatMarker", "DigitalKhatt", system-ui'
       : mushafLayout === "hafs-unicode"
-        ? '"DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif'
+        ? '"DigitalKhatt", "Amiri", system-ui, -apple-system, sans-serif'
         : '"QuranFont", system-ui, -apple-system, sans-serif',
     fontSize: fontSizeWord,
     color: theme === "dark" ? "#fff" : "#34495e",
@@ -115,7 +115,7 @@ export default function Line({
           alignItems: "center",
           justifyContent: "center",
           minWidth: "1.2em",
-          margin: "0 2px",
+          margin: "0",
           borderRadius: "4px",
           position: "relative",
           verticalAlign: "middle",
@@ -144,10 +144,14 @@ export default function Line({
             // Fixes issues where the font might overlap adjacent words
             whiteSpace: "nowrap",
             fontSize: isTarget ? fontSizeWord * 0.9 : fontSizeWord,
+            display: "inline-flex",
+            alignItems: "center",
             fontFamily:
-              mushafLayout === "hafs-unicode"
-                ? '"DigitalKhatt", "Amiri", system-ui'
-                : "inherit",
+              isAyahEnd
+                ? undefined
+                : mushafLayout === "hafs-unicode"
+                  ? '"DigitalKhatt", "Amiri", system-ui'
+                  : "inherit",
           }}
         >
           {isAyahEnd ? `﴾${word.verse}﴿` : word.text || `[${word.id}]`}
