@@ -235,7 +235,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke={theme === "dark" ? "#fff" : "#2c3e50"}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -248,7 +248,7 @@ export const NavigationControls: React.FC<NavigationControlsProps> = ({
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="currentColor"
+              stroke={theme === "dark" ? "#fff" : "#2c3e50"}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"

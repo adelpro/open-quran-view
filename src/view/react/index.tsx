@@ -255,6 +255,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       role="region"
       aria-label="Quran Viewer"
       style={{
+        position: "relative",
         width: isFullscreen ? "100vw" : "100%",
         height: isFullscreen ? "100vh" : "100%",
         background: theme === "dark" ? "#1a1a2e" : "#fafafa",
