@@ -2,6 +2,8 @@
 
 [NPM Package](https://www.npmjs.com/package/open-quran-view)
 ·
+[Docs](https://adelpro.us.kg/open-quran-view/)
+·
 [Live Demo](https://open-quran-view-react.netlify.app/)
 ·
 [Production Example](https://github.com/adelpro/open-quran-view-react)
