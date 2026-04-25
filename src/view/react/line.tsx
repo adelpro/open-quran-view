@@ -21,6 +21,10 @@ type Props = {
   paddingLeft: number;
   paddingRight: number;
   onWordClick?: (word: WordClickedData) => void;
+  highlightedWords?: WordLocation[];
+  highlightedVerse?: { surah: number; verse: number } | null;
+  wordHighlightColor?: string;
+  verseHighlightColor?: string;
 };
 
 export default function Line({
@@ -37,6 +41,10 @@ export default function Line({
   fontSizeSurahHeader,
   paddingLeft,
   paddingRight,
+  highlightedWords = [],
+  highlightedVerse = null,
+  wordHighlightColor = "rgba(255, 215, 0, 0.5)",
+  verseHighlightColor = "rgba(135, 206, 250, 0.25)",
 }: Props) {
   const handleWordClick = (word: WordLayout) => {
     onWordClick?.({
@@ -101,6 +109,18 @@ export default function Line({
   };
 
   const renderWord = (word: WordLayout) => {
+    const isWordHighlighted = highlightedWords.some(
+      (hw) =>
+        hw.surah === word.surah &&
+        hw.verse === word.verse &&
+        hw.position === word.position,
+    );
+
+    const isVerseHighlighted =
+      highlightedVerse &&
+      highlightedVerse.surah === word.surah &&
+      highlightedVerse.verse === word.verse;
+
     const isAyahEnd =
       mushafLayout === "hafs-unicode" && word.charType === "end";
 
@@ -137,6 +157,7 @@ export default function Line({
         style={{
           ...getWordStyle(isAyahEnd),
           ...markerStyles,
+          background: isWordHighlighted ? wordHighlightColor : undefined,
         }}
       >
         <span
@@ -218,6 +239,14 @@ export default function Line({
     </span>
   );
 
+  const isLineInHighlightedVerse =
+    highlightedVerse &&
+    line.words.some(
+      (w) =>
+        w.surah === highlightedVerse.surah &&
+        w.verse === highlightedVerse.verse,
+    );
+
   return (
     <div
       style={{
@@ -231,6 +260,9 @@ export default function Line({
         justifyContent: isCenteredLine ? "center" : "space-between",
         padding: "1px",
         overflow: "hidden",
+        backgroundColor: isLineInHighlightedVerse
+          ? verseHighlightColor
+          : undefined,
       }}
     >
       {line.lineType === "header" ? (

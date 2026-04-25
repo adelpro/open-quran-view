@@ -13,6 +13,7 @@ import {
   type PageLayout,
   type Word,
   type WordClickedData,
+  type WordLocation,
 } from "../../core";
 import { NavigationControls } from "./navigation-controls";
 import Line from "./line";
@@ -27,7 +28,12 @@ const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>(
   CENTERED_PAGES_HORIZONTAL,
 );
 
-export type { MushafLayout, PageLayout, WordClickedData } from "../../core";
+export type {
+  MushafLayout,
+  PageLayout,
+  WordClickedData,
+  WordLocation,
+} from "../../core";
 
 export type OpenQuranViewProps = {
   page?: number;
@@ -41,6 +47,10 @@ export type OpenQuranViewProps = {
   className?: string;
   fullscreen?: boolean;
   onFullscreenToggle?: (isFullscreen: boolean) => void;
+  highlightedWords?: WordLocation[];
+  highlightedVerse?: { surah: number; verse: number } | null;
+  wordHighlightColor?: string;
+  verseHighlightColor?: string;
 };
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
@@ -54,6 +64,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   className,
   fullscreen = false,
   onFullscreenToggle,
+  highlightedWords = [],
+  highlightedVerse = null,
+  wordHighlightColor,
+  verseHighlightColor,
 }: OpenQuranViewProps) => {
   // The official Al-Madinah Mushaf standard medium edition measures ~14x20 cm.
   // 14 / 20 = 0.7, giving a ratio of 1:1.43.
@@ -319,6 +333,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   getSurahFrameUrl={getSurahFrameUrl}
                   paddingLeft={pageLayout.metrics.pagePadding.left}
                   paddingRight={pageLayout.metrics.pagePadding.right}
+                  highlightedWords={highlightedWords}
+                  highlightedVerse={highlightedVerse}
+                  wordHighlightColor={wordHighlightColor}
+                  verseHighlightColor={verseHighlightColor}
                 />
               );
             })}

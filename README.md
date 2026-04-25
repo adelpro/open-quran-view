@@ -134,13 +134,22 @@ import { OpenQuranView, type OpenQuranViewProps } from 'open-quran-view/view';
 | `onPageChange` | `(page: number) => void` | - | Called when page changes |
 | `onLoad` | `(layout: PageLayout) => void` | - | Called when page loads |
 | `onWordClick` | `(word: WordInfo) => void` | - | Called when word is clicked |
+| `highlightedWords` | `WordLocation[]` | `[]` | List of words to highlight |
+| `highlightedVerse` | `{ surah: number, verse: number } \| null` | `null` | Verse to highlight (line background) |
+| `wordHighlightColor` | `string` | `"rgba(255, 215, 0, 0.5)"` | Word highlight color |
+| `verseHighlightColor` | `string` | `"rgba(135, 206, 250, 0.25)"` | Verse highlight color |
 | `className` | string | - | CSS class for container |
 
-```typescript
 type WordInfo = {
   id: number;
   surahNumber?: number;
   ayahNumber?: number;
+};
+
+type WordLocation = {
+  surah: number;
+  verse: number;
+  position: number;
 };
 ```
 
@@ -160,6 +169,10 @@ registerOpenQuranView();
 | `width` | string | `"600"` | Component width in pixels |
 | `height` | string | `"850"` | Component height in pixels |
 | `theme` | string | `"light"` | Color theme (`light` or `dark`) |
+| `highlighted-words` | string | `undefined` | JSON string of `WordLocation[]` |
+| `highlighted-verse` | string | `undefined` | JSON string of `{ surah: number, verse: number }` |
+| `word-highlight-color` | string | `"rgba(255, 215, 0, 0.5)"` | Word highlight color |
+| `verse-highlight-color` | string | `"rgba(135, 206, 250, 0.25)"` | Verse highlight color |
 
 **Events:**
 
@@ -179,6 +192,11 @@ viewer.goToPage(10);
 console.log(viewer.page);
 viewer.setAttribute('mushaf-layout', 'hafs-v4');
 viewer.setAttribute('theme', 'dark');
+
+// Highlighting API
+viewer.wordsHighlight = [{ surah: 1, verse: 1, position: 1 }];
+viewer.verseHighlight = { surah: 1, verse: 1 };
+viewer.wordHighlightColorOverride = 'rgba(255, 0, 0, 0.3)';
 ```
 
 ---

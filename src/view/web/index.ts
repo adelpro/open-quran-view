@@ -9,6 +9,7 @@ import {
   type MushafLayout,
   type PageLayout,
   type Word,
+  type WordLocation,
 } from "../../core";
 
 const STYLES = `
@@ -192,9 +193,23 @@ export class OpenQuranView extends HTMLElement {
   private fontFaceSheet: HTMLStyleElement | null = null;
   private showingInput: boolean = false;
   private bismillahWords: Word[] = [];
+  private highlightedWords: WordLocation[] = [];
+  private highlightedVerse: { surah: number; verse: number } | null = null;
+  private wordHighlightColor: string = "rgba(255, 215, 0, 0.5)";
+  private verseHighlightColor: string = "rgba(135, 206, 250, 0.25)";
 
   static get observedAttributes(): string[] {
-    return ["page", "mushaf-layout", "width", "height", "theme"];
+    return [
+      "page",
+      "mushaf-layout",
+      "width",
+      "height",
+      "theme",
+      "highlighted-words",
+      "highlighted-verse",
+      "word-highlight-color",
+      "verse-highlight-color",
+    ];
   }
 
   constructor() {
@@ -239,6 +254,30 @@ export class OpenQuranView extends HTMLElement {
       case "height":
       case "theme":
         this.initialize();
+        break;
+      case "highlighted-words":
+        try {
+          this.highlightedWords = JSON.parse(newValue) || [];
+          this.applyHighlights();
+        } catch (e) {
+          console.error("Failed to parse highlighted-words:", e);
+        }
+        break;
+      case "highlighted-verse":
+        try {
+          this.highlightedVerse = JSON.parse(newValue) || null;
+          this.applyHighlights();
+        } catch (e) {
+          console.error("Failed to parse highlighted-verse:", e);
+        }
+        break;
+      case "word-highlight-color":
+        this.wordHighlightColor = newValue || "rgba(255, 215, 0, 0.5)";
+        this.applyHighlights();
+        break;
+      case "verse-highlight-color":
+        this.verseHighlightColor = newValue || "rgba(135, 206, 250, 0.25)";
+        this.applyHighlights();
         break;
     }
   }
@@ -419,6 +458,7 @@ export class OpenQuranView extends HTMLElement {
       }
       const pageLayout = this.calculator.calculatePageLayout(quranPage);
       await this.renderLayout(pageLayout);
+      this.applyHighlights();
       this.showLoading(false);
 
       this.dispatchEvent(
@@ -501,6 +541,9 @@ export class OpenQuranView extends HTMLElement {
         for (const word of this.bismillahWords) {
           const wordEl = document.createElement("span");
           wordEl.className = "quran-word";
+          wordEl.dataset.surah = "1";
+          wordEl.dataset.verse = "0";
+          wordEl.dataset.position = String(word.position);
 
           wordEl.textContent = word.text || `[${word.id}]`;
           wordEl.style.cssText = `
@@ -548,6 +591,9 @@ export class OpenQuranView extends HTMLElement {
         for (const word of line.words) {
           const wordEl = document.createElement("span");
           wordEl.className = "quran-word";
+          wordEl.dataset.surah = String(word.surah);
+          wordEl.dataset.verse = String(word.verse);
+          wordEl.dataset.position = String(word.position);
 
           const isEndMarker =
             word.charType === "end" && this.layout === "hafs-unicode";
@@ -605,6 +651,46 @@ export class OpenQuranView extends HTMLElement {
     }
   }
 
+  private applyHighlights(): void {
+    if (!this.shadowRoot || !this.content) return;
+
+    const wordEls = this.shadowRoot.querySelectorAll(".quran-word");
+    const lineEls = this.shadowRoot.querySelectorAll(".quran-line");
+
+    // Clear previous highlights
+    wordEls.forEach((el) => {
+      (el as HTMLElement).style.background = "transparent";
+    });
+    lineEls.forEach((el) => {
+      (el as HTMLElement).style.backgroundColor = "transparent";
+    });
+
+    // Apply word highlights
+    this.highlightedWords.forEach((hw) => {
+      const el = this.shadowRoot?.querySelector(
+        `.quran-word[data-surah="${hw.surah}"][data-verse="${hw.verse}"][data-position="${hw.position}"]`,
+      ) as HTMLElement;
+      if (el) {
+        el.style.background = this.wordHighlightColor;
+      }
+    });
+
+    // Apply verse highlights
+    if (this.highlightedVerse) {
+      const { surah, verse } = this.highlightedVerse;
+      const wordsOfVerse = this.shadowRoot.querySelectorAll(
+        `.quran-word[data-surah="${surah}"][data-verse="${verse}"]`,
+      );
+
+      wordsOfVerse.forEach((wordEl) => {
+        const lineEl = wordEl.closest(".quran-line") as HTMLElement;
+        if (lineEl) {
+          lineEl.style.backgroundColor = this.verseHighlightColor;
+        }
+      });
+    }
+  }
+
   private showLoading(show: boolean): void {
     this.loading.style.display = show ? "block" : "none";
   }
@@ -640,6 +726,38 @@ export class OpenQuranView extends HTMLElement {
 
   set mushafLayoutAttr(value: MushafLayout) {
     this.setAttribute("mushaf-layout", value);
+  }
+
+  get wordsHighlight(): WordLocation[] {
+    return this.highlightedWords;
+  }
+
+  set wordsHighlight(value: WordLocation[]) {
+    this.setAttribute("highlighted-words", JSON.stringify(value));
+  }
+
+  get verseHighlight(): { surah: number; verse: number } | null {
+    return this.highlightedVerse;
+  }
+
+  set verseHighlight(value: { surah: number; verse: number } | null) {
+    this.setAttribute("highlighted-verse", JSON.stringify(value));
+  }
+
+  get wordHighlightColorOverride(): string {
+    return this.wordHighlightColor;
+  }
+
+  set wordHighlightColorOverride(value: string) {
+    this.setAttribute("word-highlight-color", value);
+  }
+
+  get verseHighlightColorOverride(): string {
+    return this.verseHighlightColor;
+  }
+
+  set verseHighlightColorOverride(value: string) {
+    this.setAttribute("verse-highlight-color", value);
   }
 }
 

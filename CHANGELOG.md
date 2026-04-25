@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
-## [Unreleased]
+## [UNRELEASED]
+
+## [0.4.0] - 2026-04-25
+
+### Added
+
+- Word-level highlighting (`highlightedWords`) for both React and Web Component views
+- Verse-level background highlighting (`highlightedVerse`)
+- Customizable highlight colors for words and verses
+- Optimized `applyHighlights()` method for Web Component to enable real-time updates (e.g., audio sync)
+- Comprehensive usage examples for audio synchronization and search results
+
+## [0.3.0] - 2026-04-25
 
 ### Added
 

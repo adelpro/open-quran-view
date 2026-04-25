@@ -57,6 +57,10 @@ function App() {
 | `onPageChange` | `(page: number) => void` | - | Called when page changes |
 | `onLoad` | `(layout: PageLayout) => void` | - | Called when page loads |
 | `onWordClick` | `(word: WordInfo) => void` | - | Called when word is clicked |
+| `highlightedWords` | `WordLocation[]` | `[]` | List of words to highlight |
+| `highlightedVerse` | `{ surah: number, verse: number } \| null` | `null` | Verse to highlight (line background) |
+| `wordHighlightColor` | `string` | `"rgba(255, 215, 0, 0.5)"` | Word highlight color |
+| `verseHighlightColor` | `string` | `"rgba(135, 206, 250, 0.25)"` | Verse highlight color |
 | `className` | string | - | CSS class for container |
 
 ```typescript
@@ -107,6 +111,10 @@ registerOpenQuranView();
 | `width` | string | `"600"` | Component width in pixels |
 | `height` | string | `"850"` | Component height in pixels |
 | `theme` | string | `"light"` | Color theme (`light` or `dark`) |
+| `highlighted-words` | string | `undefined` | JSON string of `WordLocation[]` |
+| `highlighted-verse` | string | `undefined` | JSON string of `{ surah: number, verse: number }` |
+| `word-highlight-color` | string | `"rgba(255, 215, 0, 0.5)"` | Word highlight color |
+| `verse-highlight-color` | string | `"rgba(135, 206, 250, 0.25)"` | Verse highlight color |
 
 ### Events
 
@@ -144,6 +152,12 @@ viewer.setAttribute('theme', 'dark');
 // Change dimensions
 viewer.setAttribute('width', '800');
 viewer.setAttribute('height', '1000');
+
+// Highlighting (v0.4.0+)
+viewer.wordsHighlight = [{ surah: 1, verse: 1, position: 1 }];
+viewer.verseHighlight = { surah: 1, verse: 1 };
+viewer.wordHighlightColorOverride = 'rgba(255, 215, 0, 0.5)';
+viewer.verseHighlightColorOverride = 'rgba(135, 206, 250, 0.25)';
 ```
 
 ---
@@ -190,12 +204,18 @@ export type OpenQuranViewProps = {
   mushafLayout?: "hafs-v2" | "hafs-v4" | "hafs-unicode";
   onPageChange?: (page: number) => void;
   onLoad?: (layout: PageLayout) => void;
-  onWordClick?: (word: {
-    id: number;
-    surahNumber?: number;
-    ayahNumber?: number;
-  }) => void;
+  onWordClick?: (word: WordInfo) => void;
+  highlightedWords?: WordLocation[];
+  highlightedVerse?: { surah: number; verse: number } | null;
+  wordHighlightColor?: string;
+  verseHighlightColor?: string;
   className?: string;
+};
+
+export type WordLocation = {
+  surah: number;
+  verse: number;
+  position: number;
 };
 ```
 
@@ -213,6 +233,10 @@ export type OpenQuranViewProps = {
 export class OpenQuranView extends HTMLElement {
   page: number;
   mushafLayoutAttr: "hafs-v2" | "hafs-v4" | "hafs-unicode";
+  wordsHighlight: WordLocation[];
+  verseHighlight: { surah: number; verse: number } | null;
+  wordHighlightColorOverride: string;
+  verseHighlightColorOverride: string;
   goToPage(page: number): void;
 }
 
