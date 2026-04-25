@@ -6,6 +6,15 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ## [UNRELEASED]
 
+## [0.4.1] - 2026-04-25
+
+### Changed
+
+- Improved verse highlighting with precise segment shapes
+- Added absolute-positioned highlight layer to bridge word gaps in justified text
+- Ported precise highlighting logic to both React and Web Component views
+- Fixed highlight selection to perfectly match ayah bounds even when starting or ending mid-line
+
 ## [0.4.0] - 2026-04-25
 
 ### Added

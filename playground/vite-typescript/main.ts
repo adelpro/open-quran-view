@@ -47,6 +47,12 @@ const tafseerDialog = document.getElementById(
 const tafseerContent = document.getElementById(
   "tafseer-content",
 ) as HTMLDivElement;
+const autoHighlightWord = document.getElementById(
+  "auto-highlight-word",
+) as HTMLInputElement;
+const clearHighlightsBtn = document.getElementById(
+  "clear-highlights-btn",
+) as HTMLButtonElement;
 
 let quranWords: WordMap = {};
 
@@ -104,6 +110,11 @@ mushafSelect.addEventListener("change", () => {
   viewer.setAttribute("mushaf-layout", mushafSelect.value);
 });
 
+clearHighlightsBtn.addEventListener("click", () => {
+  viewer.removeAttribute("highlighted-verse");
+  viewer.setAttribute("highlighted-words", "[]");
+});
+
 viewer.addEventListener("load", (e: Event) => {
   // console.log("Page loaded:", (e as CustomEvent).detail);
 });
@@ -117,6 +128,19 @@ viewer.addEventListener("wordclick", (e: Event) => {
     text?: string;
     charType?: string;
   };
+
+  if (autoHighlightWord.checked) {
+    viewer.setAttribute(
+      "highlighted-words",
+      JSON.stringify([
+        {
+          surah: detail.surahNumber,
+          verse: detail.ayahNumber,
+          position: detail.position,
+        },
+      ]),
+    );
+  }
 
   if (detail.charType === "end") {
     const verseKey = `${detail.surahNumber}:${detail.ayahNumber}`;
@@ -136,6 +160,14 @@ viewer.addEventListener("wordclick", (e: Event) => {
       document
         .getElementById("tafseer-close-btn")
         ?.addEventListener("click", closeTafseerDialog);
+
+      viewer.setAttribute(
+        "highlighted-verse",
+        JSON.stringify({
+          surah: detail.surahNumber,
+          verse: detail.ayahNumber,
+        }),
+      );
     }
     return;
   }

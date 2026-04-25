@@ -151,6 +151,15 @@ const STYLES = `
     outline: none;
     font-family: system-ui, -apple-system, sans-serif;
   }
+
+  .quran-highlight-segment {
+    position: absolute;
+    height: calc(100% - 4px);
+    top: 2px;
+    z-index: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
 `;
 
 const TEMPLATE = document.createElement("template");
@@ -502,6 +511,10 @@ export class OpenQuranView extends HTMLElement {
       const wordColor = theme === "dark" ? "#fff" : "#34495e";
       const hoverBg = theme === "dark" ? "#333" : "#e0e0e0";
 
+      const highlightSegment = document.createElement("div");
+      highlightSegment.className = "quran-highlight-segment";
+      lineEl.appendChild(highlightSegment);
+
       if (line.lineType === "header") {
         const headerFontSize = Math.min(
           42,
@@ -659,36 +672,70 @@ export class OpenQuranView extends HTMLElement {
 
     // Clear previous highlights
     wordEls.forEach((el) => {
-      (el as HTMLElement).style.background = "transparent";
+      const wordEl = el as HTMLElement;
+      wordEl.style.background = "transparent";
+      wordEl.style.borderRadius = "4px";
+      wordEl.style.boxShadow = "none";
+      wordEl.style.zIndex = "auto";
+      wordEl.style.position = "relative";
     });
     lineEls.forEach((el) => {
       (el as HTMLElement).style.backgroundColor = "transparent";
     });
 
-    // Apply word highlights
+    // Apply verse highlights first (so word highlights can stay on top)
+    if (this.highlightedVerse) {
+      const { surah, verse } = this.highlightedVerse;
+      const lines = this.shadowRoot.querySelectorAll(".quran-line");
+      
+      lines.forEach((lineEl) => {
+        const words = Array.from(lineEl.querySelectorAll(".quran-word")) as HTMLElement[];
+        const highlightedWords = words.filter(w => 
+          w.getAttribute("data-surah") === String(surah) && 
+          w.getAttribute("data-verse") === String(verse)
+        );
+
+        const segmentEl = lineEl.querySelector(".quran-highlight-segment") as HTMLElement;
+        if (!segmentEl) return;
+
+        if (highlightedWords.length > 0) {
+          const firstIdx = words.indexOf(highlightedWords[0]);
+          const lastIdx = words.indexOf(highlightedWords[highlightedWords.length - 1]);
+          
+          const firstEl = highlightedWords[0];
+          const lastEl = highlightedWords[highlightedWords.length - 1];
+
+          // RTL: first word is on the right, last word is on the left
+          const rightEdge = firstEl.offsetLeft + firstEl.offsetWidth;
+          const leftEdge = lastEl.offsetLeft;
+          
+          const isStart = firstIdx === 0 || words[firstIdx - 1].getAttribute("data-verse") !== String(verse);
+          const isEnd = lastIdx === words.length - 1 || words[lastIdx + 1].getAttribute("data-verse") !== String(verse);
+
+          segmentEl.style.display = "block";
+          segmentEl.style.left = `${leftEdge}px`;
+          segmentEl.style.width = `${rightEdge - leftEdge}px`;
+          segmentEl.style.backgroundColor = this.verseHighlightColor;
+          segmentEl.style.borderTopRightRadius = isStart ? "8px" : "0";
+          segmentEl.style.borderBottomRightRadius = isStart ? "8px" : "0";
+          segmentEl.style.borderTopLeftRadius = isEnd ? "8px" : "0";
+          segmentEl.style.borderBottomLeftRadius = isEnd ? "8px" : "0";
+        } else {
+          segmentEl.style.display = "none";
+        }
+      });
+    }
+
+    // Apply word highlights (these take precedence)
     this.highlightedWords.forEach((hw) => {
       const el = this.shadowRoot?.querySelector(
         `.quran-word[data-surah="${hw.surah}"][data-verse="${hw.verse}"][data-position="${hw.position}"]`,
       ) as HTMLElement;
       if (el) {
-        el.style.background = this.wordHighlightColor;
+        el.style.backgroundColor = this.wordHighlightColor;
+        el.style.zIndex = "2"; // Ensure word highlight is above verse highlight
       }
     });
-
-    // Apply verse highlights
-    if (this.highlightedVerse) {
-      const { surah, verse } = this.highlightedVerse;
-      const wordsOfVerse = this.shadowRoot.querySelectorAll(
-        `.quran-word[data-surah="${surah}"][data-verse="${verse}"]`,
-      );
-
-      wordsOfVerse.forEach((wordEl) => {
-        const lineEl = wordEl.closest(".quran-line") as HTMLElement;
-        if (lineEl) {
-          lineEl.style.backgroundColor = this.verseHighlightColor;
-        }
-      });
-    }
   }
 
   private showLoading(show: boolean): void {
