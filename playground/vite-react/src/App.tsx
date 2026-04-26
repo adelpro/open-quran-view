@@ -36,9 +36,7 @@ function App() {
     surah: number;
     verse: number;
   } | null>(null);
-  const [highlightedWord, setHighlightedWord] = useState<WordLocation | null>(
-    null,
-  );
+  const [highlightedWords, setHighlightedWords] = useState<WordLocation[]>([]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -92,11 +90,14 @@ function App() {
     }
 
     if (word.charType === "word") {
-      setHighlightedWord({
-        surah: word.surahNumber,
-        verse: word.ayahNumber,
-        position: word.position,
-      });
+      setHighlightedWords((prev) => [
+        ...prev,
+        {
+          surah: word.surahNumber,
+          verse: word.ayahNumber,
+          position: word.position,
+        },
+      ]);
       const wordKey = `${word.surahNumber}:${word.ayahNumber}:${word.position}`;
       const wordTafseer = quranWords[wordKey] as WordTafseer | undefined;
       if (wordTafseer) {
@@ -297,7 +298,7 @@ function App() {
           onWordClick={handleWordClick}
           onLoad={handleLoad}
           highlightedVerse={highlightedVerse || undefined}
-          highlightedWord={highlightedWord}
+          highlightedWords={highlightedWords}
         />
       </div>
 

@@ -29,7 +29,7 @@ type Props = {
   paddingLeft: number;
   paddingRight: number;
   onWordClick?: (word: WordClickedData) => void;
-  highlightedWord?: WordLocation | null;
+  highlightedWords?: WordLocation[];
   highlightedVerse?: { surah: number; verse: number } | null;
   wordHighlightColor?: string;
   verseHighlightColor?: string;
@@ -49,7 +49,7 @@ export default function Line({
   fontSizeSurahHeader,
   paddingLeft,
   paddingRight,
-  highlightedWord = null,
+  highlightedWords = [],
   highlightedVerse = null,
   wordHighlightColor = "rgba(255, 215, 0, 0.5)",
   verseHighlightColor = "rgba(135, 206, 250, 0.25)",
@@ -183,11 +183,12 @@ export default function Line({
   };
 
   const renderWord = (word: WordLayout, index: number) => {
-    const isWordHighlighted =
-      highlightedWord &&
-      highlightedWord.surah === word.surah &&
-      highlightedWord.verse === word.verse &&
-      highlightedWord.position === word.position;
+    const isWordHighlighted = highlightedWords.some(
+      (hw) =>
+        hw.surah === word.surah &&
+        hw.verse === word.verse &&
+        hw.position === word.position,
+    );
 
     const isVerseHighlighted =
       highlightedVerse &&
@@ -240,7 +241,7 @@ export default function Line({
         style={{
           ...getWordStyle(isAyahEnd),
           ...markerStyles,
-          backgroundColor: isWordHighlighted ? "red" : "blue",
+          backgroundColor: isWordHighlighted ? wordHighlightColor : undefined,
           ...highlightStyles,
         }}
       >
