@@ -51,6 +51,7 @@ export type OpenQuranViewProps = {
   highlightedVerse?: { surah: number; verse: number } | null;
   wordHighlightColor?: string;
   verseHighlightColor?: string;
+  navigationControls?: boolean;
 };
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
@@ -68,6 +69,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   highlightedVerse = null,
   wordHighlightColor,
   verseHighlightColor,
+  navigationControls = false,
 }: OpenQuranViewProps) => {
   // The official Al-Madinah Mushaf standard medium edition measures ~14x20 cm.
   // 14 / 20 = 0.7, giving a ratio of 1:1.43.
@@ -345,33 +347,36 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       )}
 
       {/* Navigation controls - positioned relative to the main container */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 20,
-          left: "50%",
-          transform: "translateX(-50%)",
-          opacity: showControls ? 1 : 0,
-          pointerEvents: showControls ? "auto" : "none",
-          transition: "opacity 0.3s ease",
-          zIndex: 10,
-        }}
-      >
-        {!loading && pageLayout && (
-          <NavigationControls
-            currentPage={currentPage}
-            totalPages={604}
-            onNext={handleNextPage}
-            onPrev={handlePrevPage}
-            onGoTo={handleGoToPage}
-            theme={theme}
-            width={containerWidth}
-            isFullscreen={isFullscreen}
-            onFullscreenToggle={handleFullscreenToggle}
-          />
-        )}
-      </div>
+      {navigationControls && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            opacity: showControls ? 1 : 0,
+            pointerEvents: showControls ? "auto" : "none",
+            transition: "opacity 0.3s ease",
+            zIndex: 10,
+          }}
+        >
+          {!loading && pageLayout && (
+            <NavigationControls
+              currentPage={currentPage}
+              totalPages={604}
+              onNext={handleNextPage}
+              onPrev={handlePrevPage}
+              onGoTo={handleGoToPage}
+              theme={theme}
+              width={containerWidth}
+              isFullscreen={isFullscreen}
+              onFullscreenToggle={handleFullscreenToggle}
+            />
+          )}
+        </div>
+      )}
     </div>
+
     /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
   );
 };

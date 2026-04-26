@@ -206,6 +206,7 @@ export class OpenQuranView extends HTMLElement {
   private highlightedVerse: { surah: number; verse: number } | null = null;
   private wordHighlightColor: string = "rgba(255, 215, 0, 0.5)";
   private verseHighlightColor: string = "rgba(135, 206, 250, 0.25)";
+  private showNavigation: boolean = false;
 
   static get observedAttributes(): string[] {
     return [
@@ -218,6 +219,7 @@ export class OpenQuranView extends HTMLElement {
       "highlighted-verse",
       "word-highlight-color",
       "verse-highlight-color",
+      "navigation-controls",
     ];
   }
 
@@ -288,6 +290,10 @@ export class OpenQuranView extends HTMLElement {
         this.verseHighlightColor = newValue || "rgba(135, 206, 250, 0.25)";
         this.applyHighlights();
         break;
+      case "navigation-controls":
+        this.showNavigation = newValue === "true";
+        this.nav.style.display = this.showNavigation ? "flex" : "none";
+        break;
     }
   }
 
@@ -337,11 +343,13 @@ export class OpenQuranView extends HTMLElement {
     this.layout = mushafLayout || "hafs-v2";
 
     const width = widthAttr ? parseInt(widthAttr, 10) : 600;
-    const height = heightAttr ? parseInt(heightAttr, 10) : this.clientHeight || 850;
+    const height = heightAttr
+      ? parseInt(heightAttr, 10)
+      : this.clientHeight || 850;
 
     this.container.style.width = widthAttr ? `${width}px` : "100%";
     this.container.style.height = heightAttr ? `${height}px` : "100%";
-    
+
     this.calculator = createLayoutCalculator({
       pageWidth: widthAttr ? width : height * 0.7,
       pageHeight: height,
@@ -355,7 +363,7 @@ export class OpenQuranView extends HTMLElement {
 
     try {
       this.updatePageDisplay();
-      this.nav.style.display = "flex";
+      this.nav.style.display = this.showNavigation ? "flex" : "none";
       this.renderPage();
     } catch (error) {
       this.loading.textContent = "فشل في تحميل البيانات";
@@ -365,22 +373,22 @@ export class OpenQuranView extends HTMLElement {
     if (!heightAttr) {
       const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
-           const rect = entry.contentRect;
-           if (rect.height > 0) {
-             let newHeight = rect.height;
-             let newWidth = widthAttr ? width : newHeight * 0.7;
+          const rect = entry.contentRect;
+          if (rect.height > 0) {
+            let newHeight = rect.height;
+            let newWidth = widthAttr ? width : newHeight * 0.7;
 
-             if (!widthAttr && rect.width > 0 && newHeight * 0.7 > rect.width) {
-                newHeight = rect.width / 0.7;
-                newWidth = rect.width;
-             }
+            if (!widthAttr && rect.width > 0 && newHeight * 0.7 > rect.width) {
+              newHeight = rect.width / 0.7;
+              newWidth = rect.width;
+            }
 
-             this.calculator = createLayoutCalculator({
-                pageWidth: newWidth,
-                pageHeight: newHeight,
-             });
-             this.renderPage();
-           }
+            this.calculator = createLayoutCalculator({
+              pageWidth: newWidth,
+              pageHeight: newHeight,
+            });
+            this.renderPage();
+          }
         }
       });
       resizeObserver.observe(this);
@@ -499,7 +507,7 @@ export class OpenQuranView extends HTMLElement {
       // Use dynamic line height if available, fallback to metrics
       const lineHeight = line.height || pageLayout.metrics.lineHeight;
       const top = line.y - lineHeight / 2;
-      
+
       lineEl.style.cssText = `
         height: ${lineHeight}px;
         top: ${top}px;
@@ -516,14 +524,8 @@ export class OpenQuranView extends HTMLElement {
       lineEl.appendChild(highlightSegment);
 
       if (line.lineType === "header") {
-        const headerFontSize = Math.min(
-          42,
-          Math.max(16, lineHeight - 10),
-        );
-        const headerLineHeight = Math.max(
-          12,
-          lineHeight - 4,
-        );
+        const headerFontSize = Math.min(42, Math.max(16, lineHeight - 10));
+        const headerLineHeight = Math.max(12, lineHeight - 4);
 
         const surahEl = document.createElement("div");
         surahEl.className = "quran-surah-name";
@@ -687,30 +689,41 @@ export class OpenQuranView extends HTMLElement {
     if (this.highlightedVerse) {
       const { surah, verse } = this.highlightedVerse;
       const lines = this.shadowRoot.querySelectorAll(".quran-line");
-      
+
       lines.forEach((lineEl) => {
-        const words = Array.from(lineEl.querySelectorAll(".quran-word")) as HTMLElement[];
-        const highlightedWords = words.filter(w => 
-          w.getAttribute("data-surah") === String(surah) && 
-          w.getAttribute("data-verse") === String(verse)
+        const words = Array.from(
+          lineEl.querySelectorAll(".quran-word"),
+        ) as HTMLElement[];
+        const highlightedWords = words.filter(
+          (w) =>
+            w.getAttribute("data-surah") === String(surah) &&
+            w.getAttribute("data-verse") === String(verse),
         );
 
-        const segmentEl = lineEl.querySelector(".quran-highlight-segment") as HTMLElement;
+        const segmentEl = lineEl.querySelector(
+          ".quran-highlight-segment",
+        ) as HTMLElement;
         if (!segmentEl) return;
 
         if (highlightedWords.length > 0) {
           const firstIdx = words.indexOf(highlightedWords[0]);
-          const lastIdx = words.indexOf(highlightedWords[highlightedWords.length - 1]);
-          
+          const lastIdx = words.indexOf(
+            highlightedWords[highlightedWords.length - 1],
+          );
+
           const firstEl = highlightedWords[0];
           const lastEl = highlightedWords[highlightedWords.length - 1];
 
           // RTL: first word is on the right, last word is on the left
           const rightEdge = firstEl.offsetLeft + firstEl.offsetWidth;
           const leftEdge = lastEl.offsetLeft;
-          
-          const isStart = firstIdx === 0 || words[firstIdx - 1].getAttribute("data-verse") !== String(verse);
-          const isEnd = lastIdx === words.length - 1 || words[lastIdx + 1].getAttribute("data-verse") !== String(verse);
+
+          const isStart =
+            firstIdx === 0 ||
+            words[firstIdx - 1].getAttribute("data-verse") !== String(verse);
+          const isEnd =
+            lastIdx === words.length - 1 ||
+            words[lastIdx + 1].getAttribute("data-verse") !== String(verse);
 
           segmentEl.style.display = "block";
           segmentEl.style.left = `${leftEdge}px`;
