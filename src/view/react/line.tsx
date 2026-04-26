@@ -219,10 +219,8 @@ export default function Line({
           display: "inline-block",
         };
 
-    const highlightStyles: CSSProperties = isVerseHighlighted
+    const highlightStyles: CSSProperties = isVerseHighlighted && !isWordHighlighted
       ? {
-          // Per-word background is removed in favor of the absolute segment layer
-          // but we keep it slightly visible for fallback or keep it transparent
           backgroundColor: "transparent",
           zIndex: 1,
         }
