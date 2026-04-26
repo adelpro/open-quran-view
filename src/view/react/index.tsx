@@ -47,7 +47,7 @@ export type OpenQuranViewProps = {
   className?: string;
   fullscreen?: boolean;
   onFullscreenToggle?: (isFullscreen: boolean) => void;
-  highlightedWords?: WordLocation[];
+  highlightedWord?: WordLocation | null;
   highlightedVerse?: { surah: number; verse: number } | null;
   wordHighlightColor?: string;
   verseHighlightColor?: string;
@@ -65,7 +65,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   className,
   fullscreen = false,
   onFullscreenToggle,
-  highlightedWords = [],
+  highlightedWord = null,
   highlightedVerse = null,
   wordHighlightColor,
   verseHighlightColor,
@@ -335,7 +335,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
                   getSurahFrameUrl={getSurahFrameUrl}
                   paddingLeft={pageLayout.metrics.pagePadding.left}
                   paddingRight={pageLayout.metrics.pagePadding.right}
-                  highlightedWords={highlightedWords}
+                  highlightedWord={highlightedWord}
                   highlightedVerse={highlightedVerse}
                   wordHighlightColor={wordHighlightColor}
                   verseHighlightColor={verseHighlightColor}

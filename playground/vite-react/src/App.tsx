@@ -35,9 +35,10 @@ function App() {
   const [highlightedVerse, setHighlightedVerse] = useState<{
     surah: number;
     verse: number;
-  } | null>({ surah: 1, verse: 7 });
-  const [highlightedWords, setHighlightedWords] = useState<WordLocation[]>([]);
-  const [autoHighlightWord, setAutoHighlightWord] = useState(true);
+  } | null>(null);
+  const [highlightedWord, setHighlightedWord] = useState<WordLocation | null>(
+    null,
+  );
 
   useEffect(() => {
     const checkMobile = () => {
@@ -72,60 +73,50 @@ function App() {
     window.history.pushState({}, "", newUrl);
   }, []);
 
-  const handleWordClick = useCallback(
-    (word: WordClickedData) => {
-      if (autoHighlightWord) {
-        setHighlightedWords([
-          {
-            surah: word.surahNumber,
-            verse: word.ayahNumber,
-            position: word.position,
-          },
-        ]);
+  const handleWordClick = useCallback((word: WordClickedData) => {
+    if (word.charType === "end") {
+      const verseKey = `${word.surahNumber}:${word.ayahNumber}`;
+      const verseTafseer = quranWords[verseKey] as VerseTafseer | undefined;
+      if (verseTafseer) {
+        setSelectedTafseer({
+          tafseer: verseTafseer.tafseer,
+          verse: verseTafseer.verse,
+          surah: verseTafseer.surah,
+        });
+        setHighlightedVerse({
+          surah: word.surahNumber!,
+          verse: word.ayahNumber!,
+        });
       }
+      return;
+    }
 
-      if (word.charType === "end") {
-        const verseKey = `${word.surahNumber}:${word.ayahNumber}`;
-        const verseTafseer = quranWords[verseKey] as VerseTafseer | undefined;
-        if (verseTafseer) {
-          setSelectedTafseer({
-            tafseer: verseTafseer.tafseer,
-            verse: verseTafseer.verse,
-            surah: verseTafseer.surah,
-          });
-          setHighlightedVerse({
-            surah: word.surahNumber!,
-            verse: word.ayahNumber!,
-          });
-        }
-        return;
+    if (word.charType === "word") {
+      setHighlightedWord({
+        surah: word.surahNumber,
+        verse: word.ayahNumber,
+        position: word.position,
+      });
+      const wordKey = `${word.surahNumber}:${word.ayahNumber}:${word.position}`;
+      const wordTafseer = quranWords[wordKey] as WordTafseer | undefined;
+      if (wordTafseer) {
+        setSelectedTafseer({
+          tafseer: wordTafseer.tafseer,
+          verse: wordTafseer.verse,
+          surah: wordTafseer.surah,
+          position: word.position,
+          text: wordTafseer.text,
+        });
       }
-
-      if (word.charType === "word") {
-        const wordKey = `${word.surahNumber}:${word.ayahNumber}:${word.position}`;
-        const wordTafseer = quranWords[wordKey] as WordTafseer | undefined;
-        if (wordTafseer) {
-          setSelectedTafseer({
-            tafseer: wordTafseer.tafseer,
-            verse: wordTafseer.verse,
-            surah: wordTafseer.surah,
-            position: word.position,
-            text: wordTafseer.text,
-          });
-        }
-        return;
-      }
-    },
-    [autoHighlightWord]
-  );
+      return;
+    }
+  }, []);
 
   const closeTafseerDialog = useCallback(() => {
     setSelectedTafseer(null);
   }, []);
 
-  const handleLoad = useCallback((layout: unknown) => {
-    //console.log("Page loaded:", layout);
-  }, []);
+  const handleLoad = useCallback(() => {}, []);
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -185,37 +176,6 @@ function App() {
                   </option>
                 ))}
               </select>
-              <div className="highlight-controls">
-                <label className={`checkbox-label ${theme}`}>
-                  <input
-                    type="checkbox"
-                    checked={autoHighlightWord}
-                    onChange={(e) => setAutoHighlightWord(e.target.checked)}
-                  />
-                  Highlight Word
-                </label>
-                <button
-                  className={`theme-btn ${theme}`}
-                  onClick={() => {
-                    setHighlightedVerse(null);
-                    setHighlightedWords([]);
-                  }}
-                  title="Clear Highlights"
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
               <button
                 onClick={() =>
                   setTheme((prev) => (prev === "light" ? "dark" : "light"))
@@ -337,7 +297,7 @@ function App() {
           onWordClick={handleWordClick}
           onLoad={handleLoad}
           highlightedVerse={highlightedVerse || undefined}
-          highlightedWords={highlightedWords}
+          highlightedWord={highlightedWord}
         />
       </div>
 

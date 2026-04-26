@@ -1,4 +1,11 @@
-import { CSSProperties, KeyboardEvent, MouseEvent, useLayoutEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  KeyboardEvent,
+  MouseEvent,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type {
   LineLayout,
   MushafLayout,
@@ -22,7 +29,7 @@ type Props = {
   paddingLeft: number;
   paddingRight: number;
   onWordClick?: (word: WordClickedData) => void;
-  highlightedWords?: WordLocation[];
+  highlightedWord?: WordLocation | null;
   highlightedVerse?: { surah: number; verse: number } | null;
   wordHighlightColor?: string;
   verseHighlightColor?: string;
@@ -42,13 +49,18 @@ export default function Line({
   fontSizeSurahHeader,
   paddingLeft,
   paddingRight,
-  highlightedWords = [],
+  highlightedWord = null,
   highlightedVerse = null,
   wordHighlightColor = "rgba(255, 215, 0, 0.5)",
   verseHighlightColor = "rgba(135, 206, 250, 0.25)",
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [highlightRange, setHighlightRange] = useState<{ left: number; width: number; isStart: boolean; isEnd: boolean } | null>(null);
+  const [highlightRange, setHighlightRange] = useState<{
+    left: number;
+    width: number;
+    isStart: boolean;
+    isEnd: boolean;
+  } | null>(null);
 
   useLayoutEffect(() => {
     if (!highlightedVerse || !containerRef.current) {
@@ -58,7 +70,11 @@ export default function Line({
 
     const wordsInLine = line.words;
     const highlightedIndices = wordsInLine
-      .map((w, i) => (w.surah === highlightedVerse.surah && w.verse === highlightedVerse.verse ? i : -1))
+      .map((w, i) =>
+        w.surah === highlightedVerse.surah && w.verse === highlightedVerse.verse
+          ? i
+          : -1,
+      )
       .filter((i) => i !== -1);
 
     if (highlightedIndices.length === 0) {
@@ -71,29 +87,36 @@ export default function Line({
 
     const container = containerRef.current;
     const wordElements = container.querySelectorAll("[data-word-idx]");
-    
+
     // Find the actual DOM elements for our range
     // Note: index in wordElements might match line.words index
-    const firstEl = Array.from(wordElements).find(el => (el as HTMLElement).dataset.wordIdx === firstIdx.toString()) as HTMLElement;
-    const lastEl = Array.from(wordElements).find(el => (el as HTMLElement).dataset.wordIdx === lastIdx.toString()) as HTMLElement;
+    const firstEl = Array.from(wordElements).find(
+      (el) => (el as HTMLElement).dataset.wordIdx === firstIdx.toString(),
+    ) as HTMLElement;
+    const lastEl = Array.from(wordElements).find(
+      (el) => (el as HTMLElement).dataset.wordIdx === lastIdx.toString(),
+    ) as HTMLElement;
 
     if (firstEl && lastEl) {
       // In RTL, the "first" word (lowest index) is on the right
       // the "last" word (highest index) is on the left
       const rightEdge = firstEl.offsetLeft + firstEl.offsetWidth;
       const leftEdge = lastEl.offsetLeft;
-      
-      const isStartOfVerse = wordsInLine[firstIdx].position === 1;
-      // We can't easily know if it's the absolute end without metadata, 
+
+      // We can't easily know if it's the absolute end without metadata,
       // but we can use the existing line segment logic.
-      const isStartOfSegment = firstIdx === 0 || wordsInLine[firstIdx - 1].verse !== highlightedVerse.verse;
-      const isEndOfSegment = lastIdx === wordsInLine.length - 1 || wordsInLine[lastIdx + 1].verse !== highlightedVerse.verse;
+      const isStartOfSegment =
+        firstIdx === 0 ||
+        wordsInLine[firstIdx - 1].verse !== highlightedVerse.verse;
+      const isEndOfSegment =
+        lastIdx === wordsInLine.length - 1 ||
+        wordsInLine[lastIdx + 1].verse !== highlightedVerse.verse;
 
       setHighlightRange({
         left: leftEdge,
         width: rightEdge - leftEdge,
         isStart: isStartOfSegment,
-        isEnd: isEndOfSegment
+        isEnd: isEndOfSegment,
       });
     }
   }, [highlightedVerse, line.words, paddingLeft, paddingRight]);
@@ -160,21 +183,16 @@ export default function Line({
   };
 
   const renderWord = (word: WordLayout, index: number) => {
-    const isWordHighlighted = highlightedWords.some(
-      (hw) =>
-        hw.surah === word.surah &&
-        hw.verse === word.verse &&
-        hw.position === word.position,
-    );
+    const isWordHighlighted =
+      highlightedWord &&
+      highlightedWord.surah === word.surah &&
+      highlightedWord.verse === word.verse &&
+      highlightedWord.position === word.position;
 
     const isVerseHighlighted =
       highlightedVerse &&
       highlightedVerse.surah === word.surah &&
       highlightedVerse.verse === word.verse;
-
-    // Segment detection for continuous highlighting
-    const isStartOfSegment = isVerseHighlighted && (index === 0 || line.words[index - 1].verse !== word.verse);
-    const isEndOfSegment = isVerseHighlighted && (index === line.words.length - 1 || line.words[index + 1].verse !== word.verse);
 
     const isAyahEnd =
       mushafLayout === "hafs-unicode" && word.charType === "end";
@@ -200,12 +218,14 @@ export default function Line({
           display: "inline-block",
         };
 
-    const highlightStyles: CSSProperties = isVerseHighlighted ? {
-      // Per-word background is removed in favor of the absolute segment layer
-      // but we keep it slightly visible for fallback or keep it transparent
-      backgroundColor: "transparent",
-      zIndex: 1,
-    } : {};
+    const highlightStyles: CSSProperties = isVerseHighlighted
+      ? {
+          // Per-word background is removed in favor of the absolute segment layer
+          // but we keep it slightly visible for fallback or keep it transparent
+          backgroundColor: "transparent",
+          zIndex: 1,
+        }
+      : {};
 
     return (
       <span
@@ -220,7 +240,7 @@ export default function Line({
         style={{
           ...getWordStyle(isAyahEnd),
           ...markerStyles,
-          background: isWordHighlighted ? wordHighlightColor : undefined,
+          backgroundColor: isWordHighlighted ? "red" : "blue",
           ...highlightStyles,
         }}
       >
@@ -231,12 +251,11 @@ export default function Line({
             fontSize: isTarget ? fontSizeWord * 0.9 : fontSizeWord,
             display: "inline-flex",
             alignItems: "center",
-            fontFamily:
-              isAyahEnd
-                ? undefined
-                : mushafLayout === "hafs-unicode"
-                  ? '"DigitalKhatt", "Amiri", system-ui'
-                  : "inherit",
+            fontFamily: isAyahEnd
+              ? undefined
+              : mushafLayout === "hafs-unicode"
+                ? '"DigitalKhatt", "Amiri", system-ui'
+                : "inherit",
           }}
         >
           {isAyahEnd ? `﴾${word.verse}﴿` : word.text || `[${word.id}]`}
