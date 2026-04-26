@@ -1,6 +1,6 @@
 {
   "name": "open-quran-view",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Universal, cross-platform Quran component library for high-fidelity Mushaf rendering.",
   "type": "module",
   "main": "./dist/view/react/index.js",
