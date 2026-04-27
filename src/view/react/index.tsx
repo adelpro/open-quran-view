@@ -85,7 +85,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
-  const [containerHeight, setContainerHeight] = useState(height || 800);
+  const [containerWidth, setContainerWidth] = useState(width || 0);
+  const [containerHeight, setContainerHeight] = useState(height || 0);
   const [bismillahWords, setBismillahWords] = useState<Word[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(fullscreen);
   const [showControls, setShowControls] = useState(true);
@@ -93,9 +94,10 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     null,
   );
 
+  // Track container width with ResizeObserver
   useEffect(() => {
-    if (height && !isFullscreen) {
-      setContainerHeight(height);
+    if (width && !isFullscreen) {
+      setContainerWidth(width);
       return;
     }
 
@@ -105,20 +107,26 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const rect = entry.contentRect;
-        if (rect.height > 0) {
-          // Keep it constrained to available width if needed to prevent horizontal overflow
-          if (rect.width > 0 && rect.height * MUSHAF_RATIO > rect.width) {
-            setContainerHeight(rect.width / MUSHAF_RATIO);
-          } else {
-            setContainerHeight(rect.height);
-          }
+        if (rect.width > 0) {
+          setContainerWidth(rect.width);
         }
       }
     });
 
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
-  }, [height, isFullscreen]);
+  }, [width, isFullscreen]);
+
+  // Derive height from width to maintain mushaf ratio
+  useEffect(() => {
+    if (height && !isFullscreen) {
+      setContainerHeight(height);
+      return;
+    }
+    if (containerWidth > 0) {
+      setContainerHeight(containerWidth / MUSHAF_RATIO);
+    }
+  }, [height, containerWidth, isFullscreen]);
 
   const handleFullscreenToggle = useCallback(() => {
     const container = containerRef.current;
@@ -174,8 +182,6 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
       setShowControls(false);
     }, 3000);
   }, []);
-
-  const containerWidth = containerHeight * MUSHAF_RATIO;
 
   const handleLoadPage = useCallback(
     async (pageNum: number) => {
