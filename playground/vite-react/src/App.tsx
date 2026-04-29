@@ -293,10 +293,13 @@ function App() {
         <OpenQuranView
           page={page}
           theme={theme}
+          width={500}
+          height={500 / 0.7}
           mushafLayout={mushafLayout}
           onPageChange={handlePageChange}
           onWordClick={handleWordClick}
           onLoad={handleLoad}
+          navigationControls
           highlightedVerse={highlightedVerse || undefined}
           highlightedWords={highlightedWords}
         />

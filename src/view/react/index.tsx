@@ -56,6 +56,7 @@ export type OpenQuranViewProps = {
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   page = 1,
+  width,
   height,
   theme = "light",
   mushafLayout = "hafs-v2",

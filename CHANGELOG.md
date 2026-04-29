@@ -6,6 +6,27 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ## [UNRELEASED]
 
+## [0.4.7] - 2026-04-29
+
+### Refactored
+
+- Update width and height calculation
+
+## [0.4.6] - 2026-04-26
+
+### Features
+
+- Add a new prop to handle navigations show hide
+
+### Refactored
+
+- Fixing word highlight
+- Debuging word highlighting
+
+### Fixed
+
+- Fix word highlight overwritten by aya highlight
+
 ## [0.4.1] - 2026-04-25
 
 ### Changed
