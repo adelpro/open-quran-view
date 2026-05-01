@@ -6,6 +6,34 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ## [UNRELEASED]
 
+## [0.5.0] - 2026-05-01
+
+### Features
+
+- Add `ratio` prop (boolean | number, default `true`)
+  - `true`: Uses mushaf ratio (0.7) to derive missing dimension
+  - `false`: Fills container dimensions without ratio derivation
+  - number: Custom ratio value (e.g., `0.8`)
+- Add `fit` prop (`"width" | "height"`, default `"width"`)
+  - `"width"`: Fill container width, derive height
+  - `"height"`: Fill container height, derive width
+  - Only applies when neither `width` nor `height` is provided
+
+### Refactored
+
+- Font size calculation now uses `min(fontSizeFromHeight, fontSizeFromWidth)` to prevent text overflow when dimensions don't match 0.7 ratio
+
+### Fixed
+
+- Resolved text overflow issue when providing custom width/height that violates the default 0.7 ratio
+
+### Docs
+
+- Updated API documentation with `ratio` and `fit` props
+- Added Prop Validation Warnings section
+- Added Font Size Calculation explanation
+- Updated web component documentation with new attributes
+
 ## [0.4.7] - 2026-04-29
 
 ### Refactored

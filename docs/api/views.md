@@ -90,6 +90,22 @@ The component warns in development mode when props conflict:
 | `ratio={false}` with `fit` | `"fit" prop is ignored when ratio={false}` |
 | `fullscreen` with `width` or `height` | Explicit dims are ignored in fullscreen |
 
+### Font Size Calculation
+
+The font size is calculated to ensure text fits within both width and height constraints:
+
+```text
+fontSizeFromHeight = lineHeight / 1.5
+fontSizeFromWidth = availableWidth / (avgCharsPerLine * 0.5)
+fontSize = min(fontSizeFromHeight, fontSizeFromWidth)
+```
+
+This approach ensures:
+
+- Text never overflows horizontally even when height is larger than the 0.7 ratio would suggest
+- Font is as large as possible while staying within both constraints
+- The 15-line Al-Madinah Mushaf standard is preserved
+
 ```typescript
 type WordInfo = {
   id: number;

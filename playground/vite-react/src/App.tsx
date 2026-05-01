@@ -295,6 +295,7 @@ function App() {
         <OpenQuranView
           page={page}
           theme={theme}
+          height={700}
           mushafLayout={mushafLayout}
           onPageChange={handlePageChange}
           onWordClick={handleWordClick}

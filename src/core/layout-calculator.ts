@@ -60,7 +60,18 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   // Al-Madinah Mushaf standard is 15 lines per page
   const computedLineHeight = availableHeight / 15;
   const lineHeight = options.lineHeight || computedLineHeight;
-  const fontSize = options.fontSize || lineHeight / 1.5;
+
+  // Calculate font size from height (original approach)
+  const fontSizeFromHeight = lineHeight / 1.5;
+
+  // Calculate font size from width constraint
+  // Estimate ~80 chars per line (accounting for word spacing)
+  const availableWidth = pageWidth - paddingLeft - paddingRight;
+  const avgCharsPerLine = 80;
+  const fontSizeFromWidth = availableWidth / (avgCharsPerLine * 0.5);
+
+  // Use the minimum to ensure text fits both constraints
+  const fontSize = options.fontSize || Math.min(fontSizeFromHeight, fontSizeFromWidth);
 
   const metrics: PageMetrics = {
     lineHeight,
