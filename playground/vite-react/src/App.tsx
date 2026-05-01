@@ -289,12 +289,12 @@ function App() {
       </header>
 
       <div className="viewer-container">
-        {/* width, default to 0.7 of the height */}
+        {/* width, default to full container width 
+            height, default to 70% of width (to maintain typical mushaf aspect ratio)        
+        */}
         <OpenQuranView
           page={page}
           theme={theme}
-          width={500}
-          height={500 / 0.7}
           mushafLayout={mushafLayout}
           onPageChange={handlePageChange}
           onWordClick={handleWordClick}

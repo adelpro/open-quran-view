@@ -52,6 +52,8 @@ export type OpenQuranViewProps = {
   wordHighlightColor?: string;
   verseHighlightColor?: string;
   navigationControls?: boolean;
+  ratio?: boolean | number;
+  fit?: "width" | "height";
 };
 
 export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
@@ -60,6 +62,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   height,
   theme = "light",
   mushafLayout = "hafs-v2",
+  ratio = true,
   onPageChange,
   onLoad,
   onWordClick,
@@ -71,6 +74,7 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   wordHighlightColor,
   verseHighlightColor,
   navigationControls = false,
+  fit = "width",
 }: OpenQuranViewProps) => {
   // The official Al-Madinah Mushaf standard medium edition measures ~14x20 cm.
   // 14 / 20 = 0.7, giving a ratio of 1:1.43.
@@ -95,39 +99,111 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     null,
   );
 
-  // Track container width with ResizeObserver
+  // Validate prop combinations and warn about ignored props
+  if (process.env.NODE_ENV !== "production") {
+    if (width && height && fit !== "width") {
+      console.warn(
+        `OpenQuranView: Both width and height are provided. The "fit" prop will be ignored.`
+      );
+    }
+    if (fit === "height" && width && !height) {
+      console.warn(
+        `OpenQuranView: "fit=\"height\"" is ignored when width is provided without height. Using width as provided.`
+      );
+    }
+    if (fit === "width" && height && !width) {
+      console.warn(
+        `OpenQuranView: "fit=\"width\"" is ignored when height is provided without width. Using height as provided.`
+      );
+    }
+    if (ratio === false && fit !== "width") {
+      console.warn(
+        `OpenQuranView: The "fit" prop is ignored when ratio={false} because no dimension derivation occurs.`
+      );
+    }
+    if (isFullscreen && (width || height)) {
+      console.warn(
+        `OpenQuranView: Explicit width/height are ignored in fullscreen mode.`
+      );
+    }
+  }
+
+  // Track container dimensions with ResizeObserver
   useEffect(() => {
+    if (ratio === false) {
+      // When ratio is disabled, use explicit dimensions if provided
+      if (width && height && !isFullscreen) {
+        setContainerWidth(width);
+        setContainerHeight(height);
+        return;
+      }
+      if (width && !isFullscreen) {
+        setContainerWidth(width);
+      } else {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const rect = entry.contentRect;
+            if (rect.width > 0) setContainerWidth(rect.width);
+            if (rect.height > 0) setContainerHeight(rect.height);
+          }
+        });
+
+        resizeObserver.observe(container);
+        return () => resizeObserver.disconnect();
+      }
+      return;
+    }
+
+    // When ratio is enabled, fit only matters when neither dimension is provided
     if (width && !isFullscreen) {
       setContainerWidth(width);
       return;
     }
+    if (height && !isFullscreen) {
+      setContainerHeight(height);
+      return;
+    }
 
+    // Neither dimension provided - use fit to decide which to track
     const container = containerRef.current;
     if (!container) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const rect = entry.contentRect;
-        if (rect.width > 0) {
-          setContainerWidth(rect.width);
+        if (fit === "height") {
+          if (rect.height > 0) setContainerHeight(rect.height);
+        } else {
+          if (rect.width > 0) setContainerWidth(rect.width);
         }
       }
     });
 
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
-  }, [width, isFullscreen]);
+  }, [width, height, ratio, fit, isFullscreen]);
 
-  // Derive height from width to maintain mushaf ratio
+  // Derive missing dimension from provided one to maintain mushaf ratio
   useEffect(() => {
+    if (ratio === false) return;
+
+    const actualRatio = typeof ratio === "number" ? ratio : MUSHAF_RATIO;
+
     if (height && !isFullscreen) {
+      const derivedWidth = height * actualRatio;
+      const clampedWidth =
+        containerWidth > 0 ? Math.min(derivedWidth, containerWidth) : derivedWidth;
+      setContainerWidth(clampedWidth);
       setContainerHeight(height);
       return;
     }
     if (containerWidth > 0) {
-      setContainerHeight(containerWidth / MUSHAF_RATIO);
+      setContainerHeight(containerWidth / actualRatio);
     }
-  }, [height, containerWidth, isFullscreen]);
+  }, [height, containerWidth, isFullscreen, ratio]);
 
   const handleFullscreenToggle = useCallback(() => {
     const container = containerRef.current;

@@ -2,9 +2,13 @@
 
 This guide explains the responsive sizing strategy used in `OpenQuranView` to handle dynamic container dimensions while maintaining proper aspect ratio and readable typography.
 
-## Aspect Ratio-Based Height Calculation
+## Dimension Behavior
 
-The Mushaf (Quran) has a fixed physical aspect ratio. We define this ratio as a constant and derive height from the container width:
+The `width` and `height` props are **optional**. The component has three sizing modes:
+
+### No dimensions provided
+
+The component uses a `ResizeObserver` to measure the actual container element's width, then derives height using the mushaf ratio:
 
 ```tsx
 const MUSHAF_RATIO = 0.7; // width / height
@@ -12,14 +16,48 @@ const MUSHAF_RATIO = 0.7; // width / height
 const containerHeight = containerWidth / MUSHAF_RATIO;
 ```
 
+There are **no hardcoded default values** — the component fills whatever space is available in the parent container.
+
+### Only width provided
+
+- Width is used directly
+- Height is derived: `height = width / MUSHAF_RATIO`
+
+**Example:** `width={700}` → `height = 700 / 0.7 = 1000`
+
+### Only height provided
+
+- Height is used directly
+- Width is derived: `width = height * MUSHAF_RATIO`
+
+**Example:** `height={600}` → `width = 600 * 0.7 = 420`
+
+### Both width and height provided
+
+Both values are used **as-is** — the ratio is ignored and you can use any custom dimensions.
+
+**Example:** `width={700} height={400}` → component renders at exactly `700×400`
+
+## Mushaf Aspect Ratio
+
+The `MUSHAF_RATIO = 0.7` constant encodes the width-to-height ratio of the standard Al-Madinah Mushaf medium edition (~14×20 cm). This preserves the authentic mushaf proportions:
+
+```
+┌─────────────────────────────────────────────────┐
+│  Input           │  Behavior                    │
+├──────────────────┼──────────────────────────────┤
+│  Neither w nor h │  Measure container, derive h │
+│  Only width      │  Use width, derive height    │
+│  Only height     │  Use height, derive width    │
+│  Both w and h    │  Use both as-is (no ratio)   │
+└─────────────────────────────────────────────────┘
+```
+
 This approach ensures that:
+
 - The Quran page maintains its correct proportions regardless of screen size
 - Width is the primary control dimension (determined by parent container or ResizeObserver)
-- Height is automatically calculated to preserve the aspect ratio
-
-**Example:** If the container is 600px wide:
-- Height = 600 / 0.7 ≈ 857px
-- If width expands to 1000px, height automatically becomes 1000 / 0.7 ≈ 1429px
+- Height is automatically calculated to preserve the aspect ratio when only one dimension is provided
 
 ## Clamp Utility Function
 

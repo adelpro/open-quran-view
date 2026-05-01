@@ -50,8 +50,10 @@ function App() {
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `page` | number | `1` | Page number (1-604) |
-| `width` | number | `600` | Component width in pixels |
-| `height` | number | `850` | Component height in pixels |
+| `width` | number | _(optional)_ | Component width in pixels. If provided alone, height is derived from the mushaf ratio (unless `ratio={false}`) |
+| `height` | number | _(optional)_ | Component height in pixels. If provided alone, width is derived from the mushaf ratio (unless `ratio={false}`) |
+| `ratio` | `boolean \| number` | `true` | Aspect ratio behavior. `true` (default) uses mushaf ratio (0.7) to derive missing dimension. `false` fills container dimensions without ratio derivation. A number overrides the ratio value (e.g., `0.8`) |
+| `fit` | `"width" \| "height"` | `"width"` | Which dimension to fill when neither `width` nor `height` is provided. `"width"` (default) fills container width and derives height. `"height"` fills container height and derives width. |
 | `theme` | `"light" \| "dark"` | `"light"` | Color theme |
 | `mushafLayout` | `"hafs-v2" \| "hafs-v4" \| "hafs-unicode"` | `"hafs-v2"` | Mushaf layout |
 | `onPageChange` | `(page: number) => void` | - | Called when page changes |
@@ -62,6 +64,31 @@ function App() {
 | `wordHighlightColor` | `string` | `"rgba(255, 215, 0, 0.5)"` | Word highlight color |
 | `verseHighlightColor` | `string` | `"rgba(135, 206, 250, 0.25)"` | Verse highlight color |
 | `className` | string | - | CSS class for container |
+
+### Ratio Prop Behavior
+
+| `ratio` value | Width provided | Height provided | `fit` | Result |
+|--------------|----------------|----------------|-------|--------|
+| `true` (default) | no | no | `"width"` (default) | Fills container width, derives height (`width / 0.7`) |
+| `true` (default) | no | no | `"height"` | Fills container height, derives width (`height * 0.7`) |
+| `true` (default) | yes | no | any | Uses width, derives height (`width / 0.7`) |
+| `true` (default) | no | yes | any | Uses height, derives width (`height * 0.7`) |
+| `true` (default) | yes | yes | any | Uses both explicitly |
+| `false` | any | any | any | No ratio derivation; uses explicit dims or container dims |
+| `0.8` (number) | yes | no | any | Uses width, derives height (`width / 0.8`) |
+| `0.8` (number) | no | yes | any | Uses height, derives width (`height * 0.8`) |
+
+### Prop Validation Warnings
+
+The component warns in development mode when props conflict:
+
+| Conflicting Props | Warning Message |
+|-------------------|-----------------|
+| Both `width` & `height` with `fit` | `"fit" prop will be ignored` |
+| `fit="height"` with `width` (no `height`) | `"fit="height"" is ignored, using width` |
+| `fit="width"` with `height` (no `width`) | `"fit="width"" is ignored, using height` |
+| `ratio={false}` with `fit` | `"fit" prop is ignored when ratio={false}` |
+| `fullscreen` with `width` or `height` | Explicit dims are ignored in fullscreen |
 
 ```typescript
 type WordInfo = {
@@ -99,6 +126,8 @@ registerOpenQuranView();
   width="600"
   height="850"
   theme="light"
+  ratio="true"
+  fit="width"
 ></open-quran-view>
 ```
 
@@ -108,8 +137,10 @@ registerOpenQuranView();
 |-----------|------|---------|-------------|
 | `page` | string | `"1"` | Page number (1-604) |
 | `mushaf-layout` | string | `"hafs-v2"` | Mushaf layout |
-| `width` | string | `"600"` | Component width in pixels |
-| `height` | string | `"850"` | Component height in pixels |
+| `width` | string | _(optional)_ | Component width in pixels. If provided alone, height is derived from the mushaf ratio |
+| `height` | string | _(optional)_ | Component height in pixels. If provided alone, width is derived from the mushaf ratio |
+| `ratio` | string | `"true"` | Aspect ratio behavior. `"true"` (default) uses mushaf ratio. `"false"` disables derivation. A number (e.g., `"0.8"`) overrides the ratio |
+| `fit` | string | `"width"` | Which dimension to fill when neither width nor height provided. `"width"` fills width and derives height. `"height"` fills height and derives width |
 | `theme` | string | `"light"` | Color theme (`light` or `dark`) |
 | `highlighted-words` | string | `undefined` | JSON string of `WordLocation[]` |
 | `highlighted-verse` | string | `undefined` | JSON string of `{ surah: number, verse: number }` |
@@ -200,6 +231,8 @@ export type OpenQuranViewProps = {
   page?: number;
   width?: number;
   height?: number;
+  ratio?: boolean | number;
+  fit?: "width" | "height";
   theme?: "light" | "dark";
   mushafLayout?: "hafs-v2" | "hafs-v4" | "hafs-unicode";
   onPageChange?: (page: number) => void;
