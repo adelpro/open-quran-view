@@ -293,4 +293,24 @@ yarn playground:web
 
 ---
 
+## 🚀 Porting to Other Frameworks (Flutter, Swift, Kotlin, Vue...)
+
+`open-quran-view` is built on a **data-first and specification-first architecture**. 
+
+While this repository maintains official rendering views for **React** and **Vanilla Web Components**, the underlying Quranic page layouts, metadata, and font glyph structures are completely framework-agnostic. 
+
+If you are a mobile developer (Flutter, Swift, Kotlin) or a frontend developer using other frameworks (Vue, Svelte, Angular, SolidJS), we highly encourage you to build your own native views using our pre-generated specifications:
+
+### How to Port:
+1.  **Consume the Specification**: Read the [Data Structure Reference](docs/architecture/data-structure.md) to understand the coordinate mapping, word elements, line structure, and metadata arrays.
+2.  **Retrieve the Font Assets**: Use the WOFF2 font files per page layout (`data/fonts/` or fetched from CDN) to load fonts dynamically in your environment.
+3.  **Map Coordinates & Tap Handlers**:
+    *   In **Flutter**, draw the page structure inside a `CustomPainter` and use a `GestureDetector` to map coordinates to word boundaries.
+    *   In **Vue/Svelte**, wrap the Vanilla Web Component (`open-quran-view/view/web`) or build native canvas/SVG-based components.
+    *   In **native iOS (Swift) / Android (Kotlin)**, draw the text layouts using native Canvas text rendering.
+
+If you build an adapter, wrapper, or port for another framework, submit a PR! We would love to link your repository as an official community-supported view in this section.
+
+---
+
 Jazakum Allahu Khairan
