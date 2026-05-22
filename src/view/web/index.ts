@@ -258,7 +258,9 @@ export class OpenQuranView extends HTMLElement {
     switch (name) {
       case "page":
         this.currentPage = parseInt(newValue, 10) || 1;
-        this.renderPage();
+        this.loadFontForPage(this.layout, this.currentPage).then(() => {
+          this.renderPage();
+        });
         break;
       case "mushaf-layout":
       case "width":
@@ -412,6 +414,14 @@ export class OpenQuranView extends HTMLElement {
     `;
     this.shadowRoot?.appendChild(this.fontFaceSheet);
     this.fontLoaded = true;
+  }
+
+  private async loadFontForPage(layout: MushafLayout, page: number): Promise<void> {
+    if (layout === "hafs-unicode") {
+      await loadFont(layout, page);
+      return;
+    }
+    await loadFont(layout, page);
   }
 
   private updateTheme(theme: "light" | "dark"): void {

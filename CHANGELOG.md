@@ -6,6 +6,11 @@ The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
 ## [UNRELEASED]
 
+### Fixed
+
+- **Web Component**: Fixed QCF font race condition where page navigation could render glyph placeholders instead of proper Arabic text
+- **Web Component**: Added `loadFontForPage()` method to ensure fonts are loaded before rendering on page change
+
 ## [0.5.0] - 2026-05-01
 
 ### Features
