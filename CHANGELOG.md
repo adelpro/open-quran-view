@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
-## [UNRELEASED]
+## [0.5.0] - 2026-05-22
 
 ### Fixed
 
 - **Web Component**: Fixed QCF font race condition where page navigation could render glyph placeholders instead of proper Arabic text
 - **Web Component**: Added `loadFontForPage()` method to ensure fonts are loaded before rendering on page change
+- **Web Component**: Fixed verse end markers in hafs-unicode layout rendering as raw glyphs (like ﴾6﴿) instead of proper Arabic-Indic numerals
 
 ## [0.5.0] - 2026-05-01
 
