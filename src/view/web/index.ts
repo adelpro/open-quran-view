@@ -625,7 +625,7 @@ export class OpenQuranView extends HTMLElement {
 
           if (isEndMarker) {
             wordEl.classList.add("ayah-end");
-            wordEl.textContent = `﴾${word.verse}﴿`;
+            wordEl.textContent = word.text || `﴾${word.verse}﴿`;
             wordEl.style.cssText = `
               font-family: "AyatMarker", "DigitalKhatt", system-ui;
               color: ${wordColor};
