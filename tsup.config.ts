@@ -16,6 +16,8 @@ const ASSETS_SRC = "src/data/assets";
 const ASSETS_DIST = "dist/data/assets";
 const VIEW_REACT_SRC = "src/view/react";
 const VIEW_REACT_DIST = "dist/view/react";
+const GLYPH_PATHS_SRC = "src/data/glyph-paths";
+const GLYPH_PATHS_DIST = "dist/data/glyph-paths";
 
 function copyFonts() {
   if (existsSync(FONTS_SRC)) {
@@ -53,6 +55,13 @@ function copyAssets() {
   if (existsSync(ASSETS_SRC)) {
     mkdirSync(ASSETS_DIST, { recursive: true });
     copyDir(ASSETS_SRC, ASSETS_DIST);
+  }
+}
+
+function copyGlyphPaths() {
+  if (existsSync(GLYPH_PATHS_SRC)) {
+    mkdirSync(GLYPH_PATHS_DIST, { recursive: true });
+    copyDir(GLYPH_PATHS_SRC, GLYPH_PATHS_DIST);
   }
 }
 
@@ -97,6 +106,7 @@ export default defineConfig({
     "view/index": "src/view/react/index.tsx",
     "view/react/index": "src/view/react/index.tsx",
     "view/web/index": "src/view/web/index.ts",
+    "view/rn/index": "src/view/rn/index.tsx",
   },
   format: ["esm"],
   dts: true,
@@ -110,6 +120,7 @@ export default defineConfig({
     copyAssets();
     copyStatic();
     copyViewReactAssets();
+    copyGlyphPaths();
     console.log("✓ Data and fonts copied to dist successfully");
   },
 });
