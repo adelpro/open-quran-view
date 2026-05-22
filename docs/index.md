@@ -18,10 +18,13 @@ docs/
 │   ├── data-structure.md      # Data structures & file formats
 │   └── static-assets.md       # Static assets architecture (v0.2.0+)
 └── guides/
+    ├── simple-guide.md        # Simple integration guide (NEW)
+    ├── advanced-guide.md      # Advanced showcase guide (Mubin) (NEW)
     ├── api-integration.md     # Quran Foundation API guide
     ├── data-generation.md      # Data generation scripts
     ├── font-loading.md        # Font loading strategy (v0.2.0+)
-    └── mushaf-comparison.md   # Mushaf versions comparison
+    ├── mushaf-comparison.md   # Mushaf versions comparison
+    └── responsive-sizing.md   # Responsive sizing guide
 ```
 
 ## Quick Start
@@ -74,6 +77,18 @@ function App() {
 - **Static Assets System** - Pre-generated URLs for reliable font and data loading (v0.2.0+).
 - **Multiple Mushaf Layouts** - Support for hafs-v2, hafs-v4, and hafs-unicode layouts.
 
+## Production Showcase
+
+For a fully-featured, production-grade implementation of `open-quran-view`, check out **[Mubin](https://mubin.adelpro.us.kg)**.
+
+Mubin serves as our official showcase, highlighting how to build highly interactive and synchronized experiences:
+- **Word-Level Audio Synchronization**: Seamless Quran recitation with dynamic word highlighting.
+- **Word-Level Tafseer Popups**: In-context definitions and vocabulary analysis on click.
+- **Ayah-Level Tafseer Triggers**: Clicking the verse marker displays full verse-level translation and Tafseer.
+- **Mobile Responsive Design**: Clean reading modes optimized for mobile devices.
+
+To see the source code, visit the [Mubin GitHub Repository](https://github.com/adelpro/mubin) or read our [Advanced Showcase Guide](guides/advanced-guide.md) to learn how to implement these patterns in your own app.
+
 ## Project Structure
 
 ```
@@ -115,6 +130,8 @@ See [Static Assets Architecture](architecture/static-assets.md) for details.
 
 ## Related
 
+- [Simple Integration Guide](guides/simple-guide.md) - Get started quickly with React & Web Components
+- [Advanced Showcase Guide (Mubin)](guides/advanced-guide.md) - Learn how Mubin implements audio-sync and Tafseer
 - [Open Quran View Journey](architecture/open-quran-view-journey.md) - The complete story from local files to Quran Foundation API
 - [Views API](api/views.md) - Detailed API reference for React and Web Component
 - [Data Structure](architecture/data-structure.md) - Data formats and file structures

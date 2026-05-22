@@ -2,15 +2,35 @@
 
 [NPM Package](https://www.npmjs.com/package/open-quran-view)
 ·
-[Docs](https://adelpro.us.kg/open-quran-view/)
+[Interactive Docs](https://adelpro.us.kg/open-quran-view/)
 ·
-[Live Demo](https://open-quran-view-react.netlify.app/)
+[Advanced Demo (Mubin)](https://mubin.adelpro.us.kg)
 ·
-[Production Example](https://github.com/adelpro/open-quran-view-react)
+[Advanced Source (Mubin)](https://github.com/adelpro/mubin)
+·
+[Basic Demo](https://open-quran-view-react.netlify.app/)
+·
+[Basic Source](https://github.com/adelpro/open-quran-view-react)
 
 High-performance universal Quran rendering library using Quran Foundation API.
 
 `open-quran-view` provides React and Web Component views for rendering Quran pages with high fidelity.
+
+---
+
+## 🌟 Advanced Showcase: Mubin
+
+For a fully-featured, production-grade application leveraging `open-quran-view` for advanced interactions, check out **[Mubin](https://mubin.adelpro.us.kg)** ([GitHub Repository](https://github.com/adelpro/mubin)).
+
+![Mubin Showcase Preview](screenshots/mubin-desktop-audio.png)
+
+Mubin demonstrates production-grade features built on top of this package, including:
+- **Word-Level Audio Highlight Synchronization**: Synchronized reciter audio utilizing Quran Foundation timestamps.
+- **Word-Level Tafseer Popup**: Clicking individual words overlays a translation and Tafseer definition.
+- **Ayah-Level Tafseer trigger**: Tapping the verse markers shows full Ayah-level translation and commentary.
+- **Responsive Layout**: Adapts dynamically across desktop, tablet, and mobile screens.
+
+Read our [Advanced Showcase Guide](docs/guides/advanced-guide.md) to learn how to implement these patterns in your own app.
 
 ---
 
