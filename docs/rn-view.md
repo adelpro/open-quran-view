@@ -157,7 +157,6 @@ Add to `app.json`:
 
 ```json
 {
-  "plugins": [["react-native-skia/plugin"]],
   "experiments": {
     "tsconfigPaths": true
   }
@@ -291,16 +290,6 @@ All layouts support pages 1-604.
 ```bash
 yarn generate:glyph-paths
 yarn build
-```
-
-### Issue: Skia Plugin Error
-
-**Solution**: Add to `app.json`:
-
-```json
-{
-  "plugins": ["react-native-skia/plugin"]
-}
 ```
 
 ### Issue: Import Error `open-quran-view/view/rn`

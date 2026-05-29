@@ -12,16 +12,21 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@expo/metro-runtime": "^56.0.13",
+    "@shopify/react-native-skia": "^0.1.215",
     "expo": "^51.0.0",
     "expo-router": "^3.5.0",
     "expo-status-bar": "~1.12.1",
+    "open-quran-view": "workspace:*",
     "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-native": "0.74.0",
-    "@shopify/react-native-skia": "^0.1.215",
-    "open-quran-view": "workspace:*"
+    "react-native-web": "~0.19.10"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
+    "@types/react-dom": "^18",
+    "@types/react-native-web": "^0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",

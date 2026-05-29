@@ -64,16 +64,6 @@ import { OpenQuranView } from "open-quran-view/view/rn";
 
 ## Troubleshooting
 
-### Plugin Error
-
-If you see a Skia plugin error, ensure your `app.json` includes:
-
-```json
-{
-  "plugins": ["react-native-skia/plugin"]
-}
-```
-
 ### Build Issues
 
 Clear the cache and rebuild:

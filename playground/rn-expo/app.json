@@ -23,7 +23,7 @@
   "web": {
     "favicon": "./assets/favicon.png"
   },
-  "plugins": [["react-native-skia/plugin"]],
+  "plugins": [],
   "experiments": {
     "tsconfigPaths": true
   }
