@@ -15,12 +15,16 @@
     "@expo/metro-runtime": "^56.0.13",
     "@shopify/react-native-skia": "^0.1.215",
     "expo": "^51.0.0",
+    "expo-constants": "^16.0.2",
+    "expo-linking": "^6.0.2",
     "expo-router": "^3.5.0",
     "expo-status-bar": "~1.12.1",
     "open-quran-view": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.0",
+    "react-native-safe-area-context": "^4.7.2",
+    "react-native-screens": "^3.29.0",
     "react-native-web": "~0.19.10"
   },
   "devDependencies": {
@@ -29,6 +33,7 @@
     "@types/react-native-web": "^0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
+    "babel-preset-expo": "^11.0.0",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   }
