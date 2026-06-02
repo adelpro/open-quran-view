@@ -336,6 +336,7 @@ export class OpenQuranView extends HTMLElement {
   }
 
   private async initialize(): Promise<void> {
+    const prevLayout = this.layout;
     const widthAttr = this.getAttribute("width");
     const heightAttr = this.getAttribute("height");
     const theme = (this.getAttribute("theme") || "light") as "light" | "dark";
@@ -343,6 +344,15 @@ export class OpenQuranView extends HTMLElement {
       "mushaf-layout",
     ) as MushafLayout | null;
     this.layout = mushafLayout || "hafs-v2";
+
+    // Reset font loaded state when layout changes so new font sheet is injected
+    if (prevLayout !== this.layout) {
+      if (this.fontFaceSheet) {
+        this.fontFaceSheet.remove();
+        this.fontFaceSheet = null;
+      }
+      this.fontLoaded = false;
+    }
 
     const width = widthAttr ? parseInt(widthAttr, 10) : 600;
     const height = heightAttr
@@ -407,11 +417,30 @@ export class OpenQuranView extends HTMLElement {
     }
 
     this.fontFaceSheet = document.createElement("style");
-    this.fontFaceSheet.textContent = `
-      .quran-word, .quran-surah-name {
-        font-family: "QuranFont", system-ui, -apple-system, sans-serif !important;
-      }
-    `;
+    if (this.layout === "hafs-unicode") {
+      // For unicode layout: use DigitalKhatt for words, SurahNameFont for headers
+      this.fontFaceSheet.textContent = `
+        .quran-word {
+          font-family: "DigitalKhatt", "Scheherazade New", "Amiri", system-ui, -apple-system, sans-serif !important;
+        }
+        .quran-word.ayah-end {
+          font-family: "AyatMarker", "DigitalKhatt", system-ui !important;
+        }
+        .quran-surah-name {
+          font-family: "SurahNameFont", system-ui, -apple-system, sans-serif !important;
+        }
+      `;
+    } else {
+      // For QCF layouts: use QuranFont for words, SurahNameFont for headers
+      this.fontFaceSheet.textContent = `
+        .quran-word {
+          font-family: "QuranFont", system-ui, -apple-system, sans-serif !important;
+        }
+        .quran-surah-name {
+          font-family: "SurahNameFont", system-ui, -apple-system, sans-serif !important;
+        }
+      `;
+    }
     this.shadowRoot?.appendChild(this.fontFaceSheet);
     this.fontLoaded = true;
   }
