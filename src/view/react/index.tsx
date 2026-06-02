@@ -92,6 +92,8 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
   const [pageLayout, setPageLayout] = useState<PageLayout | null>(null);
   const [containerWidth, setContainerWidth] = useState(width || 0);
   const [containerHeight, setContainerHeight] = useState(height || 0);
+  const [observedWidth, setObservedWidth] = useState(0);
+  const [observedHeight, setObservedHeight] = useState(0);
   const [bismillahWords, setBismillahWords] = useState<Word[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(fullscreen);
   const [showControls, setShowControls] = useState(true);
@@ -130,80 +132,93 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
 
   // Track container dimensions with ResizeObserver
   useEffect(() => {
-    if (ratio === false) {
-      // When ratio is disabled, use explicit dimensions if provided
-      if (width && height && !isFullscreen) {
-        setContainerWidth(width);
-        setContainerHeight(height);
-        return;
-      }
-      if (width && !isFullscreen) {
-        setContainerWidth(width);
-      } else {
-        const container = containerRef.current;
-        if (!container) return;
-
-        const resizeObserver = new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            const rect = entry.contentRect;
-            if (rect.width > 0) setContainerWidth(rect.width);
-            if (rect.height > 0) setContainerHeight(rect.height);
-          }
-        });
-
-        resizeObserver.observe(container);
-        return () => resizeObserver.disconnect();
-      }
-      return;
-    }
-
-    // When ratio is enabled, fit only matters when neither dimension is provided
-    if (width && !isFullscreen) {
-      setContainerWidth(width);
-      return;
-    }
-    if (height && !isFullscreen) {
-      setContainerHeight(height);
-      return;
-    }
-
-    // Neither dimension provided - use fit to decide which to track
     const container = containerRef.current;
     if (!container) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const rect = entry.contentRect;
-        if (fit === "height") {
-          if (rect.height > 0) setContainerHeight(rect.height);
-        } else {
-          if (rect.width > 0) setContainerWidth(rect.width);
-        }
+        if (rect.width > 0) setObservedWidth(rect.width);
+        if (rect.height > 0) setObservedHeight(rect.height);
       }
     });
 
     resizeObserver.observe(container);
     return () => resizeObserver.disconnect();
-  }, [width, height, ratio, fit, isFullscreen]);
+  }, []);
 
-  // Derive missing dimension from provided one to maintain mushaf ratio
+  // Derive container dimensions from props and observed container size
   useEffect(() => {
-    if (ratio === false) return;
+    if (ratio === false) {
+      if (isFullscreen) {
+        setContainerWidth(observedWidth);
+        setContainerHeight(observedHeight);
+      } else {
+        setContainerWidth(width || observedWidth);
+        setContainerHeight(height || observedHeight);
+      }
+      return;
+    }
 
     const actualRatio = typeof ratio === "number" ? ratio : MUSHAF_RATIO;
 
-    if (height && !isFullscreen) {
-      const derivedWidth = height * actualRatio;
-      const clampedWidth =
-        containerWidth > 0 ? Math.min(derivedWidth, containerWidth) : derivedWidth;
-      setContainerWidth(clampedWidth);
-      setContainerHeight(height);
+    if (isFullscreen) {
+      if (observedWidth > 0 && observedHeight > 0) {
+        const screenRatio = observedWidth / observedHeight;
+        if (screenRatio > actualRatio) {
+          setContainerHeight(observedHeight);
+          setContainerWidth(observedHeight * actualRatio);
+        } else {
+          setContainerWidth(observedWidth);
+          setContainerHeight(observedWidth / actualRatio);
+        }
+      }
       return;
     }
-    if (containerWidth > 0) {
-      setContainerHeight(containerWidth / actualRatio);
+
+    // Not fullscreen
+    if (width && height) {
+      setContainerWidth(width);
+      setContainerHeight(height);
+    } else if (width) {
+      setContainerWidth(width);
+      setContainerHeight(width / actualRatio);
+    } else if (height) {
+      const targetWidth = height * actualRatio;
+      if (observedWidth > 0 && targetWidth > observedWidth) {
+        setContainerWidth(observedWidth);
+        setContainerHeight(observedWidth / actualRatio);
+      } else {
+        setContainerWidth(targetWidth);
+        setContainerHeight(height);
+      }
+    } else {
+      // Neither prop is provided, compute based on fit and observed size
+      if (fit === "height") {
+        if (observedHeight > 0) {
+          const targetWidth = observedHeight * actualRatio;
+          if (observedWidth > 0 && targetWidth > observedWidth) {
+            setContainerWidth(observedWidth);
+            setContainerHeight(observedWidth / actualRatio);
+          } else {
+            setContainerWidth(targetWidth);
+            setContainerHeight(observedHeight);
+          }
+        }
+      } else {
+        if (observedWidth > 0) {
+          const targetHeight = observedWidth / actualRatio;
+          if (observedHeight > 0 && targetHeight > observedHeight) {
+            setContainerHeight(observedHeight);
+            setContainerWidth(observedHeight * actualRatio);
+          } else {
+            setContainerWidth(observedWidth);
+            setContainerHeight(targetHeight);
+          }
+        }
+      }
     }
-  }, [height, containerWidth, isFullscreen, ratio]);
+  }, [width, height, observedWidth, observedHeight, ratio, fit, isFullscreen]);
 
   const handleFullscreenToggle = useCallback(() => {
     const container = containerRef.current;
