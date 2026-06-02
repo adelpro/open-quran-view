@@ -4,22 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
-## [UNRELEASED]
-
-### Added
-
-- Added React Native view support under `open-quran-view/view/rn` with `@shopify/react-native-skia` rendering
-- Added Expo example app in `playground/rn-expo/` with navigation, theme switching, gesture support, and word interaction
-- Added root package export for `./view/rn` and `playground:rn` script for easy Expo startup
-
-### Changed
-
-- Updated React Native documentation to point to `playground/rn-expo/` instead of the old example path
-
-### Fixed
-
-- Corrected package exports and build config for React Native view entry point
-
 ## [0.5.0] - 2026-05-22
 
 ### Features

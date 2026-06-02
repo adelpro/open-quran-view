@@ -16,10 +16,6 @@
     "./view/web": {
       "types": "./dist/view/web/index.d.ts",
       "import": "./dist/view/web/index.js"
-    },
-    "./view/rn": {
-      "types": "./dist/view/rn/index.d.ts",
-      "import": "./dist/view/rn/index.js"
     }
   },
   "files": [
@@ -45,28 +41,12 @@
     "playground:setup": "yarn playground:install && yarn playground:build",
     "playground:react": "yarn workspace vite-react dev",
     "playground:web": "yarn workspace vite-typescript dev",
-    "playground:rn": "yarn workspace open-quran-view-rn-expo start",
     "publish": "npm publish"
   },
   "workspaces": [
     "playground/*",
     "."
   ],
-  "resolutions": {
-    "metro": "0.80.12",
-    "metro-config": "0.80.12",
-    "metro-core": "0.80.12",
-    "metro-resolver": "0.80.12",
-    "metro-runtime": "0.80.12",
-    "metro-file-map": "0.80.12",
-    "metro-source-map": "0.80.12",
-    "metro-symbolicate": "0.80.12",
-    "metro-cache": "0.80.12",
-    "metro-cache-key": "0.80.12",
-    "metro-babel-transformer": "0.80.12",
-    "metro-transform-plugins": "0.80.12",
-    "metro-transform-worker": "0.80.12"
-  },
   "peerDependencies": {
     "react": ">=18"
   },

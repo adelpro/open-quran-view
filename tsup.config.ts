@@ -106,7 +106,6 @@ export default defineConfig({
     "view/index": "src/view/react/index.tsx",
     "view/react/index": "src/view/react/index.tsx",
     "view/web/index": "src/view/web/index.ts",
-    "view/rn/index": "src/view/rn/index.tsx",
   },
   format: ["esm"],
   dts: true,

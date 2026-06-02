@@ -739,7 +739,6 @@ Different mushafs have different glyph systems, fonts, and coordinate systems. T
 ### Long Term
 
 - [ ] Server-side rendering package
-- [ ] Mobile React Native support
 - [ ] Community mushaf contributions
 
 ---
@@ -761,7 +760,7 @@ Key takeaways:
 - **Full Offline Support** - No internet required. All fonts, data, and layouts are bundled locally
 - **Easy Mushaf Switching** - Three built-in layouts (hafs-v2, hafs-v4, hafs-unicode) with easy extensibility for more
 - **Truly Modular Architecture** - Core logic (data loading, font loading, navigation) is completely separate from views. Update the core once, all views benefit
-- **Multi-View Support** - React component and Web Component included. Easy to add React Native, Angular, Vue, or any framework
+- **Multi-View Support** - React component and Web Component included. Easy to add Angular, Vue, or any framework
 - **Multilingual Ready** - Architecture supports any language layout and translation overlays
 - **Tafsir Integration** - Word-level data structure makes it simple to fetch and display tafsir on word selection
 - **Interactive Events** - Built-in events for word tap, long press, page change, and verse selection
