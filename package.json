@@ -16,6 +16,11 @@
     "./view/web": {
       "types": "./dist/view/web/index.d.ts",
       "import": "./dist/view/web/index.js"
+    },
+    "./view/rn": {
+      "react-native": "./src/view/rn/index.tsx",
+      "types": "./src/view/rn/index.tsx",
+      "default": "./src/view/rn/index.tsx"
     }
   },
   "files": [
@@ -37,6 +42,7 @@
     "generate:static": "yarn generate:static:fonts && yarn generate:static:data",
     "generate:glyph-paths": "tsx scripts/extract-glyph-paths.ts",
     "generate:pages:split": "tsx scripts/split-pages.ts",
+    "convert:fonts": "tsx scripts/convert-fonts-to-ttf.ts",
     "playground:install": "yarn install",
     "playground:build": "yarn build",
     "playground:setup": "yarn playground:install && yarn playground:build",
@@ -50,7 +56,8 @@
     "."
   ],
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "expo-font": ">=12.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
