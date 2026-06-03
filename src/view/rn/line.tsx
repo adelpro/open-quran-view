@@ -23,7 +23,7 @@ import type {
   WordLocation,
 } from "../../core";
 import { surahNumberToFontCode } from "../../core/font-loader.rn";
-import { Word } from "./word";
+import { Word as WordView } from "./word";
 
 const TARGET_MARKER = "ﲡ";
 
@@ -167,7 +167,7 @@ function LineImpl({
     const isTarget = word.text?.includes(TARGET_MARKER) ?? false;
 
     return (
-      <Word
+      <WordView
         key={word.id}
         word={word}
         index={index}
