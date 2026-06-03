@@ -36,11 +36,13 @@
     "generate:static:data": "tsx scripts/generate-static-data.ts",
     "generate:static": "yarn generate:static:fonts && yarn generate:static:data",
     "generate:glyph-paths": "tsx scripts/extract-glyph-paths.ts",
+    "generate:pages:split": "tsx scripts/split-pages.ts",
     "playground:install": "yarn install",
     "playground:build": "yarn build",
     "playground:setup": "yarn playground:install && yarn playground:build",
     "playground:react": "yarn workspace vite-react dev",
     "playground:web": "yarn workspace vite-typescript dev",
+    "playground:rn": "yarn workspace rn-expo start",
     "publish": "npm publish"
   },
   "workspaces": [
@@ -73,6 +75,7 @@
     "tsx": "^4.0.0",
     "typescript": "^5.0.0",
     "vitest": "^4.0.18",
+    "wawoff2": "^2.0.1",
     "whatwg-fetch": "^3.6.20"
   },
   "repository": {

@@ -33,8 +33,8 @@ async function downloadPageFonts(
   mkdirSync(outputDir, { recursive: true });
 
   for (let page = 1; page <= 604; page++) {
-    const url = `${FONT_BASE}/${subPath}/p${page}.woff2`;
-    const outputPath = join(outputDir, `p${page}.woff2`);
+    const url = `${FONT_BASE}/${subPath}/p${page}.ttf`;
+    const outputPath = join(outputDir, `p${page}.ttf`);
 
     const success = await downloadFile(url, outputPath);
 
@@ -61,13 +61,13 @@ async function main() {
 
     await downloadPageFonts(
       "v2",
-      "v2/woff2",
+      "v2/ttf",
       join(__dirname, "..", "src", "data", "fonts", "hafs-v2"),
     );
     console.log();
     await downloadPageFonts(
       "v4",
-      "v4/colrv1/woff2",
+      "v4/colrv1/ttf",
       join(__dirname, "..", "src", "data", "fonts", "hafs-v4"),
     );
 
@@ -80,3 +80,4 @@ async function main() {
 }
 
 main();
+

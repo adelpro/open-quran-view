@@ -112,6 +112,11 @@ export default defineConfig({
   clean: true,
   splitting: false,
   external: ["react"],
+  // Exclude React Native platform files from the web build
+  esbuildOptions(options) {
+    options.conditions = ["browser", "module", "import", "default"];
+  },
+  ignoreWatch: ["**/*.rn.ts", "**/font-loader.rn.ts"],
   onSuccess: async () => {
     copyFonts();
     copySharedData();
@@ -120,6 +125,20 @@ export default defineConfig({
     copyStatic();
     copyViewReactAssets();
     copyGlyphPaths();
+    // Remove any accidentally-copied .rn.ts files from dist
+    const { readdirSync: rds, rmSync } = await import("fs");
+    function removeRnFiles(dir: string) {
+      if (!existsSync(dir)) return;
+      for (const entry of rds(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) removeRnFiles(full);
+        else if (entry.name.endsWith(".rn.ts") || entry.name.endsWith(".rn.js") || entry.name.endsWith(".rn.d.ts")) {
+          rmSync(full);
+        }
+      }
+    }
+    removeRnFiles("dist");
     console.log("✓ Data and fonts copied to dist successfully");
   },
 });
+
