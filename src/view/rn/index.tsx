@@ -14,7 +14,13 @@
  *    fonts (DigitalKhatt, AyatQuran, SurahName) are auto-linked via
  *    react-native.config.js and available natively.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -48,12 +54,7 @@ const CENTERED_PAGES_HORIZONTAL_SET = new Set<number>(
 const clamp = (min: number, val: number, max: number) =>
   Math.max(min, Math.min(val, max));
 
-export type {
-  MushafLayout,
-  PageLayout,
-  WordClickedData,
-  WordLocation,
-};
+export type { MushafLayout, PageLayout, WordClickedData, WordLocation };
 
 export type OpenQuranViewProps = {
   page?: number;
@@ -264,59 +265,62 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
         </View>
       )}
 
-      {!isLoading && pageLayout && containerWidth > 0 && containerHeight > 0 && (
-        <View
-          style={{
-            width: containerWidth,
-            height: containerHeight,
-            position: "relative",
-          }}
-        >
-          {navigationControls && !isLoading && pageLayout && (
-            <NavigationControls
-              currentPage={currentPage}
-              totalPages={604}
-              onNext={handleNextPage}
-              onPrev={handlePrevPage}
-              onGoTo={handleGoToPage}
-              theme={theme}
-              width={containerWidth}
-            />
-          )}
-          {pageLayout.lines.map((line) => {
-            const isCenteredLine =
-              line.isCentered ||
-              CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
-
-            const lineH = line.height || pageLayout.metrics.lineHeight;
-            // /1.7 (slightly smaller than lineHeight/1.5) gives glyphs breathing
-            // room so ayah-end markers don't crowd the line box.
-            const fontSizeWord = clamp(10, lineH / 1.7, 200);
-            const fontSizeSurahHeader = clamp(16, lineH / 1.7, 200);
-
-            return (
-              <Line
-                key={line.lineNumber}
-                line={line}
-                isCenteredLine={isCenteredLine}
+      {!isLoading &&
+        pageLayout &&
+        containerWidth > 0 &&
+        containerHeight > 0 && (
+          <View
+            style={{
+              width: containerWidth,
+              height: containerHeight,
+              position: "relative",
+            }}
+          >
+            {navigationControls && !isLoading && pageLayout && (
+              <NavigationControls
+                currentPage={currentPage}
+                totalPages={604}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+                onGoTo={handleGoToPage}
                 theme={theme}
-                fontSizeWord={fontSizeWord}
-                fontSizeSurahHeader={fontSizeSurahHeader}
-                bismillahWords={bismillahWords}
-                mushafLayout={mushafLayout}
-                lineHeight={lineH}
-                onWordClick={onWordClick}
-                paddingLeft={pageLayout.metrics.pagePadding.left}
-                paddingRight={pageLayout.metrics.pagePadding.right}
-                highlightedWords={highlightedWords}
-                highlightedVerse={highlightedVerse}
-                wordHighlightColor={wordHighlightColor}
-                verseHighlightColor={verseHighlightColor}
+                width={containerWidth}
               />
-            );
-          })}
-        </View>
-      )}
+            )}
+            {pageLayout.lines.map((line) => {
+              const isCenteredLine =
+                line.isCentered ||
+                CENTERED_PAGES_HORIZONTAL_SET.has(currentPage);
+
+              const lineH = line.height || pageLayout.metrics.lineHeight;
+              // /1.7 (slightly smaller than lineHeight/1.5) gives glyphs breathing
+              // room so ayah-end markers don't crowd the line box.
+              const fontSizeWord = clamp(10, lineH / 1.7, 200);
+              const fontSizeSurahHeader = clamp(16, lineH / 1.7, 200);
+
+              return (
+                <Line
+                  key={line.lineNumber}
+                  line={line}
+                  isCenteredLine={isCenteredLine}
+                  theme={theme}
+                  fontSizeWord={fontSizeWord}
+                  fontSizeSurahHeader={fontSizeSurahHeader}
+                  bismillahWords={bismillahWords}
+                  mushafLayout={mushafLayout}
+                  lineHeight={lineH}
+                  onWordClick={onWordClick}
+                  paddingLeft={pageLayout.metrics.pagePadding.left}
+                  paddingRight={pageLayout.metrics.pagePadding.right}
+                  highlightedWords={highlightedWords}
+                  highlightedVerse={highlightedVerse}
+                  wordHighlightColor={wordHighlightColor}
+                  verseHighlightColor={verseHighlightColor}
+                />
+              );
+            })}
+          </View>
+        )}
     </View>
   );
 };
@@ -342,4 +346,8 @@ const styles = StyleSheet.create({
 });
 
 // Re-export the layout types for downstream use.
-export type { LineLayout, WordLayout, PageMetrics } from "../../core/layout-calculator";
+export type {
+  LineLayout,
+  WordLayout,
+  PageMetrics,
+} from "../../core/layout-calculator";
