@@ -31,7 +31,7 @@ import {
   type Word,
   type WordClickedData,
   type WordLocation,
-} from "../../core";
+} from "../../core/index.rn";
 import { usePageData } from "./hooks/use-page-data";
 import { useFonts } from "./hooks/use-fonts";
 import { Line } from "./line";

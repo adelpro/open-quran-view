@@ -8,8 +8,8 @@
  * in-flight, the stale result is discarded.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getPageDataThunk } from "../../core/static/data.rn";
-import type { Page } from "../../core/types";
+import { getPageDataThunk } from "../../../core/static/data.rn";
+import type { Page } from "../../../core/types";
 
 type State = {
   data: Page | null;
@@ -17,10 +17,7 @@ type State = {
   error: Error | null;
 };
 
-export function usePageData(
-  mushafLayout: string,
-  pageNumber: number,
-): State {
+export function usePageData(mushafLayout: string, pageNumber: number): State {
   const [state, setState] = useState<State>({
     data: null,
     loading: true,
