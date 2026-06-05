@@ -1,0 +1,40 @@
+# Personal/System files
+.DS_Store
+*.pem
+
+# Local env files
+.env*.local
+
+# Node modules
+node_modules/
+
+# Expo files
+.expo/
+dist/
+web-build/
+
+# Android build artifacts
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+*.apk
+*.aab
+
+# iOS build artifacts
+ios/build/
+ios/Pods/
+ios/.xcode.env.local
+ios/**/*.mode1v3
+ios/**/*.mode2v3
+ios/**/*.storyboardc
+ios/**/*.nib
+ios/**/Generated
+*.xcworkspace/
+xcuserdata/
+
+# TypeScript/JavaScript
+*.tsbuildinfo
+
+# Coverage reports
+coverage/
