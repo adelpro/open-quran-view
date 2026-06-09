@@ -1,7 +1,7 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
 
-const projectRoot = __dirname;
+const projectRoot = path.resolve(__dirname);
 const workspaceRoot = path.resolve(projectRoot, "../..");
 
 const config = getDefaultConfig(projectRoot);
@@ -23,3 +23,4 @@ config.resolver.nodeModulesPaths = [
 // Platform-specific module resolution for .rn.ts and .rn.tsx files
 config.resolver.sourceExts = ["rn.ts", "rn.tsx", "ts", "tsx", "js", "jsx", "json"];
 
+module.exports = config;
