@@ -33,7 +33,10 @@ export { getBismillahWords, clearBismillahCache } from "./bismillah";
 // RN-specific loaders and statics:
 export { getPagesJson, getPageFromJson } from "./data-loader.rn";
 
-// `src/core/font-loader.rn.ts` is added in Phase 4. Once it exists,
-// re-export it here too:
-//   export { loadFont, loadBismillahFont, loadSurahNameFont,
-//            loadAyatMarkerFont, surahNumberToFontCode } from "./font-loader.rn";
+export {
+  loadFont,
+  loadBismillahFont,
+  loadSurahNameFont,
+  loadAyatMarkerFont,
+  surahNumberToFontCode,
+} from "./font-loader.rn";
