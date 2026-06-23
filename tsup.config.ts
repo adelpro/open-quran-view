@@ -106,12 +106,18 @@ export default defineConfig({
     "view/index": "src/view/react/index.tsx",
     "view/react/index": "src/view/react/index.tsx",
     "view/web/index": "src/view/web/index.ts",
+    "view/rn/index": "src/view/rn/index.tsx",
   },
   format: ["esm"],
   dts: true,
   clean: true,
   splitting: false,
-  external: ["react"],
+  external: [
+    "react",
+    "react-native",
+    "expo-font",
+    "@react-native/assets-registry",
+  ],
   onSuccess: async () => {
     copyFonts();
     copySharedData();

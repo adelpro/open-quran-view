@@ -16,6 +16,11 @@
     "./view/web": {
       "types": "./dist/view/web/index.d.ts",
       "import": "./dist/view/web/index.js"
+    },
+    "./view/rn": {
+      "react-native": "./dist/view/rn/index.js",
+      "types": "./dist/view/rn/index.d.ts",
+      "default": "./dist/view/rn/index.js"
     }
   },
   "files": [
