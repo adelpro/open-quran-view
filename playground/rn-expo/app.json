@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "rn-expo",
+    "slug": "rn-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./node_modules/open-quran-view/dist/data/fonts/hafs-unicode/digitalkhatt.otf",
+            "./node_modules/open-quran-view/dist/data/fonts/hafs-unicode/AyatQuran2-PVKGm.ttf",
+            "./node_modules/open-quran-view/dist/data/shared/surah-name-v4.ttf"
+          ]
+        }
+      ]
+    ]
+  }
+}
