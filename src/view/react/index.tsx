@@ -110,12 +110,12 @@ export const OpenQuranView: React.FC<OpenQuranViewProps> = ({
     }
     if (fit === "height" && width && !height) {
       console.warn(
-        `OpenQuranView: "fit=\"height\"" is ignored when width is provided without height. Using width as provided.`
+        `OpenQuranView: "fit="height"" is ignored when width is provided without height. Using width as provided.`
       );
     }
     if (fit === "width" && height && !width) {
       console.warn(
-        `OpenQuranView: "fit=\"width\"" is ignored when height is provided without width. Using height as provided.`
+        `OpenQuranView: "fit="width"" is ignored when height is provided without width. Using height as provided.`
       );
     }
     if (ratio === false && fit !== "width") {
