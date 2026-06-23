@@ -136,11 +136,32 @@ export default defineConfig({
   dts: true,
   clean: true,
   splitting: false,
+  // `noExternal` is set to `[]` (default) so every import is bundled.
+  // The view/rn tree uses `() => require(...)` thunks in the static
+  // *.rn.ts modules; those thunks reference TTF / OTF / JSON files
+  // (large binaries). Bundling them into dist/view/rn/index.js bloats
+  // the published package from KBs to 70+ MB. We tell esbuild to
+  // treat those extensions as `empty` (i.e. don't load them at all
+  // — the require() call is left for Metro to resolve at runtime in
+  // the consumer's app). The actual assets are still copied to
+  // dist/data/ by copyData / copyTtfFonts in onSuccess.
+  loader: {
+    ".ttf": "empty",
+    ".otf": "empty",
+    ".woff2": "empty",
+  },
   external: [
     "react",
     "react-native",
     "expo-font",
     "@react-native/assets-registry",
+    // The static *.rn.ts files use `() => require(...)` to lazy-load
+    // TTF / OTF / JSON assets. Those calls are resolved by Metro in the
+    // consumer's app at runtime; tsup must NOT follow them, otherwise
+    // the whole fonts.rn.ts (with 1208 .ttf require() calls) and
+    // data.rn.ts (with three pages.json require() calls) gets inlined
+    // into dist/view/rn/index.js, bloating it from KBs to 70+ MB.
+    /static\/(fonts|data)\.rn/,
   ],
   onSuccess: async () => {
     copyFonts();
