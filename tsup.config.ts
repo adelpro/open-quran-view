@@ -26,6 +26,30 @@ function copyFonts() {
   }
 }
 
+// RN-only: copy the TTF directories (hafs-v2-ttf/, hafs-v4-ttf/) into
+// dist/data/fonts/ so the published package contains the assets Metro
+// will resolve from src/core/static/fonts.rn.ts (after tsup compiles it).
+function copyTtfFonts() {
+  for (const dir of ["hafs-v2-ttf", "hafs-v4-ttf"]) {
+    const src = join(FONTS_SRC, dir);
+    if (existsSync(src)) {
+      const dst = join(FONTS_DIST, dir);
+      copyDir(src, dst);
+    }
+  }
+}
+
+// RN-only: copy the surah-name TTF alongside the existing WOFF2 in
+// dist/data/shared/ so the expo-font plugin in the consumer's app.json
+// can register it (see Phase 7).
+function copySurahNameTtf() {
+  const src = join(SHARED_SRC, "surah-name-v4.ttf");
+  if (existsSync(src)) {
+    mkdirSync(SHARED_DIST, { recursive: true });
+    copyFileSync(src, join(SHARED_DIST, "surah-name-v4.ttf"));
+  }
+}
+
 function copySharedData() {
   if (existsSync(SHARED_SRC)) {
     mkdirSync(SHARED_DIST, { recursive: true });
@@ -120,6 +144,8 @@ export default defineConfig({
   ],
   onSuccess: async () => {
     copyFonts();
+    copyTtfFonts();
+    copySurahNameTtf();
     copySharedData();
     copyData();
     copyAssets();
