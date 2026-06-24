@@ -10,6 +10,7 @@ coverage/
 # Production
 dist/
 build/
+.expo/
 
 # Misc
 .DS_Store
