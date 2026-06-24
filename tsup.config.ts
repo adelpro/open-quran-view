@@ -1,5 +1,12 @@
 import { defineConfig } from "tsup";
-import { copyFileSync, existsSync, mkdirSync, readdirSync } from "fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "fs";
 import { join } from "path";
 
 const FONTS_SRC = "src/data/fonts";
@@ -45,13 +52,24 @@ function copyTtfFonts() {
 // regex) resolves to a real file at runtime in Metro. Metro handles
 // .ts files via babel, and the playground's metro.config.js has
 // `sourceExts: ["rn.ts", ...]` so the .rn.ts files are picked up.
+//
+// The generator emits `() => require("../../data/...")` paths, which
+// resolve correctly from src/core/static/ (going up two levels to
+// src/data/) but NOT from dist/view/rn/static/ (where "../../"
+// lands at dist/view/data/, not dist/data/). We rewrite the path
+// prefix to "../../../data/" in the copied file so it resolves from
+// the deeper dist tree. The source files stay as-is.
 function copyRnStaticModules() {
   const dst = join("dist/view/rn/static");
   mkdirSync(dst, { recursive: true });
   for (const name of ["data.rn.ts", "fonts.rn.ts"]) {
     const src = join(STATIC_SRC, name);
     if (existsSync(src)) {
-      copyFileSync(src, join(dst, name));
+      const original = readFileSync(src, "utf-8");
+      const rewritten = original
+        .split('"../../data/')
+        .join('"../../../data/');
+      writeFileSync(join(dst, name), rewritten, "utf-8");
     }
   }
 }
