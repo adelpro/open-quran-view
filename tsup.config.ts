@@ -39,6 +39,23 @@ function copyTtfFonts() {
   }
 }
 
+// RN-only: copy the .rn.ts static modules to dist/view/rn/static/ so
+// that the `import { staticData } from "./static/data.rn"` line in
+// dist/view/rn/index.js (which we externalized via tsup's external
+// regex) resolves to a real file at runtime in Metro. Metro handles
+// .ts files via babel, and the playground's metro.config.js has
+// `sourceExts: ["rn.ts", ...]` so the .rn.ts files are picked up.
+function copyRnStaticModules() {
+  const dst = join("dist/view/rn/static");
+  mkdirSync(dst, { recursive: true });
+  for (const name of ["data.rn.ts", "fonts.rn.ts"]) {
+    const src = join(STATIC_SRC, name);
+    if (existsSync(src)) {
+      copyFileSync(src, join(dst, name));
+    }
+  }
+}
+
 // RN-only: copy the surah-name TTF alongside the existing WOFF2 in
 // dist/data/shared/ so the expo-font plugin in the consumer's app.json
 // can register it (see Phase 7).
@@ -171,6 +188,7 @@ export default defineConfig({
     copyData();
     copyAssets();
     copyStatic();
+    copyRnStaticModules();
     copyViewReactAssets();
     copyGlyphPaths();
     console.log("✓ Data and fonts copied to dist successfully");

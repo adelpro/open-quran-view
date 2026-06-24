@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "open-quran-view": "workspace:*"
+    "open-quran-view": "link:../.."
   },
   "devDependencies": {
     "typescript": "~5.9.3",

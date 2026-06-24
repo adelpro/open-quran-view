@@ -49,6 +49,7 @@
     "playground:setup": "yarn playground:install && yarn playground:build",
     "playground:react": "yarn workspace vite-react dev",
     "playground:web": "yarn workspace vite-typescript dev",
+    "playground:rn": "yarn workspace rn-expo start",
     "publish": "npm publish"
   },
   "workspaces": [
