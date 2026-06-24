@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
+## [0.7.0] - 2026-XX-XX
+
+### Added
+
+- **`open-quran-view/view/rn`** — new React Native entry point exporting `OpenQuranViewRN`. QCF v2/v4 font-based Mushaf renderer for Expo (and bare RN via `expo prebuild`). Per-page fonts are lazy-loaded at runtime via `Font.loadAsync` (expo-font); only pages the user navigates to ship in the binary.
+
+### Notes
+
+- Existing `view` and `view/web` exports are unchanged.
+- New RN code lives under `src/view/rn/`, `src/core/font-loader.rn.ts`, `src/core/data-loader.rn.ts`, `src/core/index.rn.ts`, `src/core/static/{fonts,data}.rn.ts`.
+- `hafs-v2` / `hafs-v4` per-page fonts are TTF files in `src/data/fonts/hafs-{v2,v4}-ttf/` (committed). They are converted locally from the WOFF2 originals via `scripts/convert-woff2-to-ttf.ts` (uses `wawoff2`). The Quran Foundation API serves TTF directly at `https://verses.quran.foundation/fonts/quran/hafs/v{2,4}/.../p{N}.ttf`; `scripts/download-fonts.ts` can fetch them but is rate-limited (~0.3 files/sec sustained), so local conversion is preferred.
+- The three always-loaded fonts — DigitalKhatt (`.otf`), AyatQuran (`.ttf`), SurahName (`.ttf`) — are registered in the consumer's `app.json` via the `expo-font` plugin. No `QCF_BSML.ttf` — the bismillah is rendered with page 1's font, loaded at runtime via `loadBismillahFont`.
+- The surah-name v4 font is downloaded from the QUL CDN at `https://static-cdn.tarteel.ai/qul/fonts/surah-names/v4/surah-name-v4.ttf`. License is not explicitly cited on the QUL page; a NOTICE file is tracked as a follow-up.
+- New peer deps: `expo-font >=12.0.0`, `react-native >=0.74`. Existing peer: `react >=18`.
+- New test dev deps: `react`, `react-dom`, `@testing-library/dom`, `expo-font`, `react-native` (so the dts build and Vitest can resolve them).
+- A `react-native` stub at `src/test/react-native-stub.ts` is aliased in `vitest.config.ts` so component tests don't try to parse the real package's Flow type files.
+- The static `*.rn.ts` modules are externalized in `tsup.config.ts` via a regex (`/static/(fonts|data).rn/`) so their `() => require(...)` thunks are not inlined into `dist/view/rn/index.js`. Metro resolves them in the consumer's app at runtime.
+
 ## [UNRELEASED]
 
 ### Fixed
