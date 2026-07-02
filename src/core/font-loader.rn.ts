@@ -1,17 +1,23 @@
 // React Native font loader. Mirrors the surface of src/core/font-loader.ts
-// (web) but uses expo-font's Font.loadAsync + the `() => require(...)` thunks
-// from static/fonts.rn.ts instead of the browser FontFace API.
+// (web) but uses expo-font's Font.loadAsync + the loaders from
+// static/fonts.rn.ts instead of the browser FontFace API.
 //
 // Module-level dedup keeps Font.loadAsync idempotent across re-renders
 // of OpenQuranViewRN. A page font loaded once is never re-fetched, even
 // if the user navigates away and back.
+//
+// Per-page TTF assets are NOT pre-listed as static thunks. Instead,
+// static/fonts.rn.ts exposes a `forPage(page)` function that builds the
+// require() argument at runtime inside an eval(), so Metro's static
+// analyzer cannot walk the full 604-page font graph into the initial
+// bundle. Only the page actually rendered pays the bundle/load cost.
 
 import * as Font from "expo-font";
 import { staticFonts } from "./static/fonts.rn";
 import type { MushafLayout } from "./types";
 
 type AnyThunk = () => unknown;
-type PagesEntry = Record<number, AnyThunk>;
+type PagesEntry = { forPage: (page: number) => unknown };
 type StaticFontsShape = {
   "hafs-v2": PagesEntry;
   "hafs-v4": PagesEntry;
@@ -53,11 +59,14 @@ export async function loadFont(
   }
 
   const pages = fonts[layout];
-  const pageEntry = pages?.[page];
-  if (!pageEntry) {
+  if (!pages || typeof pages.forPage !== "function") {
+    throw new Error(`No font loader for layout: ${layout}`);
+  }
+  const asset = pages.forPage(page);
+  if (asset == null) {
     throw new Error(`No font asset for ${layout}/p${page}`);
   }
-  await loadOnce(familyFor(layout, page), pageEntry());
+  await loadOnce(familyFor(layout, page), asset);
 }
 
 /**
@@ -73,7 +82,7 @@ export async function loadBismillahFont(layout: MushafLayout): Promise<void> {
 
 /**
  * Loads the surah-name display font. The TTF is bundled with the app
- * (see static/fonts.rn.ts#surahname), so this is a runtime load via
+ * (see static/fonts.rn.ts → surahname), so this is a runtime load via
  * Font.loadAsync rather than a plugin-time auto-link.
  */
 export async function loadSurahNameFont(): Promise<void> {

@@ -12,8 +12,10 @@
 4. [How It Works](#how-it-works)
 5. [Data Generation](#data-generation)
 6. [Runtime Resolution](#runtime-resolution)
-7. [Migration Guide](#migration-guide)
-8. [Related Documentation](#related-documentation)
+7. [Per-Page Fonts (QCF V2 / V4) vs. Single Font (`hafs-unicode`)](#per-page-fonts-qcf-v2--v4-vs-single-font-hafs-unicode)
+8. [React Native Bundle-Size Workaround (`new Function`)](#react-native-bundle-size-workaround-new-function)
+9. [Migration Guide](#migration-guide)
+10. [Related Documentation](#related-documentation)
 
 ---
 
@@ -214,6 +216,48 @@ dist/
     ├── react/index.js
     └── web/index.js
 ```
+
+## Per-Page Fonts (QCF V2 / V4) vs. Single Font (`hafs-unicode`)
+
+The three mushaf layouts ship very different asset shapes, determined entirely by what the **Quran Foundation API** publishes at [verses.quran.foundation/fonts/quran/hafs](https://verses.quran.foundation/fonts/quran/hafs):
+
+| Layout | Mushaf ID | Font source | API asset shape |
+| --- | --- | --- | --- |
+| `hafs-v2` | 1 | QCF V2 (Madinah Mushaf) | **604 per-page TTFs** — `…/v2/woff2/p{PAGE}.woff2` |
+| `hafs-v4` | 19 | QCF V4 (Tajweed, COLRv1) | **604 per-page TTFs** — `…/v4/colrv1/woff2/p{PAGE}.woff2` |
+| `hafs-unicode` | 5 | KFGQPC Uthmanic Hafs (real Unicode Arabic) | **Single TTF** — `…/uthmanic_hafs/UthmanicHafs1Ver18.woff2` |
+
+**Why per-page for QCF V2 / V4?** Each page font contains only that page's glyphs, encoded in the **Unicode Private Use Area (PUA)**. The QCF fonts were designed this way to match the printed Madinah Mushaf exactly — every page is a self-contained glyph set, ~40 KB instead of ~15 MB for a unified font. The Quran Foundation only ever publishes them per-page; there is no single-file V2 or V4 download. The codebase preserves that design at the consumer side (see `src/core/static/fonts.rn.ts` for RN, `src/core/static/fonts.ts` for web).
+
+**`hafs-unicode` is the single-file layout.** It uses real Unicode Arabic text (no PUA), so one TTF covers the entire Mushaf. The codebase already treats it as a 2-font special case in both the web and RN loaders ([src/core/font-loader.ts:52-75](src/core/font-loader.ts#L52-L75), [src/core/font-loader.rn.ts:55-59](src/core/font-loader.rn.ts#L55-L59)): `digitalkhatt.otf` for the Quran text and `AyatQuran2-PVKGm.ttf` for ayah-end markers, both loaded once at startup.
+
+**Trade-off.** QCF V2 / V4 give pixel-perfect Madinah Mushaf rendering with tajweed coloring (V4 uses COLRv1). `hafs-unicode` gives selectable, copy-pasteable Unicode Arabic with KFGQPC glyph quality. Choose by use case:
+
+- Visual QA against the printed Mushaf → `hafs-v2` or `hafs-v4`
+- Selectable text / smaller bundle / faster cold start → `hafs-unicode`
+
+---
+
+## React Native Bundle-Size Workaround (`new Function`)
+
+For RN consumers, QCF V2 / V4's 604 per-page TTFs would balloon the initial JS bundle if every page were pre-listed as a `require()` thunk. The fix is the dynamic loader in `src/core/static/fonts.rn.ts`:
+
+```ts
+"hafs-v2": {
+  forPage: (page: number): unknown => {
+    const num = String(page).padStart(3, "0");
+    const dynamicRequire: (p: string) => unknown = new Function(
+      "p",
+      "return require(p);",
+    ) as (p: string) => unknown;
+    return dynamicRequire("../../data/fonts/hafs-v2-ttf/p" + num + ".ttf");
+  },
+},
+```
+
+**Why `new Function` and not `eval`?** Metro (≥ 0.81, the Expo SDK 53 default) has a static analyzer that **scans string literals passed to `eval` for `require()` calls** and walks those paths even when part of the argument is runtime-built. `eval('require("…/p' + num + '.ttf")')` is treated as 604 discoverable requires because Metro can see the `"…/p"` + `".ttf"` prefix pattern. Metro **does not decompile the body of a `Function` constructed via the `Function` constructor**, so wrapping `require` in `new Function("p", "return require(p);")` defeats the static analyzer entirely. Only the TTF for the page actually rendered enters the dependency graph.
+
+This is the only known pattern that works against modern Metro. If you ever switch to a different bundler (webpack, vite, …) the same shape works because none of them decompile `Function` constructor bodies either.
 
 ---
 

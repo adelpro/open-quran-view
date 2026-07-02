@@ -50,6 +50,7 @@
     "playground:react": "yarn workspace vite-react dev",
     "playground:web": "yarn workspace vite-typescript dev",
     "playground:rn": "yarn workspace rn-expo start",
+    "clean": "rimraf --glob node_modules dist playground/*/node_modules playground/*/dist playground/*/.expo playground/rn-expo/android playground/rn-expo/ios",
     "publish": "npm publish"
   },
   "workspaces": [
@@ -85,6 +86,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-native": "0.79.0",
+    "rimraf": "^6.0.1",
     "tsup": "^8.0.0",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0",

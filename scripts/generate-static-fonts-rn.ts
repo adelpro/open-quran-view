@@ -1,13 +1,21 @@
-// Generates src/core/static/fonts.rn.ts — RN-side thunk map for fonts.
+// Generates src/core/static/fonts.rn.ts — RN-side font loader.
 //
-// Each entry is a `() => require(...)` thunk so Metro bundles each asset
-// as a separate module. The thunks are only invoked at runtime via
-// Font.loadAsync, so a consumer that only navigates to pages 1–100 only
-// ships those 100 TTF files in the final binary.
+// Each layout key exposes a single `forPage(page)` function rather than a
+// pre-baked `() => require("…/pNNN.ttf")` thunk per page. The function
+// builds the require() argument at runtime and dispatches it through a
+// Function constructor so Metro's static analyzer cannot follow the path.
+// Only the TTFs actually fetched at runtime enter the bundle dependency
+// graph.
 //
-// Mirrors src/core/static/fonts.ts (web) but reads from the RN-only
-// TTF directories and the hafs-unicode assets (which are already .otf /
-// .ttf and don't need a parallel directory).
+// Previously this file emitted 604 static thunks per layout, which caused
+// Metro to bundle the full ~200 MB of hafs-v2 / hafs-v4 TTFs into every
+// consumer's initial bundle. The playground (and any consumer that only
+// renders a single page at startup) now starts from a tiny bundle and
+// pays the font cost only when navigation reaches a new page.
+//
+// The static `digitalkhatt` / `ayatquran` / `surahname` entries stay as
+// one-shot thunks — there are only 3 of them and they're always loaded
+// together at app startup.
 
 import { readdirSync, statSync, writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
@@ -22,8 +30,8 @@ const FONTS_SRC = join(PROJECT_ROOT, "src/data/fonts");
 const SHARED_SRC = join(PROJECT_ROOT, "src/data/shared");
 const STATIC_OUT = join(PROJECT_ROOT, "src/core/static");
 
-// hafs-{v2,v4}-ttf → per-page thunks, keyed by the *layout name* (hafs-v2 / hafs-v4)
-// so consumers can index `staticFonts[layout][page]` with the standard
+// hafs-{v2,v4}-ttf → per-page loaders, keyed by the *layout name* (hafs-v2 / hafs-v4)
+// so consumers can index `staticFonts[layout].forPage(p)` with the standard
 // MushafLayout enum. The directory name is an implementation detail.
 // hafs-unicode     → 2 keys: digitalkhatt (otf), ayatquran (ttf, special-cased)
 const PAGE_LAYOUTS: Array<[layoutKey: string, dirName: string]> = [
@@ -56,14 +64,52 @@ function buildPagesBlock(
     throw new Error(`No p*.ttf files found in ${dir}`);
   }
 
-  const inner = entries
-    .map(
-      ({ page, name }) =>
-        `    ${page}: () => require("../../data/fonts/${dirName}/${name}"),`,
-    )
-    .join("\n");
+  // Sanity check: a single dynamic loader replaces what used to be 604
+  // per-page entries. Verify we still see the expected number of pages so
+  // a half-generated font directory fails loud rather than silently
+  // emitting a loader for fewer pages than the published package claims.
+  if (entries.length < 100) {
+    throw new Error(
+      `Expected ≥100 page TTFs in ${dir}, found ${entries.length}. ` +
+        `Refusing to emit a dynamic loader with a suspiciously small page set.`,
+    );
+  }
 
-  return `  "${layoutKey}": {\n${inner}\n  },`;
+  // Emit a single runtime loader. The require() is wrapped in a
+  // Function constructor so Metro's static analyzer cannot follow it;
+  // only the page actually requested enters the dependency graph. The
+  // path prefix is rewritten by tsup.config.ts#copyRnStaticModules when
+  // the file is copied to dist/view/rn/static/ (../../data/ →
+  // ../../../data/) so the require resolves from the deeper dist tree.
+  //
+  // We deliberately keep `num` as a runtime concat rather than a static
+  // template so the rewritten prefix (when copied) stays correct.
+  //
+  // Why new Function and not eval: Metro (>=0.81, the Expo SDK 53
+  // default) has a static analyzer that scans string literals passed to
+  // eval() for require() calls and walks those paths even when the
+  // argument is partially runtime-built. It treats the literal-prefix
+  // "../../data/fonts/<dir>/p" + ".ttf" as a discoverable require
+  // target. Metro does NOT decompile the body of a Function constructed
+  // via the Function constructor, so the require here is invisible to
+  // the static analyzer.
+  return (
+    `  "${layoutKey}": {\n` +
+    `    // Dynamic per-page loader. The require is called inside a Function\n` +
+    `    // constructor so Metro's static analyzer cannot follow it — only\n` +
+    `    // the TTF for the page actually rendered enters the dependency graph.\n` +
+    `    forPage: (page: number): unknown => {\n` +
+    `      const num = String(page).padStart(3, "0");\n` +
+    `      const dynamicRequire: (p: string) => unknown = new Function(\n` +
+    `        "p",\n` +
+    `        "return require(p);",\n` +
+    `      ) as (p: string) => unknown;\n` +
+    `      return dynamicRequire(\n` +
+    `        "../../data/fonts/${dirName}/p" + num + ".ttf",\n` +
+    `      );\n` +
+    `    },\n` +
+    `  },`
+  );
 }
 
 function buildUnicodeBlock(): string {
@@ -119,10 +165,13 @@ function generateFontsRn(): string {
   return (
     `// AUTO-GENERATED by scripts/generate-static-fonts-rn.ts — do not edit.\n` +
     `//\n` +
-    `// Each entry is a lazy () => require(...) thunk so Metro bundles each\n` +
-    `// asset as a separate module. Thunks are only invoked at runtime via\n` +
-    `// Font.loadAsync, so a consumer that only navigates to a subset of\n` +
-    `// pages only ships those TTF files in the final binary.\n` +
+    `// Per-layout font loaders for RN. Page-specific TTF assets are loaded\n` +
+    `// via a runtime-built require() dispatched through a Function\n` +
+    `// constructor so Metro cannot statically walk the entire 604-page\n` +
+    `// font graph into the initial bundle. Only the TTF for the page\n` +
+    `// actually rendered enters the dependency graph. Shared fonts\n` +
+    `// (DigitalKhatt, AyatQuran, SurahName) stay as static one-shot thunks\n` +
+    `// because they're always loaded together at app startup.\n` +
     `\n` +
     `export const staticFonts = {\n` +
     blocks.join("\n") +

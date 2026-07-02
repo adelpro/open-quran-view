@@ -25,8 +25,37 @@ yarn android   # or yarn ios
 - **Page 1 (Al-Fatiha) renders** within ~2 s with all 7 lines, tashkeel
   correct, no tofu.
 - **Tap a word** — selection highlight appears at the tap position.
-- **Switch `mushafLayout` to `"hafs-v4"` or `"hafs-unicode"`** in
-  `App.tsx` — re-render, verify the v4 / DigitalKhatt glyphs match.
+- **Switch `mushafLayout` to `"hafs-v2"` or `"hafs-v4"`** in `App.tsx` —
+  re-render, verify the QCF V2 / V4 (Tajweed) glyphs match.
+
+## Default `mushafLayout`: `hafs-unicode`
+
+`App.tsx` defaults to `mushafLayout="hafs-unicode"` for fast cold-start:
+the KFGQPC Uthmanic Hafs layout uses a single TTF (DigitalKhatt) plus a
+marker TTF (AyatQuran), so Expo Go downloads only 2 fonts + 1 surah-name
+font on first launch and the bundle stays tiny.
+
+The other layouts (`hafs-v2`, `hafs-v4`) ship as **604 per-page TTFs**
+from the Quran Foundation API — that's how QCF glyphs are designed (one
+PUA glyph set per page). The dynamic `forPage()` loader keeps only the
+TTF for the currently rendered page in the bundle, but Metro still has
+to resolve a require at runtime for the page number you render, which
+means a small additional download per navigation. Change
+`mushafLayout` in `App.tsx` to switch:
+
+```tsx
+// pixel-perfect Madinah Mushaf rendering (QCF V2 glyphs, 604 per-page TTFs)
+<OpenQuranViewRN page={1} theme="light" mushafLayout="hafs-v2" />
+
+// Tajweed-colored Madinah Mushaf (QCF V4 COLRv1, 604 per-page TTFs)
+<OpenQuranViewRN page={1} theme="light" mushafLayout="hafs-v4" />
+
+// single-font Unicode Arabic (KFGQPC Uthmanic Hafs, default)
+<OpenQuranViewRN page={1} theme="light" mushafLayout="hafs-unicode" />
+```
+
+See [docs/guides/font-loading.md](../../docs/guides/font-loading.md) for
+the full rationale on per-page vs. single-file fonts.
 
 ## Files
 

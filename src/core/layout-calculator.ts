@@ -2,7 +2,9 @@ import type { Line, LineType, Page, Word } from "./types";
 
 export type LineLayout = {
   lineNumber: number;
+  x: number;
   y: number;
+  width: number;
   height: number;
   words: WordLayout[];
   isCentered: boolean;
@@ -20,6 +22,8 @@ export type WordLayout = Word & {
 export type PageMetrics = {
   lineHeight: number;
   baselineOffset: number;
+  pageWidth: number;
+  pageHeight: number;
   pagePadding: {
     top: number;
     bottom: number;
@@ -76,6 +80,8 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
   const metrics: PageMetrics = {
     lineHeight,
     baselineOffset: Math.round(lineHeight / 2),
+    pageWidth,
+    pageHeight,
     pagePadding: {
       top: Math.round(paddingTop),
       bottom: Math.round(paddingBottom),
@@ -109,7 +115,9 @@ export function createLayoutCalculator(options: LayoutCalculatorOptions): {
 
     return {
       lineNumber: line.lineNumber,
+      x: metrics.pagePadding.left,
       y,
+      width: pageWidth - metrics.pagePadding.left - metrics.pagePadding.right,
       height: lineHeightForLine,
       words,
       isCentered,
