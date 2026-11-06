@@ -4,13 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Conventional Commits](https://conventionalcommits.org/).
 
-## [UNRELEASED]
+## [0.6.1] - 2026-11-06
 
 ### Fixed
 
+- **React**: Container sizing now uses observed width/height, so `ratio` and `fit` stay correct on resize and when neither `width` nor `height` is provided
 - **Web Component**: Fixed QCF font race condition where page navigation could render glyph placeholders instead of proper Arabic text
 - **Web Component**: Added `loadFontForPage()` method to ensure fonts are loaded before rendering on page change
 - **Web Component**: Fixed verse end markers in hafs-unicode layout rendering as raw glyphs (like ﴾6﴿) instead of proper Arabic-Indic numerals
+
+### Docs
+
+- Added a guide for porting the viewer to other frameworks
 
 ## [0.5.0] - 2026-05-22
 
