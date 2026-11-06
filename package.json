@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "eslint src/**",
+    "lint": "eslint src",
     "test": "vitest",
     "generate:all": "tsx scripts/generate-all.ts",
     "generate:pages": "tsx scripts/fetch-pages.ts",

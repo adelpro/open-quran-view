@@ -42,8 +42,8 @@ Quran Foundation API → Local Data Files → Static Assets → Runtime
 Create a `.env` file with Quran.com API credentials:
 
 ```env
-QURAN_CLIENT_ID=your_client_id
-QURAN_CLIENT_SECRET=your_client_secret
+QF_CLIENT_ID=your_client_id
+QF_CLIENT_SECRET=your_client_secret
 ```
 
 **Get credentials:** Visit [Quran.com API](https://quran.com/api) to register.
@@ -312,7 +312,7 @@ yarn build
 
 ## Troubleshooting
 
-### Error: QURAN_CLIENT_ID not set
+### Error: QF_CLIENT_ID not set
 
 **Problem:** Missing credentials in `.env`
 
@@ -320,8 +320,8 @@ yarn build
 
 ```bash
 # Create .env file
-echo "QURAN_CLIENT_ID=your_id" > .env
-echo "QURAN_CLIENT_SECRET=your_secret" >> .env
+echo "QF_CLIENT_ID=your_id" > .env
+echo "QF_CLIENT_SECRET=your_secret" >> .env
 ```
 
 ### Error: Network errors during fetch

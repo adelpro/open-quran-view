@@ -43,8 +43,8 @@ function loadEnv(): { clientId: string; clientSecret: string } {
   const envPath = join(__dirname, "..", ".env");
   const envExamplePath = join(__dirname, "..", ".env.example");
 
-  let clientId = process.env.QURAN_CLIENT_ID;
-  let clientSecret = process.env.QURAN_CLIENT_SECRET;
+  let clientId = process.env.QF_CLIENT_ID;
+  let clientSecret = process.env.QF_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     if (existsSync(envPath)) {
@@ -52,8 +52,8 @@ function loadEnv(): { clientId: string; clientSecret: string } {
       envContent.split("\n").forEach((line) => {
         const [key, value] = line.split("=");
         if (key && value) {
-          if (key.trim() === "QURAN_CLIENT_ID") clientId = value.trim();
-          if (key.trim() === "QURAN_CLIENT_SECRET") clientSecret = value.trim();
+          if (key.trim() === "QF_CLIENT_ID") clientId = value.trim();
+          if (key.trim() === "QF_CLIENT_SECRET") clientSecret = value.trim();
         }
       });
     }
@@ -61,7 +61,7 @@ function loadEnv(): { clientId: string; clientSecret: string } {
 
   if (!clientId || !clientSecret) {
     throw new Error(
-      "QURAN_CLIENT_ID and QURAN_CLIENT_SECRET must be set in .env file",
+      "QF_CLIENT_ID and QF_CLIENT_SECRET must be set in .env file",
     );
   }
 

@@ -57,12 +57,12 @@ The API uses OAuth 2.0 with client credentials flow.
 ### Getting Credentials
 
 1. Register at [Quran.com API](https://quran.com/api)
-2. Obtain `QURAN_CLIENT_ID` and `QURAN_CLIENT_SECRET`
+2. Obtain `QF_CLIENT_ID` and `QF_CLIENT_SECRET`
 3. Store in `.env` file:
 
 ```env
-QURAN_CLIENT_ID=your_client_id
-QURAN_CLIENT_SECRET=your_client_secret
+QF_CLIENT_ID=your_client_id
+QF_CLIENT_SECRET=your_client_secret
 ```
 
 ### Getting Access Token

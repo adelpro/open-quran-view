@@ -930,7 +930,7 @@ yarn install
 
 # 2. Generate data (requires API credentials)
 cp .env.example .env
-# Add QURAN_CLIENT_ID and QURAN_CLIENT_SECRET
+# Add QF_CLIENT_ID and QF_CLIENT_SECRET
 yarn generate:all
 
 # 3. Start development
